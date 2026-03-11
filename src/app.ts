@@ -39,15 +39,6 @@ export function startServer() {
 
     testConnection();
 
-    // Serve Angular frontend
-  const frontendPath = path.join(__dirname, '../frontend/dist/frontend');
-  app.use(express.static(frontendPath));
-
-  // Serve index.html for all non-API routes (Angular routing)
-app.get(/^(?!\/api).*/, (req: Request, res: Response) => {
-  res.sendFile(path.join(frontendPath, 'index.html'));
-});
-
 
     const PORT:number = parseInt(process.env.PORT as string) || 4000;
     app.listen(PORT, function() {
