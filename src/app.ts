@@ -3,7 +3,7 @@ import dotenvFlow from 'dotenv-flow';
 import {connect, testConnection} from './repository/database';
 import cors from 'cors';
 import path from 'path';
-import routes from './routes';
+import routes from './routes/routes';
 import { disconnect } from './repository/database';
 import { setupDocumentation } from './util/documentation';
 
