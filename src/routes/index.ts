@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import userRoutes from './userRoutes';
 import authRoutes from './authRoutes';
+import bookingRoutes from './bookingRoutes';
 
 const router = Router();
 
@@ -12,5 +13,6 @@ router.get('/ping', (req, res) => {
 
 router.use("/auth", authRoutes);   // /api/auth/register, /api/auth/login
 router.use("/users", userRoutes);  // /api/users, /api/users/:id
+router.use("/bookings", bookingRoutes); // /api/bookings, /api/bookings/:id
 
 export default router;
