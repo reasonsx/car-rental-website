@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { BookingModel } from "../models/bookingModel";
 import { BookingStatus } from "../interfaces/booking";
 import { connect, disconnect } from "../repository/database";
+import "../models/carModel";
+import "../models/userModel";
 
 /**
  * Create booking
