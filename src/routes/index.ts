@@ -4,6 +4,7 @@ import authRoutes from './authRoutes';
 import bookingRoutes from './bookingRoutes';
 import carRoutes from './carRoutes';
 import categoryRoutes from './categoryRoutes';
+import locationRoutes from './locationRoutes';
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use("/users", userRoutes);  // /api/users, /api/users/:id
 router.use("/bookings", bookingRoutes); // /api/bookings, /api/bookings/:id
 router.use('/cars', carRoutes);        // /api/cars, /api/cars/:id
 router.use('/categories', categoryRoutes); // /api/categories, /api/categories/:id
+router.use('/locations', locationRoutes); // /api/locations, /api/locations/:id
 
 export default router;
