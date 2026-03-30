@@ -1,49 +1,33 @@
-import express, { Application, Request, Response } from 'express';
+import express, { Application } from 'express';
 import dotenvFlow from 'dotenv-flow';
-import {connect, testConnection} from './repository/database';
 import cors from 'cors';
-import path from 'path';
 import routes from './routes';
-import { disconnect } from './repository/database';
+import { connect } from './repository/database';
 import { setupDocumentation } from './util/documentation';
 
-dotenvFlow.config();    
+dotenvFlow.config();
 const app: Application = express();
 
-/**
- * Starts the Express server.
- * This function sets up middleware, routes, and starts listening on the specified port.
- */
-export function startServer() {
+export async function startServer() {
+  // Connect once
+  await connect();
 
-    app.use(cors({
-
-    // Allow request from any origin
+  app.use(cors({
     origin: "*",
-
-    // allow HTTP methods
     methods: ["GET", "PUT", "POST", "DELETE"],
-
-    // allow headers
     allowedHeaders: ['auth-token', 'Origin', 'X-Requested-Width', 'Content-Type', 'Accept'],
+    credentials: true
+  }));
 
-    // allow credentials
-    credentials:true
-    }))
+  app.use(express.json());
+  app.use('/api', routes);
 
-    app.use(express.json());
-    
-    app.use('/api', routes);
+  setupDocumentation(app);
 
-    setupDocumentation(app);
-
-    testConnection();
-
-
-    const PORT:number = parseInt(process.env.PORT as string) || 4000;
-    app.listen(PORT, function() {
-        console.log(`Server is running on port ${PORT}`);
-    });
+  const PORT: number = parseInt(process.env.PORT as string) || 4000;
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
 }
 
 // Only start server if this file is executed directly
