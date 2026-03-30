@@ -1,0 +1,11 @@
+<main class="home-page">
+  <h1>Choose a location and browse cars</h1>
+
+  <app-location-selector
+    [locations]="locations()"
+    [selectedLocationId]="selectedLocationId()"
+    (selectedLocationChange)="selectLocation($event)"
+  ></app-location-selector>
+
+  <app-car-list [cars]="filteredCars()"></app-car-list>
+</main>
