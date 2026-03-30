@@ -10,7 +10,6 @@ import "../models/userModel";
  */
 export async function createBooking(req: Request, res: Response) {
   try {
-    await connect();
 
     const booking = new BookingModel({
       userId: req.body.userId,
@@ -28,8 +27,6 @@ export async function createBooking(req: Request, res: Response) {
   } catch (error) {
     res.status(500).json({ message: "Failed to create booking: " + error });
 
-  } finally {
-    await disconnect();
   }
 }
 
@@ -38,7 +35,6 @@ export async function createBooking(req: Request, res: Response) {
  */
 export async function getBookings(req: Request, res: Response) {
   try {
-    await connect();
 
     const bookings = await BookingModel.find()
       .populate("userId")
@@ -49,9 +45,7 @@ export async function getBookings(req: Request, res: Response) {
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch bookings: " + error });
 
-  } finally {
-    await disconnect();
-  }
+  } 
 }
 
 /**
@@ -59,7 +53,6 @@ export async function getBookings(req: Request, res: Response) {
  */
 export async function getBookingById(req: Request, res: Response) {
   try {
-    await connect();
 
     const booking = await BookingModel.findById(req.params.id)
       .populate("userId")
@@ -74,8 +67,6 @@ export async function getBookingById(req: Request, res: Response) {
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch booking: " + error });
 
-  } finally {
-    await disconnect();
   }
 }
 
@@ -84,7 +75,6 @@ export async function getBookingById(req: Request, res: Response) {
  */
 export async function updateBooking(req: Request, res: Response) {
   try {
-    await connect();
 
     const updatedBooking = await BookingModel.findByIdAndUpdate(
       req.params.id,
@@ -101,9 +91,7 @@ export async function updateBooking(req: Request, res: Response) {
   } catch (error) {
     res.status(500).json({ message: "Failed to update booking: " + error });
 
-  } finally {
-    await disconnect();
-  }
+  } 
 }
 
 /**
@@ -111,7 +99,6 @@ export async function updateBooking(req: Request, res: Response) {
  */
 export async function deleteBooking(req: Request, res: Response) {
   try {
-    await connect();
 
     const deletedBooking = await BookingModel.findByIdAndDelete(req.params.id);
 
@@ -124,7 +111,5 @@ export async function deleteBooking(req: Request, res: Response) {
   } catch (error) {
     res.status(500).json({ message: "Failed to delete booking: " + error });
 
-  } finally {
-    await disconnect();
-  }
+  } 
 }

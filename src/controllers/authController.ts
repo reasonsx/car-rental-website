@@ -26,7 +26,6 @@ export async function registerUser(req: Request, res: Response) {
             return res.status(400).json({ message: error.details[0].message });
         }
 
-        await connect();
 
         const emailExists = await UserModel.findOne({ email: req.body.email });
         if (emailExists) {
@@ -49,9 +48,7 @@ export async function registerUser(req: Request, res: Response) {
 
         res.status(500).json({ message: "Failed to register user: " + error });
 
-    } finally {
-        await disconnect();
-    }
+    } 
 }
 
 export function validateUserRegistrationInfo(data: User): ValidationResult {
@@ -79,7 +76,6 @@ export async function loginUser(req: Request, res: Response) {
             return res.status(400).json({ message: error.details[0].message });
         }
 
-        await connect();
         const user: User | null = await UserModel.findOne({ email: req.body.email });
         
         if (!user) {
@@ -126,9 +122,7 @@ export async function loginUser(req: Request, res: Response) {
 
         res.status(500).json({ message: "Failed to login user: " + error });
 
-    } finally { 
-        await disconnect();
-    }
+    } 
 }
 
   export async function verifyToken(req: Request, res: Response, next: NextFunction) {

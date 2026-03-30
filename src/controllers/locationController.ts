@@ -8,7 +8,6 @@ import '../models/locationModel'; // ensure model is registered
  */
 export async function createLocation(req: Request, res: Response) {
   try {
-    await connect();
 
     const location = new LocationModel({
       name: req.body.name,
@@ -22,9 +21,7 @@ export async function createLocation(req: Request, res: Response) {
 
   } catch (error) {
     res.status(500).json({ message: "Failed to create location: " + error });
-  } finally {
-    await disconnect();
-  }
+  } 
 }
 
 /**
@@ -32,15 +29,12 @@ export async function createLocation(req: Request, res: Response) {
  */
 export async function getLocations(req: Request, res: Response) {
   try {
-    await connect();
 
     const locations = await LocationModel.find();
     res.status(200).json(locations);
 
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch locations: " + error });
-  } finally {
-    await disconnect();
   }
 }
 
@@ -49,7 +43,6 @@ export async function getLocations(req: Request, res: Response) {
  */
 export async function getLocationById(req: Request, res: Response) {
   try {
-    await connect();
 
     const location = await LocationModel.findById(req.params.id);
     if (!location) return res.status(404).json({ message: "Location not found" });
@@ -58,9 +51,7 @@ export async function getLocationById(req: Request, res: Response) {
 
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch location: " + error });
-  } finally {
-    await disconnect();
-  }
+  } 
 }
 
 /**
@@ -68,7 +59,6 @@ export async function getLocationById(req: Request, res: Response) {
  */
 export async function updateLocation(req: Request, res: Response) {
   try {
-    await connect();
 
     const updatedLocation = await LocationModel.findByIdAndUpdate(
       req.params.id,
@@ -82,8 +72,6 @@ export async function updateLocation(req: Request, res: Response) {
 
   } catch (error) {
     res.status(500).json({ message: "Failed to update location: " + error });
-  } finally {
-    await disconnect();
   }
 }
 
@@ -92,7 +80,6 @@ export async function updateLocation(req: Request, res: Response) {
  */
 export async function deleteLocation(req: Request, res: Response) {
   try {
-    await connect();
 
     const deletedLocation = await LocationModel.findByIdAndDelete(req.params.id);
     if (!deletedLocation) return res.status(404).json({ message: "Location not found" });
@@ -101,7 +88,5 @@ export async function deleteLocation(req: Request, res: Response) {
 
   } catch (error) {
     res.status(500).json({ message: "Failed to delete location: " + error });
-  } finally {
-    await disconnect();
-  }
+  } 
 }

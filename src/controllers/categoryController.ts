@@ -8,7 +8,6 @@ import '../models/categoryModel'; // ensure model is registered
  */
 export async function createCategory(req: Request, res: Response) {
   try {
-    await connect();
 
     const category = new CategoryModel({
       name: req.body.name,
@@ -20,9 +19,7 @@ export async function createCategory(req: Request, res: Response) {
 
   } catch (error) {
     res.status(500).json({ message: "Failed to create category: " + error });
-  } finally {
-    await disconnect();
-  }
+  } 
 }
 
 /**
@@ -30,16 +27,13 @@ export async function createCategory(req: Request, res: Response) {
  */
 export async function getCategories(req: Request, res: Response) {
   try {
-    await connect();
 
     const categories = await CategoryModel.find();
     res.status(200).json(categories);
 
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch categories: " + error });
-  } finally {
-    await disconnect();
-  }
+  } 
 }
 
 /**
@@ -47,7 +41,6 @@ export async function getCategories(req: Request, res: Response) {
  */
 export async function getCategoryById(req: Request, res: Response) {
   try {
-    await connect();
 
     const category = await CategoryModel.findById(req.params.id);
     if (!category) return res.status(404).json({ message: "Category not found" });
@@ -56,9 +49,7 @@ export async function getCategoryById(req: Request, res: Response) {
 
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch category: " + error });
-  } finally {
-    await disconnect();
-  }
+  } 
 }
 
 /**
@@ -66,8 +57,6 @@ export async function getCategoryById(req: Request, res: Response) {
  */
 export async function updateCategory(req: Request, res: Response) {
   try {
-    await connect();
-
     const updatedCategory = await CategoryModel.findByIdAndUpdate(
       req.params.id,
       req.body,
@@ -80,8 +69,6 @@ export async function updateCategory(req: Request, res: Response) {
 
   } catch (error) {
     res.status(500).json({ message: "Failed to update category: " + error });
-  } finally {
-    await disconnect();
   }
 }
 
@@ -90,8 +77,6 @@ export async function updateCategory(req: Request, res: Response) {
  */
 export async function deleteCategory(req: Request, res: Response) {
   try {
-    await connect();
-
     const deletedCategory = await CategoryModel.findByIdAndDelete(req.params.id);
     if (!deletedCategory) return res.status(404).json({ message: "Category not found" });
 
@@ -99,7 +84,5 @@ export async function deleteCategory(req: Request, res: Response) {
 
   } catch (error) {
     res.status(500).json({ message: "Failed to delete category: " + error });
-  } finally {
-    await disconnect();
-  }
+  } 
 }

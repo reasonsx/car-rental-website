@@ -7,7 +7,6 @@ import { connect, disconnect } from '../repository/database';
  */
 export async function createCar(req: Request, res: Response) {
   try {
-    await connect();
 
     const car = new CarModel({
       brand: req.body.brand,
@@ -25,8 +24,6 @@ export async function createCar(req: Request, res: Response) {
 
   } catch (error) {
     res.status(500).json({ message: "Failed to create car: " + error });
-  } finally {
-    await disconnect();
   }
 }
 
@@ -35,7 +32,6 @@ export async function createCar(req: Request, res: Response) {
  */
 export async function getCars(req: Request, res: Response) {
   try {
-    await connect();
 
     const cars = await CarModel.find()
       .populate('categoryId')
@@ -45,9 +41,7 @@ export async function getCars(req: Request, res: Response) {
 
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch cars: " + error });
-  } finally {
-    await disconnect();
-  }
+  } 
 }
 
 /**
@@ -55,7 +49,6 @@ export async function getCars(req: Request, res: Response) {
  */
 export async function getCarById(req: Request, res: Response) {
   try {
-    await connect();
 
     const car = await CarModel.findById(req.params.id)
       .populate('categoryId')
@@ -67,9 +60,7 @@ export async function getCarById(req: Request, res: Response) {
 
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch car: " + error });
-  } finally {
-    await disconnect();
-  }
+  } 
 }
 
 /**
@@ -77,7 +68,6 @@ export async function getCarById(req: Request, res: Response) {
  */
 export async function updateCar(req: Request, res: Response) {
   try {
-    await connect();
 
     const updatedCar = await CarModel.findByIdAndUpdate(
       req.params.id,
@@ -91,9 +81,7 @@ export async function updateCar(req: Request, res: Response) {
 
   } catch (error) {
     res.status(500).json({ message: "Failed to update car: " + error });
-  } finally {
-    await disconnect();
-  }
+  } 
 }
 
 /**
@@ -101,7 +89,6 @@ export async function updateCar(req: Request, res: Response) {
  */
 export async function deleteCar(req: Request, res: Response) {
   try {
-    await connect();
 
     const deletedCar = await CarModel.findByIdAndDelete(req.params.id);
 
@@ -111,7 +98,5 @@ export async function deleteCar(req: Request, res: Response) {
 
   } catch (error) {
     res.status(500).json({ message: "Failed to delete car: " + error });
-  } finally {
-    await disconnect();
-  }
+  } 
 }
