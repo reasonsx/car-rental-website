@@ -1,0 +1,14 @@
+<section class="location-selector">
+  <label for="location">Choose location</label>
+  <select
+    id="location"
+    #locationSelect
+    [value]="selectedLocationId || ''"
+    (change)="onLocationChange(locationSelect.value)"
+  >
+    <option value="">All locations</option>
+    <option *ngFor="let location of locations" [value]="location._id">
+      {{ location.name }}
+    </option>
+  </select>
+</section>
