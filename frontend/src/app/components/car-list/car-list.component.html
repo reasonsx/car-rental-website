@@ -1,0 +1,11 @@
+<section class="car-list">
+  <h2>Available cars</h2>
+  <ng-container *ngIf="cars.length; else noCars">
+    <div class="grid">
+      <app-car-card *ngFor="let car of cars" [car]="car"></app-car-card>
+    </div>
+  </ng-container>
+  <ng-template #noCars>
+    <p class="empty">No cars available for this location.</p>
+  </ng-template>
+</section>
