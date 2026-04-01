@@ -17,7 +17,14 @@
 
 .actions {
   display: flex;
+  align-items: center;
   gap: 0.5rem;
+}
+
+.welcome {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+  margin-right: 0.5rem;
 }
 
 .button {
@@ -27,6 +34,14 @@
   border-radius: 4px;
   height: 36px;
   padding: 0 0.75rem;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  transition: background 0.2s ease;
+}
+
+.button:hover {
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .button:disabled {

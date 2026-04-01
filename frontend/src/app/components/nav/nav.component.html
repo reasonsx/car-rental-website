@@ -1,7 +1,13 @@
 <nav class="app-nav">
   <div class="brand">Car Rental</div>
   <div class="actions">
-    <button type="button" class="button" disabled>Login</button>
-    <button type="button" class="button" disabled>Logout</button>
+    <ng-container *ngIf="isAuthenticated(); else notAuthenticated">
+      <span class="welcome">Welcome, {{ currentUser()?.name }}</span>
+      <a routerLink="/profile" class="button">Profile</a>
+      <button type="button" class="button" (click)="logout()">Logout</button>
+    </ng-container>
+    <ng-template #notAuthenticated>
+      <a routerLink="/login" class="button">Login</a>
+    </ng-template>
   </div>
 </nav>
