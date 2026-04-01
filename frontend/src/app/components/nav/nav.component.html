@@ -1,5 +1,5 @@
 <nav class="app-nav">
-  <div class="brand">Car Rental</div>
+  <a routerLink="/" class="brand">Car Rental</a>
   <div class="actions">
     <ng-container *ngIf="isAuthenticated(); else notAuthenticated">
       <span class="welcome">Welcome, {{ currentUser()?.name }}</span>
