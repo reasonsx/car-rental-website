@@ -111,7 +111,8 @@ export async function loginUser(req: Request, res: Response) {
                         user: {
                             id: userId,
                             name: user.name,
-                            email: user.email
+                            email: user.email,
+                            isAdmin: user.isAdmin
                         }
                     }
                 });
