@@ -1,17 +1,19 @@
-<article class="car-card">
-  <img
-    *ngIf="car.imageUrl; else defaultImg"
-    [src]="car.imageUrl"
-    [alt]="car.brand + ' ' + car.modelName"
-  />
-  <ng-template #defaultImg>
-    <div class="placeholder">No image</div>
-  </ng-template>
+<a [routerLink]="['/car', car._id]" class="car-card-link">
+  <article class="car-card">
+    <img
+      *ngIf="car.imageUrl; else defaultImg"
+      [src]="car.imageUrl"
+      [alt]="car.brand + ' ' + car.modelName"
+    />
+    <ng-template #defaultImg>
+      <div class="placeholder">No image</div>
+    </ng-template>
 
-  <div class="car-info">
-    <h3>{{ car.brand }} {{ car.modelName }}</h3>
-    <p>Year: {{ car.year }}</p>
-    <p>Price per day: €{{ car.pricePerDay }}</p>
-    <p>Status: <strong>{{ car.available ? 'Available' : 'Unavailable' }}</strong></p>
-  </div>
-</article>
+    <div class="car-info">
+      <h3>{{ car.brand }} {{ car.modelName }}</h3>
+      <p>Year: {{ car.year }}</p>
+      <p>Price per day: €{{ car.pricePerDay }}</p>
+      <p>Status: <strong>{{ car.available ? 'Available' : 'Unavailable' }}</strong></p>
+    </div>
+  </article>
+</a>
