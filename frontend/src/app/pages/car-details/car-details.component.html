@@ -1,0 +1,62 @@
+<main class="car-details-page">
+  <ng-container *ngIf="loading(); else content">
+    <p>Loading car details...</p>
+  </ng-container>
+
+  <ng-template #content>
+    <ng-container *ngIf="error(); else details">
+      <p class="error">{{ error() }}</p>
+    </ng-container>
+
+    <ng-template #details>
+      <div *ngIf="car() as car" class="car-details-container">
+        <div class="car-info-panel">
+          <div class="image-wrapper">
+            <img
+              *ngIf="car.imageUrl; else noImage"
+              [src]="car.imageUrl"
+              [alt]="car.brand + ' ' + car.modelName"
+            />
+            <ng-template #noImage>
+              <div class="no-image">No image available</div>
+            </ng-template>
+          </div>
+
+          <h1>{{ car.brand }} {{ car.modelName }}</h1>
+          <p><strong>Year:</strong> {{ car.year }}</p>
+          <p><strong>Price per day:</strong> €{{ car.pricePerDay }}</p>
+          <p><strong>Status:</strong> {{ car.available ? 'Available' : 'Unavailable' }}</p>
+          <p><strong>Category:</strong> {{ car.categoryId?.name ?? car.categoryId ?? 'N/A' }}</p>
+          <p><strong>Location:</strong> {{ car.locationId?.name ?? car.locationId ?? 'N/A' }}</p>
+
+          <button class="book-now" disabled>Book now (coming soon)</button>
+        </div>
+
+        <div class="booking-panel">
+          <div class="booking-status">
+            <h2>Booking calendar</h2>
+            <div class="month-controls">
+              <button (click)="prevMonth()">&#8249;</button>
+              <span>{{ monthName() }}</span>
+              <button (click)="nextMonth()">&#8250;</button>
+            </div>
+
+            <div class="calendar-grid">
+              <div class="weekday" *ngFor="let w of ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']">{{ w }}</div>
+              <ng-container *ngFor="let cell of days()">
+                <div
+                  class="day"
+                  [class.blank]="!cell.date"
+                  [class.booked]="cell.date && cell.booked"
+                  [class.free]="cell.date && !cell.booked"
+                >
+                  <span>{{ cell.date ? cell.date.getDate() : '' }}</span>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </ng-template>
+</main>
