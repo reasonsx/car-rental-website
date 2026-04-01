@@ -24,8 +24,6 @@ export class HomeComponent implements OnInit {
     const selectedId = this.selectedLocationId();
     const cars = this.allCars();
 
-    console.log('Filtering cars:', { selectedId, totalCars: cars.length, cars: cars.map(c => ({ id: c._id, locationId: c.locationId })) });
-
     if (!selectedId) {
       return cars;
     }
@@ -35,7 +33,6 @@ export class HomeComponent implements OnInit {
       const carLocationId = typeof car.locationId === 'object' ? car.locationId._id : car.locationId;
       return carLocationId === selectedId;
     });
-    console.log('Filtered cars:', filtered.length, filtered);
     return filtered;
   });
 
@@ -50,26 +47,19 @@ export class HomeComponent implements OnInit {
   }
 
   selectLocation(locationId?: string) {
-    console.log('Selecting location:', locationId);
     this.selectedLocationId.set(locationId);
   }
 
   private loadLocations() {
     this.locationService.getLocations().subscribe({
-      next: (locations) => {
-        console.log('Loaded locations:', locations);
-        this.locations.set(locations);
-      },
+      next: (locations) => this.locations.set(locations),
       error: () => this.error.set('Unable to load locations'),
     });
   }
 
   private loadCars() {
     this.carService.getCars().subscribe({
-      next: (cars) => {
-        console.log('Loaded cars:', cars.map(c => ({ id: c._id, locationId: c.locationId, brand: c.brand })));
-        this.allCars.set(cars.filter((car) => car.available));
-      },
+      next: (cars) => this.allCars.set(cars.filter((car) => car.available)),
       error: () => this.error.set('Unable to load cars'),
     });
   }
