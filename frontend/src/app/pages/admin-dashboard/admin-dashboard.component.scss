@@ -1,0 +1,53 @@
+.admin-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 64px);
+  padding: 2rem 1rem;
+  background: #f8f9fa;
+}
+
+.admin-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+}
+
+.admin-card h1 {
+  color: #1c2a40;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+}
+
+.admin-card p {
+  color: #6c757d;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.admin-content {
+  text-align: left;
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.admin-content p {
+  margin-bottom: 1rem;
+  color: #374151;
+}
+
+.admin-content ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.admin-content li {
+  margin-bottom: 0.5rem;
+  color: #6c757d;
+}
