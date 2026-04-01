@@ -1,0 +1,99 @@
+<div class="profile-container">
+  <div class="profile-card">
+    <h1>My Profile</h1>
+
+    <div *ngIf="error()" class="error-message">
+      {{ error() }}
+    </div>
+
+    <div *ngIf="success()" class="success-message">
+      {{ success() }}
+    </div>
+
+    <form [formGroup]="profileForm" (ngSubmit)="onUpdateProfile()" class="profile-form">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input
+          id="name"
+          type="text"
+          formControlName="name"
+          placeholder="Enter your name"
+          [class.error]="profileFormControls['name'].invalid && profileFormControls['name'].touched"
+        />
+        <div *ngIf="profileFormControls['name'].invalid && profileFormControls['name'].touched" class="field-error">
+          <span *ngIf="profileFormControls['name'].errors?.['required']">Name is required</span>
+          <span *ngIf="profileFormControls['name'].errors?.['minlength']">Name must be at least 3 characters</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="Enter your email"
+          [class.error]="profileFormControls['email'].invalid && profileFormControls['email'].touched"
+        />
+        <div *ngIf="profileFormControls['email'].invalid && profileFormControls['email'].touched" class="field-error">
+          <span *ngIf="profileFormControls['email'].errors?.['required']">Email is required</span>
+          <span *ngIf="profileFormControls['email'].errors?.['email']">Please enter a valid email</span>
+        </div>
+      </div>
+
+      <div class="password-section">
+        <h3>Change Password (Optional)</h3>
+
+        <div class="form-group">
+          <label for="currentPassword">Current Password</label>
+          <input
+            id="currentPassword"
+            type="password"
+            formControlName="currentPassword"
+            placeholder="Enter current password"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="newPassword">New Password</label>
+          <input
+            id="newPassword"
+            type="password"
+            formControlName="newPassword"
+            placeholder="Enter new password"
+            [class.error]="profileFormControls['newPassword'].invalid && profileFormControls['newPassword'].touched"
+          />
+          <div *ngIf="profileFormControls['newPassword'].invalid && profileFormControls['newPassword'].touched" class="field-error">
+            <span *ngIf="profileFormControls['newPassword'].errors?.['minlength']">Password must be at least 6 characters</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmNewPassword">Confirm New Password</label>
+          <input
+            id="confirmNewPassword"
+            type="password"
+            formControlName="confirmNewPassword"
+            placeholder="Confirm new password"
+            [class.error]="profileForm.errors?.['passwordMismatch'] || (profileFormControls['confirmNewPassword'].invalid && profileFormControls['confirmNewPassword'].touched)"
+          />
+          <div *ngIf="profileForm.errors?.['passwordMismatch'] && profileFormControls['confirmNewPassword'].touched" class="field-error">
+            Passwords do not match
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary" [disabled]="profileForm.invalid || isLoading()">
+        {{ isLoading() ? 'Updating...' : 'Update Profile' }}
+      </button>
+    </form>
+
+    <div *ngIf="isAdmin()" class="admin-section">
+      <hr />
+      <h3>Admin Access</h3>
+      <button type="button" class="btn-secondary" (click)="goToAdminDashboard()">
+        Go to Admin Dashboard
+      </button>
+    </div>
+  </div>
+</div>
