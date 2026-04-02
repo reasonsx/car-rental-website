@@ -1,12 +1,45 @@
 <div class="admin-categories">
   <h2>Categories Management</h2>
-  <p>Category management functionality will be implemented here.</p>
-  <p>Features to include:</p>
-  <ul>
-    <li>View all categories</li>
-    <li>Add new categories</li>
-    <li>Edit category details</li>
-    <li>Delete categories</li>
-    <li>Manage category hierarchy</li>
-  </ul>
+
+  <div *ngIf="error()" class="error">{{ error() }}</div>
+  <div *ngIf="success()" class="success">{{ success() }}</div>
+
+  <form [formGroup]="form" (ngSubmit)="saveCategory()" class="form">
+    <div class="form-row">
+      <label>Name</label>
+      <input formControlName="name" />
+    </div>
+    <div class="form-row">
+      <label>Description</label>
+      <textarea formControlName="description"></textarea>
+    </div>
+
+    <div class="actions">
+      <button type="submit" [disabled]="form.invalid">
+        {{ selectedCategory() ? 'Update Category' : 'Create Category' }}
+      </button>
+      <button type="button" (click)="cancelEdit()">Cancel</button>
+    </div>
+  </form>
+
+  <h3>Existing categories</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let category of categories()">
+        <td>{{ category.name }}</td>
+        <td>{{ category.description }}</td>
+        <td>
+          <button (click)="editCategory(category)">Edit</button>
+          <button (click)="deleteCategory(category._id)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>
