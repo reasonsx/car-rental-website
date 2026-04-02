@@ -17,4 +17,16 @@ export class CarService {
   getCarById(id: string): Observable<Car> {
     return this.http.get<Car>(`${this.baseUrl}/${id}`);
   }
+
+  createCar(car: Partial<Car>): Observable<Car> {
+    return this.http.post<Car>(this.baseUrl, car);
+  }
+
+  updateCar(id: string, car: Partial<Car>): Observable<Car> {
+    return this.http.put<Car>(`${this.baseUrl}/${id}`, car);
+  }
+
+  deleteCar(id: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.baseUrl}/${id}`);
+  }
 }
