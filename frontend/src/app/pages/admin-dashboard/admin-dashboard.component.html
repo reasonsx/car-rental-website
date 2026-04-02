@@ -1,17 +1,46 @@
 <div class="admin-container">
   <div class="admin-card">
     <h1>Admin Dashboard</h1>
-    <p>Welcome to admin view</p>
+
+    <div class="admin-tabs">
+      <button
+        class="tab-button"
+        [class.active]="activeTab() === 'cars'"
+        (click)="setActiveTab('cars')">
+        Cars
+      </button>
+      <button
+        class="tab-button"
+        [class.active]="activeTab() === 'users'"
+        (click)="setActiveTab('users')">
+        Users
+      </button>
+      <button
+        class="tab-button"
+        [class.active]="activeTab() === 'bookings'"
+        (click)="setActiveTab('bookings')">
+        Bookings
+      </button>
+      <button
+        class="tab-button"
+        [class.active]="activeTab() === 'categories'"
+        (click)="setActiveTab('categories')">
+        Categories
+      </button>
+      <button
+        class="tab-button"
+        [class.active]="activeTab() === 'locations'"
+        (click)="setActiveTab('locations')">
+        Locations
+      </button>
+    </div>
+
     <div class="admin-content">
-      <p>This is where admin functionality would be implemented.</p>
-      <p>Future features could include:</p>
-      <ul>
-        <li>User management</li>
-        <li>Car inventory management</li>
-        <li>Location management</li>
-        <li>Booking oversight</li>
-        <li>Analytics and reporting</li>
-      </ul>
+      <app-admin-cars *ngIf="activeTab() === 'cars'"></app-admin-cars>
+      <app-admin-users *ngIf="activeTab() === 'users'"></app-admin-users>
+      <app-admin-bookings *ngIf="activeTab() === 'bookings'"></app-admin-bookings>
+      <app-admin-categories *ngIf="activeTab() === 'categories'"></app-admin-categories>
+      <app-admin-locations *ngIf="activeTab() === 'locations'"></app-admin-locations>
     </div>
   </div>
 </div>
