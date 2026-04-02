@@ -1,12 +1,89 @@
 <div class="admin-cars">
   <h2>Cars Management</h2>
-  <p>Car management functionality will be implemented here.</p>
-  <p>Features to include:</p>
-  <ul>
-    <li>View all cars</li>
-    <li>Add new cars</li>
-    <li>Edit car details</li>
-    <li>Delete cars</li>
-    <li>Manage car availability</li>
-  </ul>
+
+  <div *ngIf="error()" class="error">{{ error() }}</div>
+  <div *ngIf="success()" class="success">{{ success() }}</div>
+
+  <form [formGroup]="form" (ngSubmit)="saveCar()" class="form">
+    <div class="form-row">
+      <label>Brand</label>
+      <input formControlName="brand" />
+    </div>
+    <div class="form-row">
+      <label>Model</label>
+      <input formControlName="modelName" />
+    </div>
+    <div class="form-row">
+      <label>Year</label>
+      <input type="number" formControlName="year" />
+    </div>
+    <div class="form-row">
+      <label>Price per day</label>
+      <input type="number" formControlName="pricePerDay" />
+    </div>
+    <div class="form-row">
+      <label>Available</label>
+      <input type="checkbox" formControlName="available" />
+    </div>
+    <div class="form-row">
+      <label>Image URL</label>
+      <input formControlName="imageUrl" />
+    </div>
+    <div class="form-row">
+      <label>Category</label>
+      <select formControlName="categoryId">
+        <option value="">Select category</option>
+        <option *ngFor="let category of categories()" [value]="category._id">
+          {{ category.name }}
+        </option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Location</label>
+      <select formControlName="locationId">
+        <option value="">Select location</option>
+        <option *ngFor="let location of locations()" [value]="location._id">
+          {{ location.name }}
+        </option>
+      </select>
+    </div>
+
+    <div class="actions">
+      <button type="submit" [disabled]="form.invalid">{{ selectedCar() ? 'Update Car' : 'Create Car' }}</button>
+      <button type="button" (click)="cancelEdit()">Cancel</button>
+    </div>
+  </form>
+
+  <div class="listing">
+    <h3>Existing cars</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Brand</th>
+          <th>Model</th>
+          <th>Year</th>
+          <th>Price</th>
+          <th>Available</th>
+          <th>Category</th>
+          <th>Location</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let car of cars()">
+          <td>{{ car.brand }}</td>
+          <td>{{ car.modelName }}</td>
+          <td>{{ car.year }}</td>
+          <td>€{{ car.pricePerDay }}</td>
+          <td>{{ car.available ? 'Yes' : 'No' }}</td>
+          <td>{{ categoryName(car) }}</td>
+          <td>{{ locationName(car) }}</td>
+          <td>
+            <button (click)="editCar(car)">Edit</button>
+            <button (click)="deleteCar(car._id)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
