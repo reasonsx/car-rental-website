@@ -1,12 +1,57 @@
 <div class="admin-locations">
   <h2>Locations Management</h2>
-  <p>Location management functionality will be implemented here.</p>
-  <p>Features to include:</p>
-  <ul>
-    <li>View all locations</li>
-    <li>Add new locations</li>
-    <li>Edit location details</li>
-    <li>Delete locations</li>
-    <li>Manage location availability</li>
-  </ul>
+
+  <div *ngIf="error()" class="error">{{ error() }}</div>
+  <div *ngIf="success()" class="success">{{ success() }}</div>
+
+  <form [formGroup]="form" (ngSubmit)="saveLocation()" class="form">
+    <div class="form-row">
+      <label>Name</label>
+      <input formControlName="name" />
+    </div>
+    <div class="form-row">
+      <label>City</label>
+      <input formControlName="city" />
+    </div>
+    <div class="form-row">
+      <label>Address</label>
+      <input formControlName="address" />
+    </div>
+    <div class="form-row">
+      <label>Phone</label>
+      <input formControlName="phone" />
+    </div>
+
+    <div class="actions">
+      <button type="submit" [disabled]="form.invalid">
+        {{ selectedLocation() ? 'Update Location' : 'Create Location' }}
+      </button>
+      <button type="button" (click)="cancelEdit()">Cancel</button>
+    </div>
+  </form>
+
+  <h3>Existing locations</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>City</th>
+        <th>Address</th>
+        <th>Phone</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let location of locations()">
+        <td>{{ location.name }}</td>
+        <td>{{ location.city }}</td>
+        <td>{{ location.address }}</td>
+        <td>{{ location.phone }}</td>
+        <td>
+          <button (click)="editLocation(location)">Edit</button>
+          <button (click)="deleteLocation(location._id)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>
