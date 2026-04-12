@@ -1,46 +1,23 @@
-<div class="admin-container">
-  <div class="admin-card">
-    <h1>Admin Dashboard</h1>
+<div class="min-h-screen bg-gray-50 p-6">
+  <div class="max-w-7xl mx-auto">
 
-    <div class="admin-tabs">
-      <button
-        class="tab-button"
-        [class.active]="activeTab() === 'cars'"
-        (click)="setActiveTab('cars')">
-        Cars
-      </button>
-      <button
-        class="tab-button"
-        [class.active]="activeTab() === 'users'"
-        (click)="setActiveTab('users')">
-        Users
-      </button>
-      <button
-        class="tab-button"
-        [class.active]="activeTab() === 'bookings'"
-        (click)="setActiveTab('bookings')">
-        Bookings
-      </button>
-      <button
-        class="tab-button"
-        [class.active]="activeTab() === 'categories'"
-        (click)="setActiveTab('categories')">
-        Categories
-      </button>
-      <button
-        class="tab-button"
-        [class.active]="activeTab() === 'locations'"
-        (click)="setActiveTab('locations')">
-        Locations
-      </button>
-    </div>
+    <h1 class="text-3xl font-semibold text-gray-900 mb-6">Admin Dashboard</h1>
 
-    <div class="admin-content">
-      <app-admin-cars *ngIf="activeTab() === 'cars'"></app-admin-cars>
-      <app-admin-users *ngIf="activeTab() === 'users'"></app-admin-users>
-      <app-admin-bookings *ngIf="activeTab() === 'bookings'"></app-admin-bookings>
-      <app-admin-categories *ngIf="activeTab() === 'categories'"></app-admin-categories>
-      <app-admin-locations *ngIf="activeTab() === 'locations'"></app-admin-locations>
-    </div>
+    <p-tabs>
+      <p-tablist>
+        @for (tab of tabs; track tab.key) {
+          <p-tab [value]="tab.key">{{ tab.label }}</p-tab>
+        }
+      </p-tablist>
+
+      <p-tabpanels>
+        <p-tabpanel value="cars">     <app-admin-cars />       </p-tabpanel>
+        <p-tabpanel value="users">    <app-admin-users />      </p-tabpanel>
+        <p-tabpanel value="bookings"> <app-admin-bookings />   </p-tabpanel>
+        <p-tabpanel value="categories"><app-admin-categories /></p-tabpanel>
+        <p-tabpanel value="locations"><app-admin-locations />  </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+
   </div>
 </div>
