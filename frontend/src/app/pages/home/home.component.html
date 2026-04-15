@@ -1,11 +1,31 @@
-<main class="home-page">
-  <h1>Choose a location and browse cars</h1>
+<div class="max-w-6xl mx-auto px-4 py-8 min-h-[calc(100vh-64px)]">
 
-  <app-location-selector
-    [locations]="locations()"
-    [selectedLocationId]="selectedLocationId()"
-    (selectedLocationChange)="selectLocation($event)"
-  ></app-location-selector>
+  <!-- HEADER -->
+  <div class="text-center mb-8">
+    <h1 class="text-3xl font-semibold text-gray-800">
+      Choose a location and browse cars
+    </h1>
+    <p class="text-sm text-gray-500 mt-2">
+      Find the perfect car for your next trip
+    </p>
+  </div>
 
-  <app-car-list [cars]="filteredCars()"></app-car-list>
-</main>
+  <!-- LOCATION SELECTOR CARD -->
+  <p-card class="mb-6 shadow-md rounded-xl">
+    <div class="p-4">
+      <app-location-selector
+        [locations]="locations()"
+        [selectedLocationId]="selectedLocationId()"
+        (selectedLocationChange)="selectLocation($event)"
+      ></app-location-selector>
+    </div>
+  </p-card>
+
+  <!-- CARS LIST -->
+  <p-card class="shadow-md rounded-xl">
+    <div class="p-4">
+      <app-car-list [cars]="filteredCars()"></app-car-list>
+    </div>
+  </p-card>
+
+</div>

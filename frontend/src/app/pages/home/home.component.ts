@@ -6,13 +6,13 @@ import { LocationService } from '../../services/location.service';
 import { CarService } from '../../services/car.service';
 import { Location } from '../../models/location.model';
 import { Car } from '../../models/car.model';
+import {CardModule} from 'primeng/card';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, LocationSelectorComponent, CarListComponent],
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  imports: [CommonModule, LocationSelectorComponent, CarListComponent, CardModule],
+  templateUrl: './home.component.html'
 })
 export class HomeComponent implements OnInit {
   locations = signal<Location[]>([]);
