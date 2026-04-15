@@ -10,22 +10,52 @@
     </p>
   </div>
 
-  <!-- LOCATION SELECTOR CARD -->
-  <p-card class="mb-6 shadow-md rounded-xl">
-    <div class="p-4">
-      <app-location-selector
-        [locations]="locations()"
-        [selectedLocationId]="selectedLocationId()"
-        (selectedLocationChange)="selectLocation($event)"
-      ></app-location-selector>
+  <!-- LOADING -->
+  @if (loading()) {
+    <div class="flex flex-col items-center justify-center py-16 gap-4">
+      <p-progressSpinner strokeWidth="4"></p-progressSpinner>
+      <span class="text-sm text-gray-500">Loading cars...</span>
     </div>
-  </p-card>
+  } @else {
 
-  <!-- CARS LIST -->
-  <p-card class="shadow-md rounded-xl">
-    <div class="p-4">
-      <app-car-list [cars]="filteredCars()"></app-car-list>
-    </div>
-  </p-card>
+    <!-- LOCATION SELECTOR -->
+    <p-card class="mb-6 shadow-md rounded-xl">
+      <div class="p-4">
+
+        @if (locations().length === 0) {
+          <p-skeleton height="3rem" class="w-full"></p-skeleton>
+        } @else {
+          <app-location-selector
+            [locations]="locations()"
+            [selectedLocationId]="selectedLocationId()"
+            (selectedLocationChange)="selectLocation($event)"
+          ></app-location-selector>
+        }
+
+      </div>
+    </p-card>
+
+    <!-- CARS LIST -->
+    <p-card class="shadow-md rounded-xl">
+      <div class="p-4">
+
+        @if (filteredCars().length === 0) {
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            @for (i of [1,2,3,4,5,6]; track i) {
+              <div class="flex flex-col gap-2">
+                <p-skeleton height="150px" class="w-full rounded-lg"></p-skeleton>
+                <p-skeleton height="1rem" width="70%"></p-skeleton>
+                <p-skeleton height="1rem" width="50%"></p-skeleton>
+              </div>
+            }
+          </div>
+        } @else {
+          <app-car-list [cars]="filteredCars()"></app-car-list>
+        }
+
+      </div>
+    </p-card>
+
+  }
 
 </div>
