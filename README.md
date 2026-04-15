@@ -31,14 +31,14 @@ ng serve
 
 ## 🔌 API
 
-/api/cars
-/api/users
-/api/bookings
-/api/locations
-/api/categories
+* /api/cars
+* /api/users
+* /api/bookings
+* /api/locations
+* /api/categories
 
 ## 🛠 Tech
 
-Angular + Tailwind + PrimeNG
-Node.js + Express
-MongoDB
+* Angular + Tailwind + PrimeNG
+* Node.js + Express
+* MongoDB
