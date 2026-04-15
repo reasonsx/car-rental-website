@@ -40,6 +40,6 @@ Then run:
 
 ## 🛠 Tech
 
-* Angular + Tailwind + PrimeNG
-* Node.js + Express
-* MongoDB
+* Frontend: Angular 21, Tailwind CSS 4, PrimeNG 21, PrimeIcons 7  
+* Backend: Node.js, Express  
+* Database: MongoDB 
