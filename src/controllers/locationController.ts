@@ -1,27 +1,36 @@
 import { Request, Response } from 'express';
 import { LocationModel } from '../models/locationModel';
-import { connect, disconnect } from '../repository/database';
-import '../models/locationModel'; // ensure model is registered
 
 /**
  * Create location
  */
 export async function createLocation(req: Request, res: Response) {
   try {
+    const { name, city, address, phone } = req.body;
+
+    if (!name || !city || !address || !phone) {
+      return res.status(400).json({
+        message: 'All fields are required'
+      });
+    }
 
     const location = new LocationModel({
-      name: req.body.name,
-      city: req.body.city,
-      address: req.body.address,
-      phone: req.body.phone
+      name,
+      city,
+      address,
+      phone
     });
 
     const savedLocation = await location.save();
+
     res.status(201).json(savedLocation);
 
-  } catch (error) {
-    res.status(500).json({ message: "Failed to create location: " + error });
-  } 
+  } catch (error: any) {
+    res.status(500).json({
+      message: 'Failed to create location',
+      error: error.message
+    });
+  }
 }
 
 /**
@@ -29,12 +38,15 @@ export async function createLocation(req: Request, res: Response) {
  */
 export async function getLocations(req: Request, res: Response) {
   try {
+    const locations = await LocationModel.find().lean();
 
-    const locations = await LocationModel.find();
     res.status(200).json(locations);
 
-  } catch (error) {
-    res.status(500).json({ message: "Failed to fetch locations: " + error });
+  } catch (error: any) {
+    res.status(500).json({
+      message: 'Failed to fetch locations',
+      error: error.message
+    });
   }
 }
 
@@ -43,15 +55,20 @@ export async function getLocations(req: Request, res: Response) {
  */
 export async function getLocationById(req: Request, res: Response) {
   try {
+    const location = await LocationModel.findById(req.params.id).lean();
 
-    const location = await LocationModel.findById(req.params.id);
-    if (!location) return res.status(404).json({ message: "Location not found" });
+    if (!location) {
+      return res.status(404).json({ message: 'Location not found' });
+    }
 
     res.status(200).json(location);
 
-  } catch (error) {
-    res.status(500).json({ message: "Failed to fetch location: " + error });
-  } 
+  } catch (error: any) {
+    res.status(500).json({
+      message: 'Failed to fetch location',
+      error: error.message
+    });
+  }
 }
 
 /**
@@ -59,19 +76,23 @@ export async function getLocationById(req: Request, res: Response) {
  */
 export async function updateLocation(req: Request, res: Response) {
   try {
-
     const updatedLocation = await LocationModel.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
+        req.params.id,
+        req.body,
+        { new: true, runValidators: true }
+    ).lean();
 
-    if (!updatedLocation) return res.status(404).json({ message: "Location not found" });
+    if (!updatedLocation) {
+      return res.status(404).json({ message: 'Location not found' });
+    }
 
     res.status(200).json(updatedLocation);
 
-  } catch (error) {
-    res.status(500).json({ message: "Failed to update location: " + error });
+  } catch (error: any) {
+    res.status(500).json({
+      message: 'Failed to update location',
+      error: error.message
+    });
   }
 }
 
@@ -80,13 +101,20 @@ export async function updateLocation(req: Request, res: Response) {
  */
 export async function deleteLocation(req: Request, res: Response) {
   try {
-
     const deletedLocation = await LocationModel.findByIdAndDelete(req.params.id);
-    if (!deletedLocation) return res.status(404).json({ message: "Location not found" });
 
-    res.status(200).json({ message: "Location deleted successfully" });
+    if (!deletedLocation) {
+      return res.status(404).json({ message: 'Location not found' });
+    }
 
-  } catch (error) {
-    res.status(500).json({ message: "Failed to delete location: " + error });
-  } 
+    res.status(200).json({
+      message: 'Location deleted successfully'
+    });
+
+  } catch (error: any) {
+    res.status(500).json({
+      message: 'Failed to delete location',
+      error: error.message
+    });
+  }
 }
