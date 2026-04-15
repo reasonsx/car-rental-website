@@ -24,7 +24,7 @@
 
           <h1>{{ car.brand }} {{ car.modelName }}</h1>
           <p><strong>Year:</strong> {{ car.year }}</p>
-          <p><strong>Price per day:</strong> €{{ car.pricePerDay }}</p>
+          <p><strong>Price per day:</strong> {{ car.pricePerDay }} DKK</p>
           <p><strong>Status:</strong> {{ car.available ? 'Available' : 'Unavailable' }}</p>
           <p><strong>Category:</strong> {{ car.categoryId?.name ?? car.categoryId ?? 'N/A' }}</p>
           <p><strong>Location:</strong> {{ car.locationId?.name ?? car.locationId ?? 'N/A' }}</p>

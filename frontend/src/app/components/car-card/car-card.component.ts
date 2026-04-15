@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import {CommonModule, NgOptimizedImage} from '@angular/common';
+import { Component, input } from '@angular/core';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Car } from '../../models/car.model';
 
@@ -10,5 +10,5 @@ import { Car } from '../../models/car.model';
   templateUrl: './car-card.component.html'
 })
 export class CarCardComponent {
-  @Input() car!: Car;
+  car = input.required<Car>();
 }
