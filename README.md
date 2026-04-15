@@ -1,0 +1,44 @@
+# 🚗 Car Rental App
+
+Full-stack car rental system built with Angular, Node.js, Express, MongoDB, Tailwind, PrimeNG.
+
+## ✨ Features
+
+* Authentication (login/register)
+* Browse & filter cars by location
+* Booking system
+* User profile management
+* Admin dashboard (cars, users, bookings, categories, locations)
+
+## ⚙️ Setup
+
+### Backend
+
+npm install
+npm run dev
+
+Create `.env`:
+
+PORT=3000
+MONGO_URI=your_db_url
+JWT_SECRET=your_secret
+
+### Frontend
+
+cd frontend
+npm install
+ng serve
+
+## 🔌 API
+
+* /api/cars
+* /api/users
+* /api/bookings
+* /api/locations
+* /api/categories
+
+## 🛠 Tech
+
+* Angular + Tailwind + PrimeNG
+* Node.js + Express
+* MongoDB
