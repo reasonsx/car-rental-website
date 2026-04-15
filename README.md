@@ -18,7 +18,8 @@ Create `.env`:
 * PORT=
 * MONGO_URI=
 * JWT_SECRET=
--------------
+
+Then run:
 * cd backend
 * npm install
 * npm run dev
