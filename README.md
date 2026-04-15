@@ -15,9 +15,9 @@ Full-stack car rental system built with Angular, Node.js, Express, MongoDB, Tail
 ### Backend
 Create `.env`:
 
-PORT=
-MONGO_URI=
-JWT_SECRET=
+* PORT=
+* MONGO_URI=
+* JWT_SECRET=
 
 cd backend
 npm install
