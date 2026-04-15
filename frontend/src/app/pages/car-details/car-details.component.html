@@ -1,62 +1,173 @@
-<main class="car-details-page">
-  <ng-container *ngIf="loading(); else content">
-    <p>Loading car details...</p>
-  </ng-container>
+<div class="max-w-7xl mx-auto px-4 py-8">
 
-  <ng-template #content>
-    <ng-container *ngIf="error(); else details">
-      <p class="error">{{ error() }}</p>
-    </ng-container>
+  <!-- LOADING -->
+  @if (loading()) {
+    <div class="flex flex-col items-center justify-center py-20 gap-4">
+      <p-progressSpinner></p-progressSpinner>
+      <span class="text-gray-500 text-sm">Loading car details...</span>
+    </div>
+  } @else {
 
-    <ng-template #details>
-      <div *ngIf="car() as car" class="car-details-container">
-        <div class="car-info-panel">
-          <div class="image-wrapper">
-            <img
-              *ngIf="car.imageUrl; else noImage"
-              [src]="car.imageUrl"
-              [alt]="car.brand + ' ' + car.modelName"
-            />
-            <ng-template #noImage>
-              <div class="no-image">No image available</div>
-            </ng-template>
-          </div>
-
-          <h1>{{ car.brand }} {{ car.modelName }}</h1>
-          <p><strong>Year:</strong> {{ car.year }}</p>
-          <p><strong>Price per day:</strong> {{ car.pricePerDay }} DKK</p>
-          <p><strong>Status:</strong> {{ car.available ? 'Available' : 'Unavailable' }}</p>
-          <p><strong>Category:</strong> {{ car.categoryId?.name ?? car.categoryId ?? 'N/A' }}</p>
-          <p><strong>Location:</strong> {{ car.locationId?.name ?? car.locationId ?? 'N/A' }}</p>
-
-          <button class="book-now" disabled>Book now (coming soon)</button>
-        </div>
-
-        <div class="booking-panel">
-          <div class="booking-status">
-            <h2>Booking calendar</h2>
-            <div class="month-controls">
-              <button (click)="prevMonth()">&#8249;</button>
-              <span>{{ monthName() }}</span>
-              <button (click)="nextMonth()">&#8250;</button>
-            </div>
-
-            <div class="calendar-grid">
-              <div class="weekday" *ngFor="let w of ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']">{{ w }}</div>
-              <ng-container *ngFor="let cell of days()">
-                <div
-                  class="day"
-                  [class.blank]="!cell.date"
-                  [class.booked]="cell.date && cell.booked"
-                  [class.free]="cell.date && !cell.booked"
-                >
-                  <span>{{ cell.date ? cell.date.getDate() : '' }}</span>
-                </div>
-              </ng-container>
-            </div>
-          </div>
-        </div>
+    <!-- ERROR -->
+    @if (error()) {
+      <div class="text-center text-red-500 font-medium py-10">
+        {{ error() }}
       </div>
-    </ng-template>
-  </ng-template>
-</main>
+    } @else {
+
+      @if (car(); as car) {
+
+        <div class="grid lg:grid-cols-2 gap-8">
+
+          <!-- LEFT: CAR INFO -->
+          <p-card class="rounded-2xl shadow-md border border-gray-100 overflow-hidden">
+
+            <!-- IMAGE -->
+            <div class="relative w-full h-72 bg-gray-100 overflow-hidden rounded-lg mb-2">
+              @if (car.imageUrl) {
+                <img
+                  [ngSrc]="car.imageUrl!"
+                  width="600"
+                  height="300"
+                  class="w-full h-full object-cover"
+                />
+              } @else {
+                <div class="flex items-center justify-center h-full text-gray-400">
+                  <i class="pi pi-image text-4xl"></i>
+                </div>
+              }
+
+              <!-- STATUS BADGE -->
+              <span
+                class="absolute top-3 right-3 text-xs px-3 py-1 rounded-full font-medium shadow-sm"
+                [class.bg-green-100]="car.available"
+                [class.text-green-700]="car.available"
+                [class.bg-red-100]="!car.available"
+                [class.text-red-600]="!car.available"
+              >
+      {{ car.available ? 'Available' : 'Unavailable' }}
+    </span>
+
+            </div>
+
+            <!-- CONTENT -->
+            <div class="flex flex-col gap-5">
+
+              <!-- TITLE -->
+              <div>
+                <h1 class="text-2xl font-semibold text-gray-900">
+                  {{ car.brand }} {{ car.modelName }}
+                </h1>
+                <p class="text-sm text-gray-500">
+                  {{ car.year }}
+                </p>
+              </div>
+
+              <!-- INFO GRID -->
+              <div class="grid grid-cols-2 gap-4 text-sm">
+
+                <div class="flex items-center gap-2 text-gray-600">
+                  <i class="pi pi-tag text-gray-400"></i>
+                  <span>{{ car.pricePerDay }} DKK / day</span>
+                </div>
+
+                <div class="flex items-center gap-2 text-gray-600">
+                  <i class="pi pi-list text-gray-400"></i>
+                  <span>{{ car.categoryId?.name ?? 'N/A' }}</span>
+                </div>
+
+                <div class="flex items-center gap-2 text-gray-600">
+                  <i class="pi pi-map-marker text-gray-400"></i>
+                  <span>{{ car.locationId?.name ?? 'N/A' }}</span>
+                </div>
+
+                <div class="flex items-center gap-2 text-gray-600">
+                  <i class="pi pi-car text-gray-400"></i>
+                  <span>{{ car.available ? 'Ready to rent' : 'Unavailable' }}</span>
+                </div>
+
+              </div>
+
+              <!-- DIVIDER -->
+              <div class="border-t pt-4 flex items-center justify-between">
+
+                <div>
+                  <span class="text-xs text-gray-500">Total price</span>
+                  <div class="text-xl font-semibold text-gray-900">
+                    {{ car.pricePerDay }} DKK
+                  </div>
+                </div>
+
+                <p-button
+                  label="Book now"
+                  icon="pi pi-calendar-plus"
+                  [disabled]="true"
+                />
+
+              </div>
+
+            </div>
+
+          </p-card>
+
+          <!-- RIGHT: CALENDAR -->
+          <p-card class="rounded-2xl shadow-md">
+
+            <div class="flex flex-col gap-4">
+
+              <!-- HEADER -->
+              <div class="flex items-center justify-between">
+                <h2 class="text-lg font-semibold text-gray-700">
+                  Booking calendar
+                </h2>
+
+                <div class="flex items-center gap-2">
+                  <p-button icon="pi pi-chevron-left" size="small" [text]="true" (onClick)="prevMonth()" />
+                  <span class="text-sm font-medium text-gray-600">
+                    {{ monthName() }}
+                  </span>
+                  <p-button icon="pi pi-chevron-right" size="small" [text]="true" (onClick)="nextMonth()" />
+                </div>
+              </div>
+
+              <!-- GRID -->
+              <div class="grid grid-cols-7 gap-1 text-xs text-center">
+
+                <!-- WEEKDAYS -->
+                @for (w of ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']; track w) {
+                  <div class="font-medium text-gray-400 py-1">
+                    {{ w }}
+                  </div>
+                }
+
+                <!-- DAYS -->
+                @for (cell of days(); track cell.date) {
+
+                  <div
+                    class="rounded-md h-9 flex items-center justify-center text-xs"
+                    [class.bg-gray-100]="!cell.date"
+                    [class.bg-red-100]="cell.date && cell.booked"
+                    [class.text-red-600]="cell.date && cell.booked"
+                    [class.bg-green-100]="cell.date && !cell.booked"
+                    [class.text-green-700]="cell.date && !cell.booked"
+                  >
+                    {{ cell.date ? cell.date.getDate() : '' }}
+                  </div>
+
+                }
+
+              </div>
+
+            </div>
+
+          </p-card>
+
+        </div>
+
+      }
+
+    }
+
+  }
+
+</div>

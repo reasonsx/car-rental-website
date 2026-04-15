@@ -5,13 +5,16 @@ import { CarService } from '../../services/car.service';
 import { BookingService } from '../../services/booking.service';
 import { Car } from '../../models/car.model';
 import { Booking } from '../../models/booking.model';
+import { CardModule } from 'primeng/card';
+import { ButtonModule } from 'primeng/button';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { NgOptimizedImage } from '@angular/common';
 
 @Component({
   selector: 'app-car-details',
   standalone: true,
-  imports: [CommonModule],
-  templateUrl: './car-details.component.html',
-  styleUrls: ['./car-details.component.scss']
+  imports: [CommonModule, CardModule, ButtonModule, ProgressSpinnerModule, NgOptimizedImage],
+  templateUrl: './car-details.component.html'
 })
 export class CarDetailsComponent {
   private route = inject(ActivatedRoute);
