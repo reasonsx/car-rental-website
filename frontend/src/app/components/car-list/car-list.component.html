@@ -1,11 +1,45 @@
-<section class="car-list">
-  <h2>Available cars</h2>
-  <ng-container *ngIf="cars.length; else noCars">
-    <div class="grid">
-      <app-car-card *ngFor="let car of cars" [car]="car"></app-car-card>
+<div class="w-full">
+
+  <!-- HEADER -->
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-xl font-semibold text-gray-800">
+      Available cars
+    </h2>
+
+    <span class="text-sm text-gray-500">
+      {{ cars.length }} found
+    </span>
+  </div>
+
+  <!-- GRID -->
+  @if (cars.length) {
+
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 auto-rows-fr">
+
+      @for (car of cars; track car._id) {
+
+        <!-- CARD WRAPPER (forces equal height) -->
+        <div class="h-full">
+          <app-car-card [car]="car"></app-car-card>
+        </div>
+
+      }
+
     </div>
-  </ng-container>
-  <ng-template #noCars>
-    <p class="empty">No cars available for this location.</p>
-  </ng-template>
-</section>
+
+  } @else {
+
+    <!-- EMPTY STATE -->
+    <div class="flex flex-col items-center justify-center gap-3 py-16 rounded-xl bg-gray-50 border border-dashed border-gray-200">
+
+      <i class="pi pi-car text-4xl text-gray-300"></i>
+
+      <p class="text-sm text-gray-500">
+        No cars available for this location
+      </p>
+
+    </div>
+
+  }
+
+</div>

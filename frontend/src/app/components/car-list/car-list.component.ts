@@ -7,8 +7,7 @@ import { Car } from '../../models/car.model';
   selector: 'app-car-list',
   standalone: true,
   imports: [CommonModule, CarCardComponent],
-  templateUrl: './car-list.component.html',
-  styleUrls: ['./car-list.component.scss']
+  templateUrl: './car-list.component.html'
 })
 export class CarListComponent {
   @Input() cars: Car[] = [];
