@@ -1,99 +1,137 @@
-<div class="profile-container">
-  <div class="profile-card">
-    <h1>My Profile</h1>
+<div class="h-auto flex items-start justify-center px-4 py-10 bg-gray-50">
 
-    <div *ngIf="error()" class="error-message">
-      {{ error() }}
-    </div>
+  <p-card class="w-full max-w-4xl shadow-xl rounded-2xl">
+    <form
+      [formGroup]="profileForm"
+      (ngSubmit)="onUpdateProfile()"
+      class="flex flex-col gap-6 p-8"
+    >
 
-    <div *ngIf="success()" class="success-message">
-      {{ success() }}
-    </div>
-
-    <form [formGroup]="profileForm" (ngSubmit)="onUpdateProfile()" class="profile-form">
-      <div class="form-group">
-        <label for="name">Name</label>
-        <input
-          id="name"
-          type="text"
-          formControlName="name"
-          placeholder="Enter your name"
-          [class.error]="profileFormControls['name'].invalid && profileFormControls['name'].touched"
-        />
-        <div *ngIf="profileFormControls['name'].invalid && profileFormControls['name'].touched" class="field-error">
-          <span *ngIf="profileFormControls['name'].errors?.['required']">Name is required</span>
-          <span *ngIf="profileFormControls['name'].errors?.['minlength']">Name must be at least 3 characters</span>
-        </div>
+      <!-- HEADER -->
+      <div class="text-center space-y-1">
+        <h1 class="text-2xl font-semibold text-gray-800">
+          My Profile
+        </h1>
+        <p class="text-sm text-gray-500">
+          Manage your account details
+        </p>
       </div>
 
-      <div class="form-group">
-        <label for="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          formControlName="email"
-          placeholder="Enter your email"
-          [class.error]="profileFormControls['email'].invalid && profileFormControls['email'].touched"
-        />
-        <div *ngIf="profileFormControls['email'].invalid && profileFormControls['email'].touched" class="field-error">
-          <span *ngIf="profileFormControls['email'].errors?.['required']">Email is required</span>
-          <span *ngIf="profileFormControls['email'].errors?.['email']">Please enter a valid email</span>
+      <!-- SUCCESS -->
+      @if (success()) {
+        <div class="rounded-lg bg-green-50 border border-green-200 px-4 py-2 text-sm text-green-700 text-center">
+          {{ success() }}
         </div>
-      </div>
+      }
 
-      <div class="password-section">
-        <h3>Change Password (Optional)</h3>
+      <!-- ERROR -->
+      @if (error()) {
+        <div class="rounded-lg bg-red-50 border border-red-200 px-4 py-2 text-sm text-red-600 text-center">
+          {{ error() }}
+        </div>
+      }
 
-        <div class="form-group">
-          <label for="currentPassword">Current Password</label>
+      <!-- BASIC INFO -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <!-- NAME -->
+        <div class="flex flex-col gap-1">
+          <label class="text-sm text-gray-600">Name</label>
           <input
-            id="currentPassword"
-            type="password"
+            pInputText
+            formControlName="name"
+            class="w-full"
+            placeholder="Your name"
+          />
+        </div>
+
+        <!-- EMAIL -->
+        <div class="flex flex-col gap-1">
+          <label class="text-sm text-gray-600">Email</label>
+          <input
+            pInputText
+            formControlName="email"
+            class="w-full"
+            placeholder="email@example.com"
+          />
+        </div>
+
+      </div>
+
+      <!-- PASSWORD SECTION (NO UGLY BORDER) -->
+      <div class="flex flex-col gap-4 pt-4">
+
+        <div class="bg-gray-50 rounded-xl p-4 flex flex-col gap-4">
+
+          <h3 class="text-sm font-medium text-gray-700">
+            Change Password
+          </h3>
+
+          <p-password
             formControlName="currentPassword"
-            placeholder="Enter current password"
+            [toggleMask]="true"
+            class="w-full"
+            inputStyleClass="w-full"
+            placeholder="Current password"
           />
-        </div>
 
-        <div class="form-group">
-          <label for="newPassword">New Password</label>
-          <input
-            id="newPassword"
-            type="password"
+          <p-password
             formControlName="newPassword"
-            placeholder="Enter new password"
-            [class.error]="profileFormControls['newPassword'].invalid && profileFormControls['newPassword'].touched"
+            [toggleMask]="true"
+            class="w-full"
+            inputStyleClass="w-full"
+            placeholder="New password"
           />
-          <div *ngIf="profileFormControls['newPassword'].invalid && profileFormControls['newPassword'].touched" class="field-error">
-            <span *ngIf="profileFormControls['newPassword'].errors?.['minlength']">Password must be at least 6 characters</span>
-          </div>
+
+          <p-password
+            formControlName="confirmNewPassword"
+            [toggleMask]="true"
+            class="w-full"
+            inputStyleClass="w-full"
+            placeholder="Confirm new password"
+          />
+
+          @if (profileForm.errors?.['passwordMismatch']) {
+            <span class="text-sm text-red-500 text-center">
+              Passwords do not match
+            </span>
+          }
+
         </div>
 
-        <div class="form-group">
-          <label for="confirmNewPassword">Confirm New Password</label>
-          <input
-            id="confirmNewPassword"
-            type="password"
-            formControlName="confirmNewPassword"
-            placeholder="Confirm new password"
-            [class.error]="profileForm.errors?.['passwordMismatch'] || (profileFormControls['confirmNewPassword'].invalid && profileFormControls['confirmNewPassword'].touched)"
-          />
-          <div *ngIf="profileForm.errors?.['passwordMismatch'] && profileFormControls['confirmNewPassword'].touched" class="field-error">
-            Passwords do not match
-          </div>
-        </div>
       </div>
 
-      <button type="submit" class="btn-primary" [disabled]="profileForm.invalid || isLoading()">
-        {{ isLoading() ? 'Updating...' : 'Update Profile' }}
-      </button>
+      <!-- ACTION -->
+      <p-button
+        type="submit"
+        label="Update profile"
+        icon="pi pi-save"
+        [loading]="isLoading()"
+        [disabled]="profileForm.invalid || isLoading()"
+        styleClass="w-full"
+      />
+
+      <!-- ADMIN -->
+      @if (isAdmin()) {
+        <div class="flex flex-col gap-3 pt-4 text-center">
+
+          <span class="text-sm text-gray-500">
+            Admin access
+          </span>
+
+          <p-button
+            label="Admin Dashboard"
+            icon="pi pi-cog"
+            (onClick)="goToAdminDashboard()"
+            severity="secondary"
+            styleClass="w-full"
+          />
+
+        </div>
+      }
+
     </form>
 
-    <div *ngIf="isAdmin()" class="admin-section">
-      <hr />
-      <h3>Admin Access</h3>
-      <button type="button" class="btn-secondary" (click)="goToAdminDashboard()">
-        Go to Admin Dashboard
-      </button>
-    </div>
-  </div>
+  </p-card>
+
 </div>

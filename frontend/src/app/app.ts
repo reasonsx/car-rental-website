@@ -6,15 +6,8 @@ import { NavComponent } from './components/nav/nav.component';
   selector: 'app-root',
   standalone: true,
   imports: [NavComponent, RouterOutlet],
-  template: `
-    <app-nav></app-nav>
-    <div class="app-container">
-      <router-outlet></router-outlet>
-    </div>
-  `,
-  styleUrls: ['./app.scss']
+  templateUrl: './app.component.html'
 })
 export class App {
   protected readonly title = signal('frontend');
 }
-

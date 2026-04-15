@@ -14,7 +14,7 @@ router.get('/ping', (req, res) => {
 });
 
 
-router.use("/auth", authRoutes);   // /api/auth/register, /api/auth/login
+router.use("/auth", authRoutes);   // /api/auth/register, /api/auth/auth
 router.use("/users", userRoutes);  // /api/users, /api/users/:id
 router.use("/bookings", bookingRoutes); // /api/bookings, /api/bookings/:id
 router.use('/cars', carRoutes);        // /api/cars, /api/cars/:id
