@@ -2,7 +2,8 @@ import { Request, Response } from 'express';
 import { LocationModel } from '../models/locationModel';
 
 /**
- * Create location
+ * Create a new location
+ * @route POST /api/locations
  */
 export async function createLocation(req: Request, res: Response) {
   try {
@@ -22,7 +23,6 @@ export async function createLocation(req: Request, res: Response) {
     });
 
     const savedLocation = await location.save();
-
     res.status(201).json(savedLocation);
 
   } catch (error: any) {
@@ -35,11 +35,11 @@ export async function createLocation(req: Request, res: Response) {
 
 /**
  * Get all locations
+ * @route GET /api/locations
  */
-export async function getLocations(req: Request, res: Response) {
+export async function getLocations(_req: Request, res: Response) {
   try {
     const locations = await LocationModel.find().lean();
-
     res.status(200).json(locations);
 
   } catch (error: any) {
@@ -51,7 +51,8 @@ export async function getLocations(req: Request, res: Response) {
 }
 
 /**
- * Get location by ID
+ * Get a location by ID
+ * @route GET /api/locations/:id
  */
 export async function getLocationById(req: Request, res: Response) {
   try {
@@ -72,14 +73,18 @@ export async function getLocationById(req: Request, res: Response) {
 }
 
 /**
- * Update location
+ * Update a location by ID
+ * @route PUT /api/locations/:id
  */
 export async function updateLocation(req: Request, res: Response) {
   try {
     const updatedLocation = await LocationModel.findByIdAndUpdate(
         req.params.id,
         req.body,
-        { new: true, runValidators: true }
+        {
+          new: true,
+          runValidators: true
+        }
     ).lean();
 
     if (!updatedLocation) {
@@ -97,7 +102,8 @@ export async function updateLocation(req: Request, res: Response) {
 }
 
 /**
- * Delete location
+ * Delete a location by ID
+ * @route DELETE /api/locations/:id
  */
 export async function deleteLocation(req: Request, res: Response) {
   try {

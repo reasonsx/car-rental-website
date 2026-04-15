@@ -28,7 +28,7 @@ export async function getUserById(req: Request, res: Response) {
     res.status(200).json({ error: null, data: user });
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch user: " + error });
-  } 
+  }
 }
 
 /**
@@ -37,15 +37,15 @@ export async function getUserById(req: Request, res: Response) {
 export async function updateUser(req: Request, res: Response) {
   try {
     const updatedUser = await UserModel.findByIdAndUpdate(
-      req.params.id,
-      {
-        $set: {
-          name: req.body.name,
-          email: req.body.email,
-          isAdmin: req.body.isAdmin
-        }
-      },
-      { new: true }
+        req.params.id,
+        {
+          $set: {
+            name: req.body.name,
+            email: req.body.email,
+            isAdmin: req.body.isAdmin
+          }
+        },
+        { new: true }
     ).select("-password");
 
     if (!updatedUser) {
@@ -55,7 +55,7 @@ export async function updateUser(req: Request, res: Response) {
     res.status(200).json({ error: null, data: updatedUser });
   } catch (error) {
     res.status(500).json({ message: "Failed to update user: " + error });
-  } 
+  }
 }
 
 /**
