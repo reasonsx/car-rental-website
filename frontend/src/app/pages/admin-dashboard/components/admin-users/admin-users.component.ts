@@ -3,13 +3,23 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserService } from '../../../../services/user.service';
 import { User } from '../../../../models/auth.model';
+import {TableModule} from 'primeng/table';
+import {ButtonModule} from 'primeng/button';
+import {CheckboxModule} from 'primeng/checkbox';
+import {InputTextModule} from 'primeng/inputtext';
 
 @Component({
   selector: 'app-admin-users',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './admin-users.component.html',
-  styleUrls: ['./admin-users.component.scss']
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    InputTextModule,
+    ButtonModule,
+    TableModule,
+    CheckboxModule
+  ],
+  templateUrl: './admin-users.component.html'
 })
 export class AdminUsersComponent {
   users = signal<User[]>([]);

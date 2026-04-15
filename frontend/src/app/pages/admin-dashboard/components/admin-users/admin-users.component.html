@@ -1,52 +1,143 @@
-<div class="admin-users">
-  <h2>Users Management</h2>
+<div class="flex flex-col gap-6">
 
-  <div *ngIf="error()" class="error">{{ error() }}</div>
-  <div *ngIf="success()" class="success">{{ success() }}</div>
+  <!-- HEADER -->
+  <div class="flex items-center justify-between">
+    <h2 class="text-xl font-semibold text-gray-800">
+      Users Management
+    </h2>
 
-  <form [formGroup]="form" (ngSubmit)="saveUser()" class="form" *ngIf="selectedUser()">
-    <h3>Edit User</h3>
-    <div class="form-row">
-      <label>Name</label>
-      <input formControlName="name" />
-    </div>
-    <div class="form-row">
-      <label>Email</label>
-      <input formControlName="email" />
-    </div>
-    <div class="form-row">
-      <label>Admin</label>
-      <input type="checkbox" formControlName="isAdmin" />
-    </div>
+    <p-button
+      icon="pi pi-refresh"
+      [text]="true"
+      (onClick)="loadUsers()"
+    />
+  </div>
 
-    <div class="actions">
-      <button type="submit" [disabled]="form.invalid">Update User</button>
-      <button type="button" (click)="cancelEdit()">Cancel</button>
+  <!-- ALERTS -->
+  @if (error()) {
+    <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-2 rounded-lg text-sm">
+      {{ error() }}
     </div>
-  </form>
+  }
 
-  <div class="listing">
-    <h3>Existing users</h3>
-    <table>
-      <thead>
+  @if (success()) {
+    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-2 rounded-lg text-sm">
+      {{ success() }}
+    </div>
+  }
+
+  <!-- EDIT FORM -->
+  @if (selectedUser()) {
+    <div class="bg-white shadow rounded-2xl p-6">
+
+      <h3 class="text-lg font-medium text-gray-700 mb-4">
+        Edit User
+      </h3>
+
+      <form
+        [formGroup]="form"
+        (ngSubmit)="saveUser()"
+        class="grid gap-4 md:grid-cols-2"
+      >
+
+        <input pInputText formControlName="name" placeholder="Name" />
+        <input pInputText formControlName="email" placeholder="Email" />
+
+        <!-- ADMIN -->
+        <div class="flex items-center gap-2 md:col-span-2">
+          <p-checkbox formControlName="isAdmin" binary="true"></p-checkbox>
+          <span class="text-sm text-gray-600">Admin</span>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="flex gap-2 md:col-span-2 pt-2">
+          <p-button
+            type="submit"
+            label="Update User"
+            icon="pi pi-save"
+            [disabled]="form.invalid"
+          />
+
+          <p-button
+            label="Cancel"
+            icon="pi pi-times"
+            severity="secondary"
+            (onClick)="cancelEdit()"
+          />
+        </div>
+
+      </form>
+    </div>
+  }
+
+  <!-- TABLE -->
+  <div class="bg-white shadow rounded-2xl p-6">
+
+    <h3 class="text-lg font-medium text-gray-700 mb-4">
+      Existing users
+    </h3>
+
+    <p-table
+      [value]="users()"
+      [paginator]="true"
+      [rows]="8"
+      responsiveLayout="scroll"
+    >
+
+      <ng-template pTemplate="header">
         <tr>
           <th>Name</th>
           <th>Email</th>
-          <th>Admin</th>
-          <th>Actions</th>
+          <th>Role</th>
+          <th></th>
         </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let user of users()">
-          <td>{{ user.name }}</td>
-          <td>{{ user.email }}</td>
-          <td>{{ user.isAdmin ? 'Yes' : 'No' }}</td>
-          <td>
-            <button (click)="editUser(user)">Edit</button>
-            <button (click)="deleteUser(user.id)">Delete</button>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-user>
+        <tr>
+
+          <td class="font-medium">
+            {{ user.name }}
           </td>
+
+          <td>
+            {{ user.email }}
+          </td>
+
+          <td>
+            <span
+              class="px-2 py-1 rounded text-xs"
+              [class.bg-blue-100]="user.isAdmin"
+              [class.text-blue-700]="user.isAdmin"
+              [class.bg-gray-100]="!user.isAdmin"
+              [class.text-gray-600]="!user.isAdmin"
+            >
+              {{ user.isAdmin ? 'Admin' : 'User' }}
+            </span>
+          </td>
+
+          <td class="flex gap-2">
+            <p-button
+              icon="pi pi-pencil"
+              size="small"
+              [text]="true"
+              (onClick)="editUser(user)"
+            />
+
+            <p-button
+              icon="pi pi-trash"
+              size="small"
+              severity="danger"
+              [text]="true"
+              (onClick)="deleteUser(user._id)"
+            />
+          </td>
+
         </tr>
-      </tbody>
-    </table>
+      </ng-template>
+
+    </p-table>
+
   </div>
+
 </div>
