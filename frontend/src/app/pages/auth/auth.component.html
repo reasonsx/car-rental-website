@@ -72,22 +72,23 @@
       <div class="flex flex-col gap-3">
 
         <!-- PRIMARY BUTTON -->
-        <button type="submit" class="w-full">
-          <p-button
-            [label]="isLogin() ? 'Sign in' : 'Create account'"
-            [loading]="loading()"
-            styleClass="w-full"
-          />
-        </button>
+        <p-button
+          type="submit"
+          [label]="isLogin() ? 'Sign in' : 'Create account'"
+          [icon]="isLogin() ? 'pi pi-sign-in' : 'pi pi-user-plus'"
+          [loading]="loading()"
+          styleClass="w-full"
+        />
 
         <!-- TOGGLE -->
-        <button type="button" (click)="toggleMode()" class="w-full">
-          <p-button
-            [text]="true"
-            [label]="isLogin() ? 'Create account' : 'Back to login'"
-            styleClass="w-full text-sm"
-          />
-        </button>
+        <p-button
+          type="button"
+          (onClick)="toggleMode()"
+          [text]="true"
+          [label]="isLogin() ? 'Create account' : 'Back to login'"
+          [icon]="isLogin() ? 'pi pi-user-plus' : 'pi pi-arrow-left'"
+          styleClass="w-full text-sm"
+        />
 
       </div>
 
