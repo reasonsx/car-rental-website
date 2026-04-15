@@ -1,20 +1,22 @@
-<div class="flex items-center justify-center min-h-screen bg-gray-50 px-4">
+<div class="min-h-screen flex items-center justify-center px-4">
 
-  <p-card class="w-full max-w-md">
+  <p-card class="w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
+
 
     <form
       [formGroup]="form"
       (ngSubmit)="submit()"
-      class="flex flex-col gap-6 p-6"
+      class="flex flex-col gap-6 p-8"
     >
 
       <!-- HEADER -->
-      <div class="flex flex-col gap-1 text-center">
-        <h2 class="text-2xl font-semibold">
-          {{ isLogin() ? 'Login' : 'Register' }}
+      <div class="text-center space-y-1">
+        <h2 class="text-2xl font-semibold text-gray-800">
+          {{ isLogin() ? 'Welcome back' : 'Create account' }}
         </h2>
+
         <p class="text-sm text-gray-500">
-          {{ isLogin() ? 'Sign in to continue' : 'Create your account' }}
+          {{ isLogin() ? 'Sign in to continue' : 'Start renting cars today' }}
         </p>
       </div>
 
@@ -25,23 +27,24 @@
           <input
             pInputText
             formControlName="name"
-            placeholder="Name"
-            class="w-full"
+            placeholder="Full name"
+            class="w-full rounded-lg"
           />
         }
 
         <input
           pInputText
           formControlName="email"
-          placeholder="Email"
-          class="w-full"
+          placeholder="Email address"
+          class="w-full rounded-lg"
         />
 
         <p-password
           formControlName="password"
           [toggleMask]="true"
+          [feedback]="!isLogin()"
           class="w-full"
-          inputStyleClass="w-full"
+          inputStyleClass="w-full rounded-lg"
           placeholder="Password"
         />
 
@@ -49,8 +52,9 @@
           <p-password
             formControlName="confirmPassword"
             [toggleMask]="true"
+            [feedback]="false"
             class="w-full"
-            inputStyleClass="w-full"
+            inputStyleClass="w-full rounded-lg"
             placeholder="Confirm password"
           />
         }
@@ -59,7 +63,7 @@
 
       <!-- ERROR -->
       @if (error()) {
-        <div class="text-sm text-red-600 text-center">
+        <div class="rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-600 text-center">
           {{ error() }}
         </div>
       }
@@ -67,13 +71,13 @@
       <!-- ACTIONS -->
       <div class="flex flex-col gap-3">
 
-        <!-- ✅ REAL SUBMIT BUTTON -->
+        <!-- PRIMARY BUTTON -->
         <button type="submit" class="w-full">
           <p-button
             [label]="isLogin() ? 'Sign in' : 'Create account'"
             [loading]="loading()"
-            class="w-full"
-          ></p-button>
+            styleClass="w-full"
+          />
         </button>
 
         <!-- TOGGLE -->
@@ -81,11 +85,23 @@
           <p-button
             [text]="true"
             [label]="isLogin() ? 'Create account' : 'Back to login'"
-            class="w-full"
-          ></p-button>
+            styleClass="w-full text-sm"
+          />
         </button>
 
       </div>
+
+      <!-- EXTRA -->
+      @if (isLogin()) {
+        <div class="text-center pt-2">
+          <a
+            routerLink="/cars"
+            class="text-sm text-gray-500 hover:text-gray-800 underline transition"
+          >
+            Browse available cars
+          </a>
+        </div>
+      }
 
     </form>
 
