@@ -45,10 +45,7 @@ export class HomeComponent {
 
     return all.filter(car => {
       const id =
-        typeof car.locationId === 'object'
-          ? car.locationId._id
-          : car.locationId;
-
+        typeof car.locationId === 'object' ? car.locationId._id : car.locationId;
       return id === selectedId;
     });
   });

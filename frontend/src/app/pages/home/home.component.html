@@ -13,7 +13,7 @@
   <!-- LOADING -->
   @if (loading()) {
     <div class="flex flex-col items-center justify-center py-16 gap-4">
-      <p-progressSpinner strokeWidth="4"></p-progressSpinner>
+      <p-progressSpinner strokeWidth="4"/>
       <span class="text-sm text-gray-500">Loading cars...</span>
     </div>
   } @else {
@@ -23,13 +23,13 @@
       <div class="p-4">
 
         @if (locations().length === 0) {
-          <p-skeleton height="3rem" class="w-full"></p-skeleton>
+          <p-skeleton height="3rem" class="w-full"/>
         } @else {
           <app-location-selector
             [locations]="locations()"
             [selectedLocationId]="selectedLocationId()"
             (selectedLocationChange)="selectLocation($event)"
-          ></app-location-selector>
+          />
         }
 
       </div>
@@ -43,14 +43,14 @@
           <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             @for (i of [1,2,3,4,5,6]; track i) {
               <div class="flex flex-col gap-2">
-                <p-skeleton height="150px" class="w-full rounded-lg"></p-skeleton>
-                <p-skeleton height="1rem" width="70%"></p-skeleton>
-                <p-skeleton height="1rem" width="50%"></p-skeleton>
+                <p-skeleton height="150px" class="w-full rounded-lg"/>
+                <p-skeleton height="1rem" width="70%"/>
+                <p-skeleton height="1rem" width="50%"/>
               </div>
             }
           </div>
         } @else {
-          <app-car-list [cars]="filteredCars()"></app-car-list>
+          <app-car-list [cars]="filteredCars()"/>
         }
 
       </div>
