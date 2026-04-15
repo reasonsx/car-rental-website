@@ -1,14 +1,21 @@
-<section class="location-selector">
-  <label for="location">Choose location</label>
-  <select
-    id="location"
-    #locationSelect
-    [value]="selectedLocationId || ''"
-    (change)="onLocationChange(locationSelect.value)"
+<div class="flex flex-col gap-2 mb-6">
+
+  <label class="text-sm font-medium text-gray-700">
+    Choose location
+  </label>
+
+  <p-select
+    [options]="locations"
+    optionLabel="name"
+    optionValue="_id"
+    [showClear]="true"
+    placeholder="All locations"
+
+    [ngModel]="selectedLocationId"
+    (ngModelChange)="onLocationChange($event)"
+
+    class="w-full"
   >
-    <option value="">All locations</option>
-    <option *ngFor="let location of locations" [value]="location._id">
-      {{ location.name }}
-    </option>
-  </select>
-</section>
+  </p-select>
+
+</div>
