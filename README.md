@@ -12,7 +12,7 @@ Full-stack car rental system built with Angular, Node.js, Express, MongoDB, Tail
 
 ## ⚙️ Setup
 
-### Backend
+### 🛠 Backend
 Create `.env`:
 
 * PORT=
@@ -23,7 +23,7 @@ Create `.env`:
 * npm install
 * npm run dev
 
-### Frontend
+### 🎨 Frontend
 
 * cd frontend
 * npm install
