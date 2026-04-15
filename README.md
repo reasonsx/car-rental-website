@@ -12,22 +12,23 @@ Full-stack car rental system built with Angular, Node.js, Express, MongoDB, Tail
 
 ## ⚙️ Setup
 
-### Backend
-
-npm install
-npm run dev
-
+### 🛠 Backend
 Create `.env`:
 
-PORT=3000
-MONGO_URI=your_db_url
-JWT_SECRET=your_secret
+* PORT=
+* MONGO_URI=
+* JWT_SECRET=
 
-### Frontend
+Then run:
+* cd backend
+* npm install
+* npm run dev
 
-cd frontend
-npm install
-ng serve
+### 🎨 Frontend
+
+* cd frontend
+* npm install
+* ng serve
 
 ## 🔌 API
 
@@ -39,6 +40,6 @@ ng serve
 
 ## 🛠 Tech
 
-* Angular + Tailwind + PrimeNG
-* Node.js + Express
-* MongoDB
+* Frontend: Angular 21, Tailwind CSS 4, PrimeNG 21, PrimeIcons 7  
+* Backend: Node.js, Express  
+* Database: MongoDB 
