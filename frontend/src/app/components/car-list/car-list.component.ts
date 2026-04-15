@@ -1,14 +1,78 @@
-import { Component, Input } from '@angular/core';
+import { Component, input, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CarCardComponent } from '../car-card/car-card.component';
 import { Car } from '../../models/car.model';
+import {ButtonModule} from 'primeng/button';
+import {InputTextModule} from 'primeng/inputtext';
+import {SelectModule} from 'primeng/select';
+import {FormsModule} from '@angular/forms';
+
+type SortOption = 'priceAsc' | 'priceDesc' | 'yearDesc';
 
 @Component({
   selector: 'app-car-list',
   standalone: true,
-  imports: [CommonModule, CarCardComponent],
+  imports: [CommonModule, CarCardComponent, ButtonModule, InputTextModule, SelectModule, FormsModule],
   templateUrl: './car-list.component.html'
 })
 export class CarListComponent {
-  @Input() cars: Car[] = [];
+
+  cars = input<Car[]>([]);
+
+  // filters
+  selectedCategory = signal<string | null>(null);
+  maxPrice = signal<number | null>(null);
+
+  // sorting
+  sort = signal<SortOption>('priceAsc');
+
+  // computed
+  filteredCars = computed(() => {
+    let result = [...this.cars()];
+
+    // filter by category
+    if (this.selectedCategory()) {
+      result = result.filter(car => {
+        const categoryId =
+          typeof car.categoryId === 'object' ? car.categoryId._id : car.categoryId;
+
+        return categoryId === this.selectedCategory();
+      });
+    }
+
+    // filter by price
+    if (this.maxPrice()) {
+      result = result.filter(car => car.pricePerDay <= this.maxPrice()!);
+    }
+
+    // sorting
+    switch (this.sort()) {
+      case 'priceAsc':
+        result.sort((a, b) => a.pricePerDay - b.pricePerDay);
+        break;
+      case 'priceDesc':
+        result.sort((a, b) => b.pricePerDay - a.pricePerDay);
+        break;
+      case 'yearDesc':
+        result.sort((a, b) => b.year - a.year);
+        break;
+    }
+
+    return result;
+  });
+
+
+  hasActiveFilters = computed(() => {
+    return (
+      this.maxPrice() !== null ||
+      this.selectedCategory() !== null ||
+      this.sort() !== 'priceAsc'
+    );
+  });
+
+  resetFilters() {
+    this.selectedCategory.set(null);
+    this.maxPrice.set(null);
+    this.sort.set('priceAsc');
+  }
 }
