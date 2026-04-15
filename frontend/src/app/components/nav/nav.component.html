@@ -1,13 +1,57 @@
-<nav class="app-nav">
-  <a routerLink="/" class="brand">Car Rental</a>
-  <div class="actions">
-    <ng-container *ngIf="isAuthenticated(); else notAuthenticated">
-      <span class="welcome">Welcome, {{ currentUser()?.name }}</span>
-      <a routerLink="/profile" class="button">Profile</a>
-      <button type="button" class="button" (click)="logout()">Logout</button>
-    </ng-container>
-    <ng-template #notAuthenticated>
-      <a routerLink="/login" class="button">Login</a>
-    </ng-template>
+<nav class="w-full bg-white shadow-md px-6 py-3 flex items-center justify-between">
+
+  <!-- LEFT: BRAND -->
+  <a routerLink="/" class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+    <i class="pi pi-car"></i>
+    Car Rental
+  </a>
+
+  <!-- RIGHT: ACTIONS -->
+  <div class="flex items-center gap-3">
+
+    @if (isAuthenticated()) {
+
+      <span class="text-sm text-gray-600 hidden sm:block">
+        Welcome, {{ currentUser()?.name }}
+      </span>
+
+      <p-button
+        routerLink="/profile"
+        label="Profile"
+        icon="pi pi-user"
+        [text]="true"
+        styleClass="text-sm"
+      />
+
+      @if (isAdmin()) {
+        <p-button
+          routerLink="/admin"
+          label="Admin"
+          icon="pi pi-cog"
+          [text]="true"
+          styleClass="text-sm"
+        />
+      }
+
+      <p-button
+        (onClick)="logout()"
+        label="Logout"
+        icon="pi pi-sign-out"
+        severity="danger"
+        styleClass="text-sm"
+      />
+
+    } @else {
+
+      <p-button
+        routerLink="/login"
+        label="Login"
+        icon="pi pi-sign-in"
+        styleClass="text-sm"
+      />
+
+    }
+
   </div>
+
 </nav>
