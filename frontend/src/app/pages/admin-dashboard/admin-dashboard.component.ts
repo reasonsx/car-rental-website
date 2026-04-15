@@ -30,4 +30,5 @@ export class AdminDashboardComponent {
     { key: 'categories' as TabKey,  label: 'Categories' },
     { key: 'locations' as TabKey,   label: 'Locations' },
   ];
+  activeTab: TabKey = 'cars';
 }

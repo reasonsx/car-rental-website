@@ -1,22 +1,28 @@
 <div class="min-h-screen bg-gray-50 p-6">
   <div class="max-w-7xl mx-auto">
 
-    <h1 class="text-3xl font-semibold text-gray-900 mb-6">Admin Dashboard</h1>
+    <h1 class="text-3xl font-semibold text-gray-900 mb-6">
+      Admin Dashboard
+    </h1>
 
-    <p-tabs>
+    <p-tabs [(value)]="activeTab">
+
       <p-tablist>
         @for (tab of tabs; track tab.key) {
-          <p-tab [value]="tab.key">{{ tab.label }}</p-tab>
+          <p-tab [value]="tab.key">
+            {{ tab.label }}
+          </p-tab>
         }
       </p-tablist>
 
       <p-tabpanels>
-        <p-tabpanel value="cars">     <app-admin-cars />       </p-tabpanel>
-        <p-tabpanel value="users">    <app-admin-users />      </p-tabpanel>
-        <p-tabpanel value="bookings"> <app-admin-bookings />   </p-tabpanel>
+        <p-tabpanel value="cars"><app-admin-cars /></p-tabpanel>
+        <p-tabpanel value="users"><app-admin-users /></p-tabpanel>
+        <p-tabpanel value="bookings"><app-admin-bookings /></p-tabpanel>
         <p-tabpanel value="categories"><app-admin-categories /></p-tabpanel>
-        <p-tabpanel value="locations"><app-admin-locations />  </p-tabpanel>
+        <p-tabpanel value="locations"><app-admin-locations /></p-tabpanel>
       </p-tabpanels>
+
     </p-tabs>
 
   </div>

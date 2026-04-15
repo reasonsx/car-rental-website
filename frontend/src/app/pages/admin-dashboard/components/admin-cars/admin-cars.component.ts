@@ -7,13 +7,25 @@ import { LocationService } from '../../../../services/location.service';
 import { Car } from '../../../../models/car.model';
 import { Category } from '../../../../models/category.model';
 import { Location } from '../../../../models/location.model';
+import { TableModule } from 'primeng/table';
+import { CheckboxModule } from 'primeng/checkbox';
+import { SelectModule } from 'primeng/select';
+import { InputTextModule } from 'primeng/inputtext';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-admin-cars',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './admin-cars.component.html',
-  styleUrls: ['./admin-cars.component.scss']
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    InputTextModule,
+    ButtonModule,
+    SelectModule,
+    TableModule,
+    CheckboxModule
+  ],
+  templateUrl: './admin-cars.component.html'
 })
 export class AdminCarsComponent {
   cars = signal<Car[]>([]);
@@ -46,7 +58,7 @@ export class AdminCarsComponent {
     this.loadData();
   }
 
-  private loadData(): void {
+   loadData(): void {
     this.loading.set(true);
     this.error.set(null);
     this.success.set(null);
