@@ -121,7 +121,7 @@ export async function loginUser(req: Request, res: Response) {
 
     } catch (error) {
 
-        res.status(500).json({ message: "Failed to login user: " + error });
+        res.status(500).json({ message: "Failed to auth user: " + error });
 
     } 
 }

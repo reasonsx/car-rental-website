@@ -42,7 +42,7 @@ export class AuthService {
   register(userData: RegisterRequest): Observable<any> {
     return this.http.post(`${this.baseUrl}/register`, userData).pipe(
       tap(() => {
-        // After successful registration, redirect to login
+        // After successful registration, redirect to auth
         this.router.navigate(['/login']);
       }),
       catchError(error => {
