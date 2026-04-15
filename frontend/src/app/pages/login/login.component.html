@@ -8,9 +8,11 @@
       </div>
     }
 
-    <!-- Login Form -->
     @if (isLoginMode()) {
+
+      <!-- Login Form -->
       <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="auth-form">
+
         <div class="form-group">
           <label for="loginEmail">Email</label>
           <input
@@ -18,15 +20,15 @@
             type="email"
             formControlName="email"
             placeholder="Enter your email"
-            [class.error]="loginFormControls['email'].invalid && loginFormControls['email'].touched"
+            [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
           />
 
-          @if (loginFormControls['email'].invalid && loginFormControls['email'].touched) {
+          @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
             <div class="field-error">
-              @if (loginFormControls['email'].errors?.['required']) {
+              @if (loginForm.get('email')?.errors?.['required']) {
                 <span>Email is required</span>
               }
-              @if (loginFormControls['email'].errors?.['email']) {
+              @if (loginForm.get('email')?.errors?.['email']) {
                 <span>Please enter a valid email</span>
               }
             </div>
@@ -40,28 +42,32 @@
             type="password"
             formControlName="password"
             placeholder="Enter your password"
-            [class.error]="loginFormControls['password'].invalid && loginFormControls['password'].touched"
+            [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
           />
 
-          @if (loginFormControls['password'].invalid && loginFormControls['password'].touched) {
+          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
             <div class="field-error">
-              @if (loginFormControls['password'].errors?.['required']) {
+              @if (loginForm.get('password')?.errors?.['required']) {
                 <span>Password is required</span>
               }
-              @if (loginFormControls['password'].errors?.['minlength']) {
+              @if (loginForm.get('password')?.errors?.['minlength']) {
                 <span>Password must be at least 6 characters</span>
               }
             </div>
           }
         </div>
 
-        <button type="submit" class="btn-primary" [disabled]="loginForm.invalid || isLoading()">
+        <button type="submit" class="btn-primary"
+                [disabled]="loginForm.invalid || isLoading()">
           {{ isLoading() ? 'Logging in...' : 'Login' }}
         </button>
       </form>
+
     } @else {
+
       <!-- Register Form -->
       <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="auth-form">
+
         <div class="form-group">
           <label for="registerName">Name</label>
           <input
@@ -69,15 +75,15 @@
             type="text"
             formControlName="name"
             placeholder="Enter your name"
-            [class.error]="registerFormControls['name'].invalid && registerFormControls['name'].touched"
+            [class.error]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched"
           />
 
-          @if (registerFormControls['name'].invalid && registerFormControls['name'].touched) {
+          @if (registerForm.get('name')?.invalid && registerForm.get('name')?.touched) {
             <div class="field-error">
-              @if (registerFormControls['name'].errors?.['required']) {
+              @if (registerForm.get('name')?.errors?.['required']) {
                 <span>Name is required</span>
               }
-              @if (registerFormControls['name'].errors?.['minlength']) {
+              @if (registerForm.get('name')?.errors?.['minlength']) {
                 <span>Name must be at least 3 characters</span>
               }
             </div>
@@ -91,15 +97,15 @@
             type="email"
             formControlName="email"
             placeholder="Enter your email"
-            [class.error]="registerFormControls['email'].invalid && registerFormControls['email'].touched"
+            [class.error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
           />
 
-          @if (registerFormControls['email'].invalid && registerFormControls['email'].touched) {
+          @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
             <div class="field-error">
-              @if (registerFormControls['email'].errors?.['required']) {
+              @if (registerForm.get('email')?.errors?.['required']) {
                 <span>Email is required</span>
               }
-              @if (registerFormControls['email'].errors?.['email']) {
+              @if (registerForm.get('email')?.errors?.['email']) {
                 <span>Please enter a valid email</span>
               }
             </div>
@@ -113,15 +119,15 @@
             type="password"
             formControlName="password"
             placeholder="Enter your password"
-            [class.error]="registerFormControls['password'].invalid && registerFormControls['password'].touched"
+            [class.error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
           />
 
-          @if (registerFormControls['password'].invalid && registerFormControls['password'].touched) {
+          @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
             <div class="field-error">
-              @if (registerFormControls['password'].errors?.['required']) {
+              @if (registerForm.get('password')?.errors?.['required']) {
                 <span>Password is required</span>
               }
-              @if (registerFormControls['password'].errors?.['minlength']) {
+              @if (registerForm.get('password')?.errors?.['minlength']) {
                 <span>Password must be at least 6 characters</span>
               }
             </div>
@@ -135,22 +141,24 @@
             type="password"
             formControlName="confirmPassword"
             placeholder="Confirm your password"
-            [class.error]="registerForm.errors?.['passwordMismatch'] || (registerFormControls['confirmPassword'].invalid && registerFormControls['confirmPassword'].touched)"
+            [class.error]="registerForm.errors?.['passwordMismatch'] || (registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched)"
           />
 
-          @if (registerForm.errors?.['passwordMismatch'] && registerFormControls['confirmPassword'].touched) {
+          @if (registerForm.errors?.['passwordMismatch'] && registerForm.get('confirmPassword')?.touched) {
             <div class="field-error">
               Passwords do not match
             </div>
           }
         </div>
 
-        <button type="submit" class="btn-primary" [disabled]="registerForm.invalid || isLoading()">
+        <button type="submit" class="btn-primary"
+                [disabled]="registerForm.invalid || isLoading()">
           {{ isLoading() ? 'Registering...' : 'Register' }}
         </button>
       </form>
     }
 
+    <!-- Toggle -->
     <div class="auth-toggle">
       <p>
         {{ isLoginMode() ? "Don't have an account?" : "Already have an account?" }}
@@ -159,5 +167,6 @@
         </button>
       </p>
     </div>
+
   </div>
 </div>

@@ -1,7 +1,14 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import {
+  ReactiveFormsModule,
+  FormGroup,
+  FormControl,
+  Validators,
+  AbstractControl,
+  ValidationErrors,
+  ValidatorFn
+} from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { LoginRequest, RegisterRequest } from '../../models/auth.model';
 
@@ -13,96 +20,84 @@ import { LoginRequest, RegisterRequest } from '../../models/auth.model';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
+  protected authService = inject(AuthService);
+
   isLoginMode = signal(true);
   isLoading = signal(false);
   error = signal<string | null>(null);
 
-  loginForm: FormGroup;
-  registerForm: FormGroup;
+  loginForm = new FormGroup({
+    email: new FormControl('', {nonNullable: true, validators: [Validators.required, Validators.email]}),
+    password: new FormControl('', {nonNullable: true, validators: [Validators.required, Validators.minLength(6)]})
+  });
 
-  constructor(
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private router: Router
-  ) {
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
-    });
+  registerForm = new FormGroup(
+    {
+      name: new FormControl('', {nonNullable: true, validators: [Validators.required, Validators.minLength(3)]}),
+      email: new FormControl('', {nonNullable: true, validators: [Validators.required, Validators.email]}),
+      password: new FormControl('', {nonNullable: true, validators: [Validators.required, Validators.minLength(6)]}),
+      confirmPassword: new FormControl('', {nonNullable: true, validators: [Validators.required]})
+    },
+    { validators: this.passwordMatchValidator() }
+  );
 
-    this.registerForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required]]
-    }, { validators: this.passwordMatchValidator });
-  }
-
-  toggleMode(): void {
-    this.isLoginMode.set(!this.isLoginMode());
+  toggleMode() {
+    this.isLoginMode.update(v => !v);
     this.error.set(null);
   }
 
-  onLogin(): void {
-    if (this.loginForm.invalid) return;
-
-    this.isLoading.set(true);
-    this.error.set(null);
-
-    const credentials: LoginRequest = this.loginForm.value;
-
-    this.authService.login(credentials).subscribe({
-      next: () => {
-        this.isLoading.set(false);
-        // Navigation is handled in AuthService
-      },
-      error: (error) => {
-        this.isLoading.set(false);
-        this.error.set(error.error?.message || 'Login failed');
-      }
-    });
-  }
-
-  onRegister(): void {
-    if (this.registerForm.invalid) return;
-
-    this.isLoading.set(true);
-    this.error.set(null);
-
-    const userData: RegisterRequest = {
-      name: this.registerForm.value.name,
-      email: this.registerForm.value.email,
-      password: this.registerForm.value.password
-    };
-
-    this.authService.register(userData).subscribe({
-      next: () => {
-        this.isLoading.set(false);
-        this.error.set(null);
-        // Navigation is handled in AuthService
-      },
-      error: (error) => {
-        this.isLoading.set(false);
-        this.error.set(error.error?.message || 'Registration failed');
-      }
-    });
-  }
-
-  private passwordMatchValidator(group: FormGroup): { [key: string]: any } | null {
-    const password = group.get('password');
-    const confirmPassword = group.get('confirmPassword');
-
-    if (password && confirmPassword && password.value !== confirmPassword.value) {
-      return { passwordMismatch: true };
+  onLogin() {
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
     }
-    return null;
+
+    this.isLoading.set(true);
+    this.error.set(null);
+
+    const payload: LoginRequest = this.loginForm.getRawValue();
+
+    this.authService.login(payload).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.error.set(err?.error?.message ?? 'Login failed');
+      }
+    });
   }
 
-  get loginFormControls() {
-    return this.loginForm.controls;
+  onRegister() {
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
+    }
+
+    this.isLoading.set(true);
+    this.error.set(null);
+
+    const { name, email, password } = this.registerForm.getRawValue();
+    const payload: RegisterRequest = { name, email, password };
+
+    this.authService.register(payload).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.error.set(err?.error?.message ?? 'Registration failed');
+      }
+    });
   }
 
-  get registerFormControls() {
-    return this.registerForm.controls;
+  private passwordMatchValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const group = control as FormGroup;
+      const password = group.get('password')?.value;
+      const confirm = group.get('confirmPassword')?.value;
+
+      return password === confirm ? null : { passwordMismatch: true };
+    };
   }
 }
