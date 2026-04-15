@@ -19,15 +19,15 @@ Create `.env`:
 * MONGO_URI=
 * JWT_SECRET=
 
-cd backend
-npm install
-npm run dev
+* cd backend
+* npm install
+* npm run dev
 
 ### Frontend
 
-cd frontend
-npm install
-ng serve
+* cd frontend
+* npm install
+* ng serve
 
 ## 🔌 API
 
