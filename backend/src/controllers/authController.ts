@@ -112,7 +112,15 @@ export function verifyToken(
     res: Response,
     next: NextFunction
 ) {
-    const token = req.header("auth-token");
+    const authHeader = req.header("Authorization");
+
+    if (!authHeader) {
+        return res.status(401).json({
+            message: "Access denied. No token provided."
+        });
+    }
+
+    const token = authHeader.replace("Bearer ", "");
 
     if (!token) {
         return res.status(401).json({

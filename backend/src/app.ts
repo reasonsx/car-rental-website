@@ -15,7 +15,13 @@ export async function startServer() {
   app.use(cors({
     origin: "*",
     methods: ["GET", "PUT", "POST", "DELETE"],
-    allowedHeaders: ['auth-token', 'Origin', 'X-Requested-Width', 'Content-Type', 'Accept'],
+    allowedHeaders: [
+      'Authorization',
+      'Content-Type',
+      'Origin',
+      'X-Requested-With',
+      'Accept'
+    ],
     credentials: true
   }));
 

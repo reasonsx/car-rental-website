@@ -76,13 +76,16 @@ export class AuthService {
     const token = localStorage.getItem('authToken');
     const user = localStorage.getItem('currentUser');
 
-    if (!token || !user) return;
+    if (!token) return;
 
-    try {
-      this._token.set(token);
-      this._currentUser.set(JSON.parse(user));
-    } catch {
-      localStorage.clear();
+    this._token.set(token);
+
+    if (user) {
+      try {
+        this._currentUser.set(JSON.parse(user));
+      } catch {
+        this._currentUser.set(null);
+      }
     }
   }
 }
