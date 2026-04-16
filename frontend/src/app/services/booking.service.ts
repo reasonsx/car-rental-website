@@ -15,21 +15,14 @@ export class BookingService {
   }
 
   getBookingsForCar(carId: string): Observable<Booking[]> {
-    return this.getBookings().pipe(
-      map(bookings => bookings.filter(booking => {
-        const bookingCarId = booking.carId;
-        if (!bookingCarId) return false;
+    return this.http.get<Booking[]>(`${this.baseUrl}/car/${carId}`);
+  }
 
-        if (typeof bookingCarId === 'string') {
-          return bookingCarId === carId;
-        }
-
-        if (typeof bookingCarId === 'object') {
-          return bookingCarId._id === carId || (bookingCarId as any)['id'] === carId;
-        }
-
-        return false;
-      }))
-    );
+  createBooking(data: {
+    carId: string;
+    startDate: Date;
+    endDate: Date;
+  }): Observable<Booking> {
+    return this.http.post<Booking>(this.baseUrl, data);
   }
 }

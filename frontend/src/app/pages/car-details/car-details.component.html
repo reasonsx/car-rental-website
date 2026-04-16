@@ -120,17 +120,33 @@
               <!-- CTA -->
               <div class="flex items-center justify-between">
 
-                <div>
-                  <span class="text-xs text-gray-500">Total</span>
-                  <div class="text-xl font-semibold text-gray-900">
-                    {{ car.pricePerDay }} DKK
-                  </div>
+                <!-- LEFT -->
+                <div class="flex flex-col">
+
+                  @if (selectedRange() && totalPrice() > 0) {
+                    <span class="text-xs text-gray-500">
+        {{ selectedRange()![0] | date:'mediumDate' }} →
+                      {{ selectedRange()![1] | date:'mediumDate' }}
+      </span>
+
+                    <div class="text-xl font-semibold text-gray-900">
+                      {{ totalPrice() }} DKK
+                    </div>
+                  } @else {
+                    <span class="text-xs text-gray-500">Price per day</span>
+                    <div class="text-xl font-semibold text-gray-900">
+                      {{ car.pricePerDay }} DKK
+                    </div>
+                  }
+
                 </div>
 
+                <!-- BUTTON -->
                 <p-button
                   label="Book now"
                   icon="pi pi-calendar-plus"
-                  [disabled]="!car.available"
+                  [disabled]="!car.available || !selectedRange() || totalPrice() === 0"
+                  (onClick)="bookCar()"
                 />
 
               </div>
@@ -171,18 +187,27 @@
 
                 <!-- DAYS -->
                 @for (cell of days(); track cell.date) {
-
                   <div
-                    class="rounded-md h-9 flex items-center justify-center text-xs"
+                    class="rounded-md h-9 flex items-center justify-center text-xs transition"
+
                     [class.bg-gray-100]="!cell.date"
                     [class.bg-red-100]="cell.date && cell.booked"
                     [class.text-red-600]="cell.date && cell.booked"
                     [class.bg-green-100]="cell.date && !cell.booked"
                     [class.text-green-700]="cell.date && !cell.booked"
+
+                    [class.!bg-blue-100]="cell.date && isSelected(cell.date)"
+                    [class.!text-blue-700]="cell.date && isSelected(cell.date)"
+
+                    [class.opacity-40]="cell.date && isPast(cell.date)"
+
+                    [class.cursor-pointer]="cell.date && !cell.booked && !isPast(cell.date)"
+                    [class.cursor-not-allowed]="cell.date && isPast(cell.date)"
+
+                    (click)="cell.date && !cell.booked && !isPast(cell.date) && selectDate(cell.date)"
                   >
                     {{ cell.date ? cell.date.getDate() : '' }}
                   </div>
-
                 }
 
               </div>

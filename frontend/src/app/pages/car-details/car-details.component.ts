@@ -28,11 +28,88 @@ export class CarDetailsComponent {
   loading = signal(true);
   error = signal<string | null>(null);
   monthOffset = signal(0);
+  selectedRange = signal<[Date, Date] | null>(null);
 
   constructor() {
     this.loadData();
   }
 
+  private today(): number {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  }
+
+  selectDate(date: Date) {
+    const normalized = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+    // 🚫 block past dates
+    if (this.normalize(normalized) < this.today()) {
+      return;
+    }
+
+    const current = this.selectedRange();
+
+    if (!current) {
+      this.selectedRange.set([normalized, normalized]);
+      return;
+    }
+
+    const [start, end] = current;
+
+    if (!this.isRangeValid(start, normalized)) {
+      return;
+    }
+
+    // restart if already full range
+    if (this.normalize(start) !== this.normalize(end)) {
+      this.selectedRange.set([normalized, normalized]);
+      return;
+    }
+
+    if (this.normalize(normalized) < this.normalize(start)) {
+      this.selectedRange.set([normalized, start]);
+    } else {
+      this.selectedRange.set([start, normalized]);
+    }
+  }
+  isPast(d: Date): boolean {
+    return this.normalize(d) < this.today();
+  }
+  private normalize(d: Date): number {
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  }
+
+  isSelected(d: Date): boolean {
+    const range = this.selectedRange();
+    if (!range) return false;
+
+    const [start, end] = range;
+
+    const t = this.normalize(d);
+    return t >= this.normalize(start) && t <= this.normalize(end);
+  }
+
+  totalPrice = computed(() => {
+    const range = this.selectedRange();
+    const car = this.car();
+
+    if (!range || !car) return 0;
+
+    const [start, end] = range;
+
+    const days =
+      (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
+
+    return days > 0 ? days * car.pricePerDay : 0;
+  });
+  isRangeValid(start: Date, end: Date): boolean {
+    return !this.bookedRanges().some(range => {
+      return (
+        this.normalize(start) <= this.normalize(range.endDate) &&
+        this.normalize(end) >= this.normalize(range.startDate)
+      );
+    });
+  }
   get carId(): string {
     return this.route.snapshot.paramMap.get('id') ?? '';
   }
@@ -114,4 +191,25 @@ export class CarDetailsComponent {
   nextMonth(): void {
     this.monthOffset.set(this.monthOffset() + 1);
   }
+  bookCar() {
+    const range = this.selectedRange();
+    if (!range) return;
+
+    const [start, end] = range;
+
+    this.bookingService.createBooking({
+      carId: this.carId,
+      startDate: start,
+      endDate: end
+    }).subscribe({
+      next: () => {
+        this.loadData(); // refresh bookings
+        this.selectedRange.set(null);
+      },
+      error: err => {
+        console.error(err);
+      }
+    });
+  }
+
 }
