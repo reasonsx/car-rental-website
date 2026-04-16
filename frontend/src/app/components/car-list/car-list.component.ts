@@ -1,4 +1,4 @@
-import { Component, input, computed, signal } from '@angular/core';
+import {Component, input, computed, signal, effect} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CarCardComponent } from '../car-card/car-card.component';
 import { Car } from '../../models/car.model';
@@ -6,13 +6,14 @@ import {ButtonModule} from 'primeng/button';
 import {InputTextModule} from 'primeng/inputtext';
 import {SelectModule} from 'primeng/select';
 import {FormsModule} from '@angular/forms';
+import { SliderModule } from 'primeng/slider';
 
 type SortOption = 'priceAsc' | 'priceDesc' | 'yearDesc';
 
 @Component({
   selector: 'app-car-list',
   standalone: true,
-  imports: [CommonModule, CarCardComponent, ButtonModule, InputTextModule, SelectModule, FormsModule],
+  imports: [CommonModule, CarCardComponent, ButtonModule, InputTextModule, SelectModule, FormsModule, SliderModule],
   templateUrl: './car-list.component.html'
 })
 export class CarListComponent {
@@ -21,9 +22,23 @@ export class CarListComponent {
 
   // filters
   selectedCategory = signal<string | null>(null);
-  maxPrice = signal<number | null>(null);
   selectedBrand = signal<string | null>(null);
+  defaultPriceRange: [number, number] = [0, 200];
+  priceRange = signal<[number, number]>([0, 100]);
 
+  constructor() {
+    effect(() => {
+      const [min, max] = this.priceBounds();
+      this.priceRange.set([min, max]);
+    });
+  }
+  priceBounds = computed<[number, number]>(() => {
+    const cars = this.cars();
+    if (!cars.length) return [0, 100];
+
+    const prices = cars.map(c => c.pricePerDay);
+    return [Math.min(...prices), Math.max(...prices)];
+  });
   // sorting
   sort = signal<SortOption>('priceAsc');
 
@@ -42,9 +57,10 @@ export class CarListComponent {
     }
 
     // filter by price
-    if (this.maxPrice()) {
-      result = result.filter(car => car.pricePerDay <= this.maxPrice()!);
-    }
+    const [min, max] = this.priceRange();
+    result = result.filter(car =>
+      car.pricePerDay >= min && car.pricePerDay <= max
+    );
 
     // filter by brand
     if (this.selectedBrand()) {
@@ -77,8 +93,12 @@ export class CarListComponent {
 
 
   hasActiveFilters = computed(() => {
+    const [min, max] = this.priceRange();
+    const [defaultMin, defaultMax] = this.priceBounds();
+
     return (
-      this.maxPrice() !== null ||
+      min !== defaultMin ||
+      max !== defaultMax ||
       this.selectedCategory() !== null ||
       this.selectedBrand() !== null ||
       this.sort() !== 'priceAsc'
@@ -88,7 +108,7 @@ export class CarListComponent {
   resetFilters() {
     this.selectedCategory.set(null);
     this.selectedBrand.set(null);
-    this.maxPrice.set(null);
+    this.priceRange.set(this.priceBounds());
     this.sort.set('priceAsc');
   }
 }

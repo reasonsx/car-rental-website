@@ -27,18 +27,36 @@
   </div>
 
   <!-- FILTER BAR -->
-  <div class="flex flex-wrap gap-3">
+  <div class="flex flex-wrap items-center gap-3">
 
-    <!-- PRICE FILTER -->
-    <input
-      pInputText
-      type="number"
-      placeholder="Max price"
-      class="w-40"
-      (input)="maxPrice.set($any($event.target).valueAsNumber || null)"
-    />
+    <!-- SORT -->
+    <p-select
+      [options]="[
+      { label: 'Price: Low to High', value: 'priceAsc', icon: 'pi pi-sort-amount-up' },
+      { label: 'Price: High to Low', value: 'priceDesc', icon: 'pi pi-sort-amount-down' },
+      { label: 'Newest First', value: 'yearDesc', icon: 'pi pi-calendar' }
+    ]"
+      [ngModel]="sort()"
+      (ngModelChange)="sort.set($event)"
+      placeholder="Sort"
+      class="w-52"
+    >
+      <ng-template pTemplate="selectedItem" let-option>
+        <div class="flex items-center gap-2">
+          <i [class]="option?.icon"></i>
+          <span>{{ option?.label }}</span>
+        </div>
+      </ng-template>
 
-    <!-- FILTER BY BRAND -->
+      <ng-template pTemplate="item" let-option>
+        <div class="flex items-center gap-2">
+          <i [class]="option.icon"></i>
+          <span>{{ option.label }}</span>
+        </div>
+      </ng-template>
+    </p-select>
+
+    <!-- BRAND -->
     <p-select
       [options]="brands()"
       [ngModel]="selectedBrand()"
@@ -47,36 +65,31 @@
       class="w-44"
     />
 
-    <!-- SORT -->
-    <p-select
-      [options]="[
-    { label: 'Price: Low to High', value: 'priceAsc', icon: 'pi pi-sort-amount-up' },
-    { label: 'Price: High to Low', value: 'priceDesc', icon: 'pi pi-sort-amount-down' },
-    { label: 'Newest First', value: 'yearDesc', icon: 'pi pi-calendar' }
-  ]"
-      [ngModel]="sort()"
-      (ngModelChange)="sort.set($event)"
-      placeholder="Sort by"
-      class="w-52"
-    >
+    <!-- PRICE (compact style) -->
+    <div class="flex flex-col gap-2 min-w-[240px]">
 
-      <!-- Selected value -->
-      <ng-template pTemplate="selectedItem" let-option>
-        <div class="flex items-center gap-2">
-          <i [class]="option?.icon"></i>
-          <span>{{ option?.label }}</span>
-        </div>
-      </ng-template>
+      <!-- LABEL -->
+      <span class="text-xs font-medium text-gray-500">
+    Price range
+  </span>
 
-      <!-- Dropdown options -->
-      <ng-template pTemplate="item" let-option>
-        <div class="flex items-center gap-2">
-          <i [class]="option.icon"></i>
-          <span>{{ option.label }}</span>
-        </div>
-      </ng-template>
+      <!-- SLIDER -->
+      <p-slider
+        [ngModel]="priceRange()"
+        (ngModelChange)="priceRange.set($event)"
+        [range]="true"
+        [min]="priceBounds()[0]"
+        [max]="priceBounds()[1]"
+        class="w-full"
+      />
 
-    </p-select>
+      <!-- VALUES -->
+      <div class="flex justify-between text-xs text-gray-600">
+        <span>{{ priceRange()[0] }} DKK</span>
+        <span>{{ priceRange()[1] }} DKK</span>
+      </div>
+
+    </div>
 
   </div>
 
