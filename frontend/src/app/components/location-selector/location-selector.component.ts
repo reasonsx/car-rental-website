@@ -1,9 +1,9 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SelectModule } from 'primeng/select';
+import { FormsModule } from '@angular/forms';
 
 import { Location } from '../../models/location.model';
-import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-location-selector',
@@ -12,12 +12,13 @@ import {FormsModule} from '@angular/forms';
   templateUrl: './location-selector.component.html'
 })
 export class LocationSelectorComponent {
-  @Input() locations: Location[] = [];
-  @Input() selectedLocationId?: string;
 
-  @Output() selectedLocationChange = new EventEmitter<string | undefined>();
+  locations = input<Location[]>([]);
+  selectedLocationId = input<string | undefined>();
 
-  onLocationChange(locationId: string) {
+  selectedLocationChange = output<string | undefined>();
+
+  onLocationChange(locationId: string | null) {
     this.selectedLocationChange.emit(locationId || undefined);
   }
 }

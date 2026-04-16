@@ -5,17 +5,14 @@
   </label>
 
   <p-select
-    [options]="locations"
+    [options]="locations()"
     optionLabel="name"
     optionValue="_id"
     [showClear]="true"
     placeholder="All locations"
-
-    [ngModel]="selectedLocationId"
+    [ngModel]="selectedLocationId()"
     (ngModelChange)="onLocationChange($event)"
-
     class="w-full"
-  >
-  </p-select>
+  />
 
 </div>
