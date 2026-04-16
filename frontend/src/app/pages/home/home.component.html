@@ -1,4 +1,4 @@
-<div class="max-w-6xl mx-auto px-4 py-8 min-h-[calc(100vh-64px)]">
+<div class="w-full max-w-7xl mx-auto px-6 py-8 min-h-[calc(100vh-64px)]">
 
   <!-- HEADER -->
   <div class="text-center mb-8">
@@ -19,8 +19,8 @@
   } @else {
 
     <!-- LOCATION SELECTOR -->
-    <p-card class="mb-6 shadow-md rounded-xl">
-      <div class="p-4">
+    <p-card class="mb-6 shadow-sm rounded-xl w-full">
+      <div class="p-3 md:p-4">
 
         @if (locations().length === 0) {
           <p-skeleton height="3rem" class="w-full"/>
@@ -36,8 +36,8 @@
     </p-card>
 
     <!-- CARS LIST -->
-    <p-card class="shadow-md rounded-xl">
-      <div class="p-4">
+    <p-card class="shadow-none border-0 w-full">
+      <div class="p-0">
 
         @if (filteredCars().length === 0) {
           <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

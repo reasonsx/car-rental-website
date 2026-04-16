@@ -1,35 +1,34 @@
 <a
-  [routerLink]="['/car', car()._id]"
+  [routerLink]="car() ? ['/car', car()._id] : null"
   class="block h-full group"
 >
-  <div class="h-full flex flex-col bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-shadow duration-200">
+  <div class="h-full flex flex-col bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition duration-200">
 
     <!-- IMAGE -->
-    <div class="relative w-full h-44 bg-gray-100 overflow-hidden">
+    <div class="relative w-full aspect-[16/9]">
 
-      @if (car().imageUrl) {
+      @if (car()?.imageUrl) {
         <img
-          [ngSrc]="car().imageUrl!"
+          [ngSrc]="car()!.imageUrl!"
           [alt]="car().brand + ' ' + car().modelName"
-          width="400"
-          height="180"
-          class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+          fill
+          class="object-cover object-center transition duration-300 group-hover:scale-105"
         />
       } @else {
-        <div class="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+        <div class="absolute inset-0 flex items-center justify-center text-gray-400 text-sm">
           No image
         </div>
       }
 
-      <!-- STATUS BADGE -->
+      <!-- STATUS -->
       <span
-        class="absolute top-2 right-2 text-xs px-2 py-1 rounded-full font-medium shadow-sm"
-        [class.bg-green-100]="car().available"
-        [class.text-green-700]="car().available"
-        [class.bg-red-100]="!car().available"
-        [class.text-red-600]="!car().available"
+        class="absolute top-3 right-3 text-xs px-2 py-1 rounded-full font-medium shadow-sm backdrop-blur-sm"
+        [class.bg-green-100]="car()?.available"
+        [class.text-green-700]="car()?.available"
+        [class.bg-red-100]="!car()?.available"
+        [class.text-red-600]="!car()?.available"
       >
-        {{ car().available ? 'Available' : 'Unavailable' }}
+        {{ car()?.available ? 'Available' : 'Unavailable' }}
       </span>
 
     </div>
@@ -38,24 +37,24 @@
     <div class="flex flex-col flex-1 p-4 gap-3">
 
       <!-- TITLE -->
-      <div>
-        <h3 class="font-semibold text-gray-800 text-base leading-tight">
-          {{ car().brand }} {{ car().modelName }}
+      <div class="min-h-[48px]">
+        <h3 class="font-semibold text-gray-800 text-base leading-tight line-clamp-2">
+          {{ car()?.brand }} {{ car()?.modelName }}
         </h3>
         <p class="text-xs text-gray-500">
-          {{ car().year }}
+          {{ car()?.year }}
         </p>
       </div>
 
       <!-- PRICE -->
-      <div class="mt-auto flex items-center justify-between">
+      <div class="mt-auto flex items-end justify-between">
 
-        <div class="flex flex-col">
-          <span class="text-xs text-gray-500">
+        <div>
+          <span class="text-xs text-gray-500 block">
             Price per day
           </span>
           <span class="font-semibold text-lg text-gray-900">
-            {{ car().pricePerDay }} DKK
+            {{ car()?.pricePerDay }} DKK
           </span>
         </div>
 
