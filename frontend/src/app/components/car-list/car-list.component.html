@@ -65,6 +65,15 @@
       class="w-44"
     />
 
+    <!-- YEAR -->
+    <p-select
+      [options]="years()"
+      [ngModel]="selectedYear()"
+      (ngModelChange)="selectedYear.set($event)"
+      placeholder="Year"
+      class="w-32"
+    />
+
     <!-- PRICE (compact style) -->
     <div class="flex flex-col gap-2 min-w-[240px]">
 

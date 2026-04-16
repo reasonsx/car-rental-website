@@ -23,8 +23,8 @@ export class CarListComponent {
   // filters
   selectedCategory = signal<string | null>(null);
   selectedBrand = signal<string | null>(null);
-  defaultPriceRange: [number, number] = [0, 200];
   priceRange = signal<[number, number]>([0, 100]);
+  selectedYear = signal<number | null>(null);
 
   constructor() {
     effect(() => {
@@ -32,6 +32,17 @@ export class CarListComponent {
       this.priceRange.set([min, max]);
     });
   }
+
+  years = computed(() => {
+    const unique = new Set(this.cars().map(car => car.year));
+    return Array.from(unique)
+      .sort((a, b) => b - a) // newest first
+      .map(y => ({
+        label: y.toString(),
+        value: y
+      }));
+  });
+
   priceBounds = computed<[number, number]>(() => {
     const cars = this.cars();
     if (!cars.length) return [0, 100];
@@ -39,6 +50,7 @@ export class CarListComponent {
     const prices = cars.map(c => c.pricePerDay);
     return [Math.min(...prices), Math.max(...prices)];
   });
+
   // sorting
   sort = signal<SortOption>('priceAsc');
 
@@ -65,6 +77,11 @@ export class CarListComponent {
     // filter by brand
     if (this.selectedBrand()) {
       result = result.filter(car => car.brand === this.selectedBrand());
+    }
+
+    // filter by year
+    if (this.selectedYear()) {
+      result = result.filter(car => car.year === this.selectedYear());
     }
 
     // sorting
@@ -101,6 +118,7 @@ export class CarListComponent {
       max !== defaultMax ||
       this.selectedCategory() !== null ||
       this.selectedBrand() !== null ||
+      this.selectedYear() !== null ||
       this.sort() !== 'priceAsc'
     );
   });
@@ -108,6 +126,7 @@ export class CarListComponent {
   resetFilters() {
     this.selectedCategory.set(null);
     this.selectedBrand.set(null);
+    this.selectedYear.set(null);
     this.priceRange.set(this.priceBounds());
     this.sort.set('priceAsc');
   }

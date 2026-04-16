@@ -9,11 +9,13 @@ import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ImageModule } from 'primeng/image';
+import { DividerModule } from 'primeng/divider';
+
 
 @Component({
   selector: 'app-car-details',
   standalone: true,
-  imports: [CommonModule, CardModule, ButtonModule, ProgressSpinnerModule, ImageModule],
+  imports: [CommonModule, CardModule, ButtonModule, ProgressSpinnerModule, ImageModule, DividerModule],
   templateUrl: './car-details.component.html'
 })
 export class CarDetailsComponent {

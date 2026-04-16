@@ -1,4 +1,4 @@
-<div class="max-w-7xl mx-auto px-4 py-8">
+<div class="max-w-[1400px] mx-auto px-6 py-8">
 
   <!-- LOADING -->
   @if (loading()) {
@@ -20,79 +20,108 @@
         <div class="grid lg:grid-cols-2 gap-8">
 
           <!-- LEFT: CAR INFO -->
-          <p-card class="rounded-2xl shadow-md border border-gray-100 overflow-hidden">
+          <p-card class="rounded-2xl shadow-md overflow-hidden">
 
-            <!-- IMAGE -->
-            <div class="relative w-full aspect-[16/9] bg-gray-100 overflow-hidden rounded-xl mb-4">
+            <div class="flex flex-col">
 
-              @if (car.imageUrl) {
-                <p-image
-                  [src]="car.imageUrl!"
-                  [alt]="car.brand + ' ' + car.modelName"
-                  class="object-cover object-center"
-                />
-              } @else {
-                <div class="absolute inset-0 flex items-center justify-center text-gray-400">
-                  <i class="pi pi-image text-4xl"></i>
-                </div>
-              }
+              <!-- IMAGE -->
+              <div class="relative w-full aspect-[16/9] overflow-hidden rounded-xl mb-5">
 
-              <!-- STATUS BADGE -->
-              <span
-                class="absolute top-3 right-3 text-xs px-3 py-1 rounded-full font-medium shadow-sm"
-                [class.bg-green-100]="car.available"
-                [class.text-green-700]="car.available"
-                [class.bg-red-100]="!car.available"
-                [class.text-red-600]="!car.available"
-              >
-    {{ car.available ? 'Available' : 'Unavailable' }}
-  </span>
+                @if (car.imageUrl) {
+                  <p-image
+                    [src]="car.imageUrl!"
+                    [alt]="car.brand + ' ' + car.modelName"
+                    imageClass="w-full h-full object-cover"
+                    class="block w-full h-full"
+                  />
+                } @else {
+                  <div class="absolute inset-0 flex items-center justify-center text-gray-400">
+                    <i class="pi pi-image text-4xl"></i>
+                  </div>
+                }
 
-            </div>
+                <!-- overlay -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
 
-            <!-- CONTENT -->
-            <div class="flex flex-col gap-5">
+                <!-- status -->
+                <span
+                  class="absolute top-3 right-3 text-xs px-3 py-1 rounded-full font-medium bg-white/80 backdrop-blur"
+                  [class.text-green-700]="car.available"
+                  [class.text-red-600]="!car.available"
+                >
+        {{ car.available ? 'Available' : 'Unavailable' }}
+      </span>
 
-              <!-- TITLE -->
-              <div>
-                <h1 class="text-2xl font-semibold text-gray-900">
-                  {{ car.brand }} {{ car.modelName }}
-                </h1>
-                <p class="text-sm text-gray-500">
-                  {{ car.year }}
-                </p>
               </div>
+
+              <!-- TITLE + PRICE -->
+              <div class="flex items-start justify-between gap-4">
+
+                <div class="flex flex-col gap-1">
+                  <h1 class="text-2xl font-semibold text-gray-900 leading-tight">
+                    {{ car.brand }} {{ car.modelName }}
+                  </h1>
+                  <span class="text-sm text-gray-500">
+          {{ car.year }}
+        </span>
+                </div>
+
+                <div class="text-right">
+                  <div class="text-xl font-semibold text-gray-900">
+                    {{ car.pricePerDay }} DKK
+                  </div>
+                  <span class="text-xs text-gray-500">per day</span>
+                </div>
+
+              </div>
+
+              <p-divider></p-divider>
 
               <!-- INFO GRID -->
-              <div class="grid grid-cols-2 gap-4 text-sm">
+              <div class="flex flex-col gap-4 text-sm">
 
-                <div class="flex items-center gap-2 text-gray-600">
-                  <i class="pi pi-tag text-gray-400"></i>
-                  <span>{{ car.pricePerDay }} DKK / day</span>
+                <!-- MAIN INFO -->
+                <div class="grid grid-cols-2 gap-y-3 gap-x-4">
+
+                  <div class="flex items-center gap-2 text-gray-600">
+                    <i class="pi pi-list text-gray-400 text-sm"></i>
+                    <span>{{ car.categoryId?.name ?? 'N/A' }}</span>
+                  </div>
+
+                  <div class="flex items-center gap-2 text-gray-600">
+                    <i class="pi pi-map-marker text-gray-400 text-sm"></i>
+                    <span>{{ car.locationId?.city ?? 'N/A' }}</span>
+                  </div>
+
+                  <div class="flex items-center gap-2 text-gray-600">
+                    <i class="pi pi-building text-gray-400 text-sm"></i>
+                    <span>{{ car.locationId?.name ?? 'N/A' }}</span>
+                  </div>
+
+                  <div class="flex items-center gap-2 text-gray-600">
+                    <i class="pi pi-car text-gray-400 text-sm"></i>
+                    <span>{{ car.available ? 'Ready to rent' : 'Unavailable' }}</span>
+                  </div>
+
                 </div>
 
-                <div class="flex items-center gap-2 text-gray-600">
-                  <i class="pi pi-list text-gray-400"></i>
-                  <span>{{ car.categoryId?.name ?? 'N/A' }}</span>
-                </div>
+                <p-divider></p-divider>
 
-                <div class="flex items-center gap-2 text-gray-600">
-                  <i class="pi pi-map-marker text-gray-400"></i>
-                  <span>{{ car.locationId?.name ?? 'N/A' }}</span>
-                </div>
-
-                <div class="flex items-center gap-2 text-gray-600">
-                  <i class="pi pi-car text-gray-400"></i>
-                  <span>{{ car.available ? 'Ready to rent' : 'Unavailable' }}</span>
-                </div>
+                @if (car.categoryId?.description) {
+                  <p class="text-xs text-gray-500">
+                    {{ car.categoryId.description }}
+                  </p>
+                }
 
               </div>
 
-              <!-- DIVIDER -->
-              <div class="border-t pt-4 flex items-center justify-between">
+              <p-divider></p-divider>
+
+              <!-- CTA -->
+              <div class="flex items-center justify-between">
 
                 <div>
-                  <span class="text-xs text-gray-500">Total price</span>
+                  <span class="text-xs text-gray-500">Total</span>
                   <div class="text-xl font-semibold text-gray-900">
                     {{ car.pricePerDay }} DKK
                   </div>
@@ -101,7 +130,7 @@
                 <p-button
                   label="Book now"
                   icon="pi pi-calendar-plus"
-                  [disabled]="true"
+                  [disabled]="!car.available"
                 />
 
               </div>
