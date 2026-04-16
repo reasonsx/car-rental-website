@@ -1,12 +1,13 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { UserService } from '../../../../services/user.service';
 import { User } from '../../../../models/auth.model';
-import {TableModule} from 'primeng/table';
-import {ButtonModule} from 'primeng/button';
-import {CheckboxModule} from 'primeng/checkbox';
-import {InputTextModule} from 'primeng/inputtext';
+
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { CheckboxModule } from 'primeng/checkbox';
+import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
   selector: 'app-admin-users',
@@ -22,21 +23,22 @@ import {InputTextModule} from 'primeng/inputtext';
   templateUrl: './admin-users.component.html'
 })
 export class AdminUsersComponent {
+  private fb = inject(FormBuilder);
+  private userService = inject(UserService);
+
   users = signal<User[]>([]);
   selectedUser = signal<User | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
   success = signal<string | null>(null);
 
-  form: FormGroup;
+  form = this.fb.nonNullable.group({
+    name: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
+    isAdmin: false
+  });
 
-  constructor(private fb: FormBuilder, private userService: UserService) {
-    this.form = this.fb.group({
-      name: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      isAdmin: [false]
-    });
-
+  constructor() {
     this.loadUsers();
   }
 
@@ -46,8 +48,8 @@ export class AdminUsersComponent {
     this.success.set(null);
 
     this.userService.getAllUsers().subscribe({
-      next: (response) => {
-        this.users.set(response.data);
+      next: (res) => {
+        this.users.set(res.data);
         this.loading.set(false);
       },
       error: (err) => {
@@ -59,33 +61,31 @@ export class AdminUsersComponent {
 
   editUser(user: User): void {
     this.selectedUser.set(user);
-    this.form.setValue({
+
+    this.form.patchValue({
       name: user.name,
       email: user.email,
       isAdmin: user.isAdmin
     });
-    this.success.set(null);
+
     this.error.set(null);
+    this.success.set(null);
   }
 
   saveUser(): void {
-    if (this.form.invalid) return;
+    if (this.form.invalid || !this.selectedUser()) return;
 
-    const data = this.form.value;
     const userId = this.selectedUser()?.id;
 
-    if (!userId) {
-      this.error.set('No user selected');
-      return;
-    }
-
-    this.userService.updateUser(userId, data).subscribe({
+    this.userService.updateUser(userId!, this.form.getRawValue()).subscribe({
       next: () => {
         this.success.set('User updated successfully');
         this.cancelEdit();
         this.loadUsers();
       },
-      error: (err) => this.error.set(err.error?.message || 'Failed to update user')
+      error: (err) => {
+        this.error.set(err.error?.message || 'Failed to update user');
+      }
     });
   }
 
@@ -97,13 +97,20 @@ export class AdminUsersComponent {
         this.success.set('User deleted successfully');
         this.loadUsers();
       },
-      error: (err) => this.error.set(err.error?.message || 'Failed to delete user')
+      error: (err) => {
+        this.error.set(err.error?.message || 'Failed to delete user');
+      }
     });
   }
 
   cancelEdit(): void {
     this.selectedUser.set(null);
-    this.form.reset({ isAdmin: false });
+    this.form.reset({
+      name: '',
+      email: '',
+      isAdmin: false
+    });
+
     this.error.set(null);
     this.success.set(null);
   }

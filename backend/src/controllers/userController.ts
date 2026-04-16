@@ -9,12 +9,19 @@ export async function getAllUsers(req: AuthRequest, res: Response) {
     }
 
     const users = await UserModel.find().select("-password");
-    res.status(200).json({ error: null, data: users });
+
+    const mappedUsers = users.map(u => ({
+      id: u._id.toString(),
+      name: u.name,
+      email: u.email,
+      isAdmin: u.isAdmin
+    }));
+
+    res.status(200).json({ error: null, data: mappedUsers });
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch users: " + error });
   }
 }
-
 export async function getUserById(req: AuthRequest, res: Response) {
   try {
     const { id } = req.params;
