@@ -3,13 +3,23 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CategoryService } from '../../../../services/category.service';
 import { Category } from '../../../../models/category.model';
+import {TableModule} from 'primeng/table';
+import {InputTextModule} from 'primeng/inputtext';
+import {ButtonModule} from 'primeng/button';
+import { TextareaModule } from 'primeng/textarea';
 
 @Component({
   selector: 'app-admin-categories',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './admin-categories.component.html',
-  styleUrls: ['./admin-categories.component.scss']
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    InputTextModule,
+    TextareaModule,
+    ButtonModule,
+    TableModule
+  ],
+  templateUrl: './admin-categories.component.html'
 })
 export class AdminCategoriesComponent {
   categories = signal<Category[]>([]);

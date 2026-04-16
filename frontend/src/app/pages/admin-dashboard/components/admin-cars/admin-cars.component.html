@@ -2,32 +2,55 @@
 
   <!-- HEADER -->
   <div class="flex items-center justify-between">
-    <h2 class="text-xl font-semibold text-gray-800">
-      Cars Management
-    </h2>
+    <div>
+      <h2 class="text-xl font-semibold text-gray-800">
+        Cars
+      </h2>
+      <p class="text-sm text-gray-500">
+        Manage your fleet
+      </p>
+    </div>
 
     <p-button
       icon="pi pi-refresh"
-      [text]="true"
+      label="Refresh"
+      severity="secondary"
+      size="small"
       (onClick)="loadData()"
     />
   </div>
 
   <!-- ALERTS -->
   @if (error()) {
-    <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-2 rounded-lg text-sm">
+    <div class="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm">
       {{ error() }}
     </div>
   }
 
   @if (success()) {
-    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-2 rounded-lg text-sm">
+    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl text-sm">
       {{ success() }}
     </div>
   }
 
-  <!-- FORM -->
-  <div class="bg-white shadow rounded-2xl p-6">
+  <!-- FORM CARD -->
+  <div class="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-5">
+
+    <div class="flex items-center justify-between">
+      <h3 class="text-base font-medium text-gray-700">
+        {{ selectedCar() ? 'Edit car' : 'Create new car' }}
+      </h3>
+
+      @if (selectedCar()) {
+        <p-button
+          label="Cancel"
+          icon="pi pi-times"
+          severity="secondary"
+          size="small"
+          (onClick)="cancelEdit()"
+        />
+      }
+    </div>
 
     <form
       [formGroup]="form"
@@ -35,104 +58,116 @@
       class="grid gap-4 md:grid-cols-2"
     >
 
+      <!-- BASIC -->
       <input pInputText formControlName="brand" placeholder="Brand" />
       <input pInputText formControlName="modelName" placeholder="Model" />
 
       <input type="number" pInputText formControlName="year" placeholder="Year" />
-      <input type="number" pInputText formControlName="pricePerDay" placeholder="Price per day" />
+      <input type="number" pInputText formControlName="pricePerDay" placeholder="Price / day" />
 
-      <input pInputText formControlName="imageUrl" placeholder="Image URL" class="md:col-span-2" />
+      <!-- IMAGE -->
+      <input
+        pInputText
+        formControlName="imageUrl"
+        placeholder="Image URL"
+        class="md:col-span-2"
+      />
 
-      <!-- CATEGORY -->
+      <!-- SELECTS -->
       <p-select
         [options]="categories()"
         optionLabel="name"
         optionValue="_id"
         formControlName="categoryId"
-        placeholder="Select category"
+        placeholder="Category"
         class="w-full"
       />
 
-      <!-- LOCATION -->
       <p-select
         [options]="locations()"
         optionLabel="name"
         optionValue="_id"
         formControlName="locationId"
-        placeholder="Select location"
+        placeholder="Location"
         class="w-full"
       />
 
       <!-- AVAILABLE -->
-      <div class="flex items-center gap-2 md:col-span-2">
-        <p-checkbox formControlName="available" binary="true"></p-checkbox>
-        <span class="text-sm text-gray-600">Available</span>
+      <div class="flex items-center gap-2 md:col-span-2 pt-1">
+        <p-checkbox formControlName="available" binary="true" />
+        <span class="text-sm text-gray-600">Available for booking</span>
       </div>
 
-      <!-- ACTIONS -->
-      <div class="flex gap-2 md:col-span-2 pt-2">
-
+      <!-- ACTION -->
+      <div class="md:col-span-2 pt-3 flex justify-end">
         <p-button
           type="submit"
-          [label]="selectedCar() ? 'Update Car' : 'Create Car'"
+          [label]="selectedCar() ? 'Update car' : 'Create car'"
           icon="pi pi-save"
           [disabled]="form.invalid"
         />
-
-        <p-button
-          label="Cancel"
-          icon="pi pi-times"
-          severity="secondary"
-          (onClick)="cancelEdit()"
-        />
-
       </div>
 
     </form>
 
   </div>
 
-  <!-- TABLE -->
-  <div class="bg-white shadow rounded-2xl p-6">
+  <!-- TABLE CARD -->
+  <div class="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-4">
 
-    <h3 class="text-lg font-medium text-gray-700 mb-4">
-      Existing cars
-    </h3>
+    <div class="flex items-center justify-between">
+      <h3 class="text-base font-medium text-gray-700">
+        Cars list
+      </h3>
+
+      <span class="text-sm text-gray-500">
+        {{ cars().length }} items
+      </span>
+    </div>
 
     <p-table
       [value]="cars()"
       [paginator]="true"
       [rows]="8"
-      responsiveLayout="scroll"
+      class="text-sm"
     >
 
+      <!-- HEADER -->
       <ng-template pTemplate="header">
         <tr>
           <th>Car</th>
           <th>Year</th>
           <th>Price</th>
-          <th>Available</th>
+          <th>Status</th>
           <th>Category</th>
           <th>Location</th>
-          <th></th>
+          <th class="w-24"></th>
         </tr>
       </ng-template>
 
+      <!-- BODY -->
       <ng-template pTemplate="body" let-car>
-        <tr>
-          <td class="font-medium">
+        <tr class="hover:bg-gray-50 transition">
+
+          <!-- CAR -->
+          <td class="font-medium text-gray-800">
             {{ car.brand }} {{ car.modelName }}
           </td>
-          <td>{{ car.year }}</td>
-          <td>{{ car.pricePerDay }} DKK</td>
 
+          <td>{{ car.year }}</td>
+
+          <td class="font-medium">
+            {{ car.pricePerDay }} DKK
+          </td>
+
+          <!-- STATUS -->
           <td>
             <span
-              class="px-2 py-1 rounded text-xs"
+              class="px-2 py-1 rounded-md text-xs font-medium"
               [class.bg-green-100]="car.available"
               [class.text-green-700]="car.available"
-              [class.bg-red-100]="!car.available"
-              [class.text-red-600]="!car.available"
+              [class.bg-gray-100]="!car.available"
+              [class.text-gray-600]="!car.available"
             >
               {{ car.available ? 'Available' : 'Unavailable' }}
             </span>
@@ -141,21 +176,28 @@
           <td>{{ categoryName(car) }}</td>
           <td>{{ locationName(car) }}</td>
 
-          <td class="flex gap-2">
-            <p-button
-              icon="pi pi-pencil"
-              size="small"
-              [text]="true"
-              (onClick)="editCar(car)"
-            />
-            <p-button
-              icon="pi pi-trash"
-              size="small"
-              severity="danger"
-              [text]="true"
-              (onClick)="deleteCar(car._id)"
-            />
+          <!-- ACTIONS -->
+          <td>
+            <div class="flex justify-end gap-1">
+
+              <p-button
+                icon="pi pi-pencil"
+                size="small"
+                [text]="true"
+                (onClick)="editCar(car)"
+              />
+
+              <p-button
+                icon="pi pi-trash"
+                size="small"
+                severity="danger"
+                [text]="true"
+                (onClick)="deleteCar(car._id)"
+              />
+
+            </div>
           </td>
+
         </tr>
       </ng-template>
 
