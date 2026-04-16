@@ -5,14 +5,14 @@
   <div class="h-full flex flex-col bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition duration-200">
 
     <!-- IMAGE -->
-    <div class="relative w-full aspect-[16/9]">
+    <div class="relative w-full aspect-[16/9] overflow-hidden">
 
       @if (car()?.imageUrl) {
-        <img
-          [ngSrc]="car()!.imageUrl!"
+        <p-image
+          [src]="car()!.imageUrl!"
           [alt]="car().brand + ' ' + car().modelName"
-          fill
-          class="object-cover object-center transition duration-300 group-hover:scale-105"
+          class="block w-full h-full"
+          imageClass="w-full h-full object-cover"
         />
       } @else {
         <div class="absolute inset-0 flex items-center justify-center text-gray-400 text-sm">

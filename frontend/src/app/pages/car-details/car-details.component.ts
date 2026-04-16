@@ -8,12 +8,12 @@ import { Booking } from '../../models/booking.model';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { NgOptimizedImage } from '@angular/common';
+import { ImageModule } from 'primeng/image';
 
 @Component({
   selector: 'app-car-details',
   standalone: true,
-  imports: [CommonModule, CardModule, ButtonModule, ProgressSpinnerModule, NgOptimizedImage],
+  imports: [CommonModule, CardModule, ButtonModule, ProgressSpinnerModule, ImageModule],
   templateUrl: './car-details.component.html'
 })
 export class CarDetailsComponent {

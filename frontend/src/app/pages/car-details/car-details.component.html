@@ -23,16 +23,16 @@
           <p-card class="rounded-2xl shadow-md border border-gray-100 overflow-hidden">
 
             <!-- IMAGE -->
-            <div class="relative w-full h-72 bg-gray-100 overflow-hidden rounded-lg mb-2">
+            <div class="relative w-full aspect-[16/9] bg-gray-100 overflow-hidden rounded-xl mb-4">
+
               @if (car.imageUrl) {
-                <img
-                  [ngSrc]="car.imageUrl!"
-                  width="600"
-                  height="300"
-                  class="w-full h-full object-cover"
+                <p-image
+                  [src]="car.imageUrl!"
+                  [alt]="car.brand + ' ' + car.modelName"
+                  class="object-cover object-center"
                 />
               } @else {
-                <div class="flex items-center justify-center h-full text-gray-400">
+                <div class="absolute inset-0 flex items-center justify-center text-gray-400">
                   <i class="pi pi-image text-4xl"></i>
                 </div>
               }
@@ -45,8 +45,8 @@
                 [class.bg-red-100]="!car.available"
                 [class.text-red-600]="!car.available"
               >
-      {{ car.available ? 'Available' : 'Unavailable' }}
-    </span>
+    {{ car.available ? 'Available' : 'Unavailable' }}
+  </span>
 
             </div>
 
