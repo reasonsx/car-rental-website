@@ -3,8 +3,9 @@ import { HomeComponent } from './pages/home/home.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 import { CarDetailsComponent } from './pages/car-details/car-details.component';
-import { AuthGuard, AdminGuard } from './guards/auth.guard';
-import {AuthComponent} from './pages/auth/auth.component';
+import { AuthGuard } from './guards/auth.guard';
+import { AdminGuard } from './guards/admin.guard';
+import { AuthComponent } from './pages/auth/auth.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },

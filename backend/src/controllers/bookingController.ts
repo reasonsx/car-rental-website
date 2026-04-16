@@ -1,14 +1,17 @@
 import { Request, Response } from 'express';
 import { BookingModel } from '../models/bookingModel';
 import { BookingStatus } from '../interfaces/booking';
+import {AuthRequest} from "./authController";
 
 /**
  * Create a new booking
  * @route POST /api/bookings
  */
-export async function createBooking(req: Request, res: Response) {
+export async function createBooking(req: AuthRequest, res: Response) {
   try {
-    const { userId, carId, startDate, endDate, totalPrice } = req.body;
+    const { carId, startDate, endDate, totalPrice } = req.body;
+
+    const userId = req.user?.id;
 
     if (!userId || !carId || !startDate || !endDate || !totalPrice) {
       return res.status(400).json({
@@ -40,11 +43,13 @@ export async function createBooking(req: Request, res: Response) {
  * Get all bookings
  * @route GET /api/bookings
  */
-export async function getBookings(_req: Request, res: Response) {
+export async function getBookings(req: AuthRequest, res: Response) {
   try {
-    const bookings = await BookingModel.find()
-        .populate('userId')
-        .populate('carId')
+    const userId = req.user?.id;
+
+    const bookings = await BookingModel.find({ userId })
+        .populate('userId', 'name email')
+        .populate('carId', 'brand modelName pricePerDay imageUrl')
         .lean();
 
     res.status(200).json(bookings);
@@ -64,7 +69,7 @@ export async function getBookings(_req: Request, res: Response) {
 export async function getBookingById(req: Request, res: Response) {
   try {
     const booking = await BookingModel.findById(req.params.id)
-        .populate('userId')
+        .populate('userId', 'name email')
         .populate('carId')
         .lean();
 
@@ -96,7 +101,7 @@ export async function updateBooking(req: Request, res: Response) {
           runValidators: true
         }
     )
-        .populate('userId')
+        .populate('userId', 'name email')
         .populate('carId')
         .lean();
 

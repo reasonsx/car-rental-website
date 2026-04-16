@@ -3,7 +3,7 @@ import { CanActivate, Router, UrlTree } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 @Injectable({ providedIn: 'root' })
-export class AuthGuard implements CanActivate {
+export class AdminGuard implements CanActivate {
   constructor(
     private authService: AuthService,
     private router: Router
@@ -12,6 +12,10 @@ export class AuthGuard implements CanActivate {
   canActivate(): boolean | UrlTree {
     if (!this.authService.isAuthenticated()) {
       return this.router.createUrlTree(['/login']);
+    }
+
+    if (!this.authService.isAdmin()) {
+      return this.router.createUrlTree(['/']);
     }
 
     return true;
