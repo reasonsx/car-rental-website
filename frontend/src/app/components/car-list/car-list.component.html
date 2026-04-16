@@ -38,18 +38,45 @@
       (input)="maxPrice.set($any($event.target).valueAsNumber || null)"
     />
 
+    <!-- FILTER BY BRAND -->
+    <p-select
+      [options]="brands()"
+      [ngModel]="selectedBrand()"
+      (ngModelChange)="selectedBrand.set($event)"
+      placeholder="Brand"
+      class="w-44"
+    />
+
     <!-- SORT -->
     <p-select
       [options]="[
-    { label: 'Price ↑', value: 'priceAsc' },
-    { label: 'Price ↓', value: 'priceDesc' },
-    { label: 'Newest', value: 'yearDesc' }
+    { label: 'Price: Low to High', value: 'priceAsc', icon: 'pi pi-sort-amount-up' },
+    { label: 'Price: High to Low', value: 'priceDesc', icon: 'pi pi-sort-amount-down' },
+    { label: 'Newest First', value: 'yearDesc', icon: 'pi pi-calendar' }
   ]"
       [ngModel]="sort()"
       (ngModelChange)="sort.set($event)"
       placeholder="Sort by"
-      class="w-44"
-    />
+      class="w-52"
+    >
+
+      <!-- Selected value -->
+      <ng-template pTemplate="selectedItem" let-option>
+        <div class="flex items-center gap-2">
+          <i [class]="option?.icon"></i>
+          <span>{{ option?.label }}</span>
+        </div>
+      </ng-template>
+
+      <!-- Dropdown options -->
+      <ng-template pTemplate="item" let-option>
+        <div class="flex items-center gap-2">
+          <i [class]="option.icon"></i>
+          <span>{{ option.label }}</span>
+        </div>
+      </ng-template>
+
+    </p-select>
 
   </div>
 

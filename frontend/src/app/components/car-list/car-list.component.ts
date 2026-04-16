@@ -22,6 +22,7 @@ export class CarListComponent {
   // filters
   selectedCategory = signal<string | null>(null);
   maxPrice = signal<number | null>(null);
+  selectedBrand = signal<string | null>(null);
 
   // sorting
   sort = signal<SortOption>('priceAsc');
@@ -45,6 +46,11 @@ export class CarListComponent {
       result = result.filter(car => car.pricePerDay <= this.maxPrice()!);
     }
 
+    // filter by brand
+    if (this.selectedBrand()) {
+      result = result.filter(car => car.brand === this.selectedBrand());
+    }
+
     // sorting
     switch (this.sort()) {
       case 'priceAsc':
@@ -61,17 +67,27 @@ export class CarListComponent {
     return result;
   });
 
+  brands = computed(() => {
+    const unique = new Set(this.cars().map(car => car.brand));
+    return Array.from(unique).map(b => ({
+      label: b,
+      value: b
+    }));
+  });
+
 
   hasActiveFilters = computed(() => {
     return (
       this.maxPrice() !== null ||
       this.selectedCategory() !== null ||
+      this.selectedBrand() !== null ||
       this.sort() !== 'priceAsc'
     );
   });
 
   resetFilters() {
     this.selectedCategory.set(null);
+    this.selectedBrand.set(null);
     this.maxPrice.set(null);
     this.sort.set('priceAsc');
   }
