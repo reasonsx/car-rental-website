@@ -1,7 +1,7 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap, catchError, throwError } from 'rxjs';
+import { Observable, tap, catchError, throwError, map } from 'rxjs';
 import {
   User,
   LoginRequest,
@@ -14,101 +14,75 @@ import { API_BASE_URL } from './api.constants';
 export class AuthService {
   private readonly baseUrl = `${API_BASE_URL}/auth`;
 
+  private http = inject(HttpClient);
+  private router = inject(Router);
+
   private _currentUser = signal<User | null>(null);
   private _token = signal<string | null>(null);
 
-  currentUser = this._currentUser.asReadonly();
-  token = this._token.asReadonly();
+  readonly currentUser = this._currentUser.asReadonly();
+  readonly isAuthenticated = computed(() => !!this._token());
+  readonly isAdmin = computed(() => this._currentUser()?.isAdmin ?? false);
 
-  isAuthenticated = computed(() => !!this._token());
-  isAdmin = computed(() => this._currentUser()?.isAdmin ?? false);
-
-  constructor(
-    private http: HttpClient,
-    private router: Router
-  ) {
+  constructor() {
     this.loadStoredAuth();
   }
 
   login(credentials: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.baseUrl}/login`, credentials).pipe(
-      tap(response => {
-        this.setAuthData(response.data.token, response.data.user);
+      tap(({ data }) => {
+        this._token.set(data.token);
+        this._currentUser.set(data.user);
+        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('currentUser', JSON.stringify(data.user));
         void this.router.navigate(['/']);
       }),
-      catchError(error => {
-        console.error('Login failed:', error);
-        return throwError(() => error);
-      })
+      catchError(err => throwError(() => err))
     );
   }
 
-  register(userData: RegisterRequest): Observable<any> {
-    return this.http.post(`${this.baseUrl}/register`, userData).pipe(
-      tap(() => {
-        void this.router.navigate(['/login']);
-      }),
-      catchError(error => {
-        console.error('Registration failed:', error);
-        return throwError(() => error);
-      })
+  register(userData: RegisterRequest): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/register`, userData).pipe(
+      tap(() => void this.router.navigate(['/login'])),
+      catchError(err => throwError(() => err))
     );
   }
 
   logout(): void {
-    this.clearAuthData();
+    this._token.set(null);
+    this._currentUser.set(null);
+    localStorage.clear();
     void this.router.navigate(['/login']);
   }
 
   updateUser(userData: Partial<User>): Observable<User> {
     const userId = this._currentUser()?.id;
+    if (!userId) return throwError(() => new Error('User not found'));
 
-    if (!userId) {
-      return throwError(() => new Error('User not found'));
-    }
-
-    return this.http.put<User>(`${API_BASE_URL}/users/${userId}`, userData).pipe(
-      tap(updatedUser => {
-        const currentUser = this._currentUser();
-        if (currentUser) {
-          const merged = { ...currentUser, ...updatedUser };
+    return this.http
+      .put<{ error: null; data: User }>(`${API_BASE_URL}/users/${userId}`, userData)
+      .pipe(
+        map(res => res.data),
+        tap(user => {
+          const merged = { ...this._currentUser()!, ...user };
           this._currentUser.set(merged);
           localStorage.setItem('currentUser', JSON.stringify(merged));
-        }
-      }),
-      catchError(error => {
-        console.error('Update user failed:', error);
-        return throwError(() => error);
-      })
-    );
-  }
-
-  private setAuthData(token: string, user: User): void {
-    this._token.set(token);
-    this._currentUser.set(user);
-    localStorage.setItem('authToken', token);
-    localStorage.setItem('currentUser', JSON.stringify(user));
-  }
-
-  private clearAuthData(): void {
-    this._token.set(null);
-    this._currentUser.set(null);
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('currentUser');
+        }),
+        catchError(err => throwError(() => err))
+      );
   }
 
   private loadStoredAuth(): void {
     const token = localStorage.getItem('authToken');
-    const userJson = localStorage.getItem('currentUser');
+    const user = localStorage.getItem('currentUser');
 
-    if (token && userJson) {
-      try {
-        const user: User = JSON.parse(userJson);
-        this._token.set(token);
-        this._currentUser.set(user);
-      } catch {
-        this.clearAuthData();
-      }
+    if (!token || !user) return;
+
+    try {
+      this._token.set(token);
+      this._currentUser.set(JSON.parse(user));
+    } catch {
+      localStorage.clear();
     }
   }
 }
