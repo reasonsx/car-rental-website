@@ -1,16 +1,12 @@
 <div class="w-full flex flex-col gap-6">
-
   <!-- HEADER -->
   <div class="flex items-center justify-between flex-wrap gap-4">
-
     <div>
       <h2 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
         <i class="pi pi-car text-primary"></i>
         Available Cars
       </h2>
-      <p class="text-sm text-gray-500">
-        ({{ filteredCars().length }}) results
-      </p>
+      <p class="text-sm text-gray-500">({{ filteredCars().length }}) results</p>
     </div>
 
     <div class="flex gap-2">
@@ -23,19 +19,17 @@
         (onClick)="resetFilters()"
       />
     </div>
-
   </div>
 
   <!-- FILTER BAR -->
   <div class="flex flex-wrap items-center gap-3">
-
     <!-- SORT -->
     <p-select
       [options]="[
-      { label: 'Price: Low to High', value: 'priceAsc', icon: 'pi pi-sort-amount-up' },
-      { label: 'Price: High to Low', value: 'priceDesc', icon: 'pi pi-sort-amount-down' },
-      { label: 'Newest First', value: 'yearDesc', icon: 'pi pi-calendar' }
-    ]"
+        { label: 'Price: Low to High', value: 'priceAsc', icon: 'pi pi-sort-amount-up' },
+        { label: 'Price: High to Low', value: 'priceDesc', icon: 'pi pi-sort-amount-down' },
+        { label: 'Newest First', value: 'yearDesc', icon: 'pi pi-calendar' },
+      ]"
       [ngModel]="sort()"
       (ngModelChange)="sort.set($event)"
       placeholder="Sort"
@@ -76,11 +70,8 @@
 
     <!-- PRICE (compact style) -->
     <div class="flex flex-col gap-2 min-w-[240px]">
-
       <!-- LABEL -->
-      <span class="text-xs font-medium text-gray-500">
-    Price range
-  </span>
+      <span class="text-xs font-medium text-gray-500"> Price range </span>
 
       <!-- SLIDER -->
       <p-slider
@@ -97,45 +88,35 @@
         <span>{{ priceRange()[0] }} DKK</span>
         <span>{{ priceRange()[1] }} DKK</span>
       </div>
-
     </div>
-
   </div>
 
   <!-- GRID -->
   @if (filteredCars().length) {
-
     <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       @for (car of filteredCars(); track car._id) {
         <div class="h-full">
           <app-car-card [car]="car"></app-car-card>
         </div>
       }
-
     </div>
-
   } @else {
-
     <!-- EMPTY -->
-    <div class="flex flex-col items-center justify-center py-16 gap-3 bg-gray-50 rounded-xl border border-dashed">
-
+    <div
+      class="flex flex-col items-center justify-center py-16 gap-3 bg-gray-50 rounded-xl border border-dashed"
+    >
       <i class="pi pi-car text-3xl text-gray-400"></i>
 
-      <p class="text-gray-500">
-        No cars match your filters.
-      </p>
+      <p class="text-gray-500">No cars match your filters.</p>
 
-    <p-button
-      label="Reset filters"
-      icon="pi pi-refresh"
-      severity="secondary"
-      size="small"
-      [disabled]="!hasActiveFilters()"
-      (onClick)="resetFilters()"
-    />
-
+      <p-button
+        label="Reset filters"
+        icon="pi pi-refresh"
+        severity="secondary"
+        size="small"
+        [disabled]="!hasActiveFilters()"
+        (onClick)="resetFilters()"
+      />
     </div>
-
   }
-
 </div>

@@ -1,28 +1,21 @@
-import { Component, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { Component, signal, inject } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { ReactiveFormsModule, FormBuilder, Validators } from "@angular/forms";
 
-import { LocationService } from '../../../../services/location.service';
-import { Location } from '../../../../models/location.model';
+import { LocationService } from "../../../../services/location.service";
+import { Location } from "../../../../models/location.model";
 
-import { TableModule } from 'primeng/table';
-import { InputTextModule } from 'primeng/inputtext';
-import { ButtonModule } from 'primeng/button';
+import { TableModule } from "primeng/table";
+import { InputTextModule } from "primeng/inputtext";
+import { ButtonModule } from "primeng/button";
 
 @Component({
-  selector: 'app-admin-locations',
+  selector: "app-admin-locations",
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    InputTextModule,
-    ButtonModule,
-    TableModule
-  ],
-  templateUrl: './admin-locations.component.html'
+  imports: [CommonModule, ReactiveFormsModule, InputTextModule, ButtonModule, TableModule],
+  templateUrl: "./admin-locations.component.html",
 })
 export class AdminLocationsComponent {
-
   private fb = inject(FormBuilder);
   private locationService = inject(LocationService);
 
@@ -35,10 +28,10 @@ export class AdminLocationsComponent {
 
   // typed form
   form = this.fb.nonNullable.group({
-    name: ['', Validators.required],
-    city: ['', Validators.required],
-    address: ['', Validators.required],
-    phone: ['', Validators.required]
+    name: ["", Validators.required],
+    city: ["", Validators.required],
+    address: ["", Validators.required],
+    phone: ["", Validators.required],
   });
 
   constructor() {
@@ -60,9 +53,9 @@ export class AdminLocationsComponent {
         this.loading.set(false);
       },
       error: (err) => {
-        this.error.set(err.error?.message || 'Failed to load locations');
+        this.error.set(err.error?.message || "Failed to load locations");
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -77,7 +70,7 @@ export class AdminLocationsComponent {
       name: location.name,
       city: location.city,
       address: location.address,
-      phone: location.phone
+      phone: location.phone,
     });
 
     this.error.set(null);
@@ -88,10 +81,10 @@ export class AdminLocationsComponent {
     this.selectedLocation.set(null);
 
     this.form.reset({
-      name: '',
-      city: '',
-      address: '',
-      phone: ''
+      name: "",
+      city: "",
+      address: "",
+      phone: "",
     });
 
     this.error.set(null);
@@ -108,21 +101,19 @@ export class AdminLocationsComponent {
     const data = this.form.getRawValue();
 
     const request = this.selectedLocation()
-      ? this.locationService.updateLocation(this.selectedLocation()?._id ?? '', data)
+      ? this.locationService.updateLocation(this.selectedLocation()?._id ?? "", data)
       : this.locationService.createLocation(data);
 
     request.subscribe({
       next: () => {
-        this.success.set(
-          this.selectedLocation() ? 'Location updated' : 'Location created'
-        );
+        this.success.set(this.selectedLocation() ? "Location updated" : "Location created");
 
         this.cancelEdit();
         this.loadLocations();
       },
       error: (err) => {
-        this.error.set(err.error?.message || 'Failed to save location');
-      }
+        this.error.set(err.error?.message || "Failed to save location");
+      },
     });
   }
 
@@ -131,16 +122,16 @@ export class AdminLocationsComponent {
   // ========================
 
   deleteLocation(id: string): void {
-    if (!confirm('Delete this location?')) return;
+    if (!confirm("Delete this location?")) return;
 
     this.locationService.deleteLocation(id).subscribe({
       next: () => {
-        this.success.set('Location deleted');
+        this.success.set("Location deleted");
         this.loadLocations();
       },
       error: (err) => {
-        this.error.set(err.error?.message || 'Failed to delete location');
-      }
+        this.error.set(err.error?.message || "Failed to delete location");
+      },
     });
   }
 }

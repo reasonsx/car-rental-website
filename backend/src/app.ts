@@ -1,9 +1,9 @@
-import express, { Application } from 'express';
-import dotenvFlow from 'dotenv-flow';
-import cors from 'cors';
-import routes from './routes';
-import { connect } from './repository/database';
-import { setupDocumentation } from './util/documentation';
+import express, { Application } from "express";
+import dotenvFlow from "dotenv-flow";
+import cors from "cors";
+import routes from "./routes";
+import { connect } from "./repository/database";
+import { setupDocumentation } from "./util/documentation";
 
 dotenvFlow.config();
 const app: Application = express();
@@ -12,21 +12,17 @@ export async function startServer() {
   // Connect once
   await connect();
 
-  app.use(cors({
-    origin: "*",
-    methods: ["GET", "PUT", "POST", "DELETE"],
-    allowedHeaders: [
-      'Authorization',
-      'Content-Type',
-      'Origin',
-      'X-Requested-With',
-      'Accept'
-    ],
-    credentials: true
-  }));
+  app.use(
+    cors({
+      origin: "*",
+      methods: ["GET", "PUT", "POST", "DELETE"],
+      allowedHeaders: ["Authorization", "Content-Type", "Origin", "X-Requested-With", "Accept"],
+      credentials: true,
+    }),
+  );
 
   app.use(express.json());
-  app.use('/api', routes);
+  app.use("/api", routes);
 
   setupDocumentation(app);
 

@@ -5,5 +5,5 @@ export interface Booking {
   startDate: string;
   endDate: string;
   totalPrice: number;
-  status: 'pending' | 'confirmed' | 'cancelled';
+  status: "pending" | "confirmed" | "cancelled";
 }

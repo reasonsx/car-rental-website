@@ -1,9 +1,9 @@
-import { Document, Types } from 'mongoose';
+import { Document, Types } from "mongoose";
 
 export enum BookingStatus {
-  Pending = 'pending',
-  Confirmed = 'confirmed',
-  Cancelled = 'cancelled'
+  Pending = "pending",
+  Confirmed = "confirmed",
+  Cancelled = "cancelled",
 }
 
 export interface Booking extends Document {

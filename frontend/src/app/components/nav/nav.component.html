@@ -1,5 +1,4 @@
 <nav class="w-full bg-white shadow-md px-6 py-3 flex items-center justify-between">
-
   <!-- LEFT: BRAND -->
   <a routerLink="/" class="text-lg font-semibold text-gray-800 flex items-center gap-2">
     <i class="pi pi-car"></i>
@@ -8,9 +7,7 @@
 
   <!-- RIGHT: ACTIONS -->
   <div class="flex items-center gap-3">
-
     @if (isAuthenticated()) {
-
       <span class="text-sm text-gray-600 hidden sm:block">
         Welcome, {{ currentUser()?.name }}
       </span>
@@ -40,18 +37,8 @@
         severity="danger"
         styleClass="text-sm"
       />
-
     } @else {
-
-      <p-button
-        routerLink="/login"
-        label="Login"
-        icon="pi pi-sign-in"
-        styleClass="text-sm"
-      />
-
+      <p-button routerLink="/login" label="Login" icon="pi pi-sign-in" styleClass="text-sm" />
     }
-
   </div>
-
 </nav>

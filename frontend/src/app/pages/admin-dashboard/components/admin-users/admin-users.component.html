@@ -1,14 +1,9 @@
 <div class="flex flex-col gap-6">
-
   <!-- HEADER -->
   <div class="flex items-center justify-between">
     <div>
-      <h2 class="text-xl font-semibold text-gray-800">
-        Users
-      </h2>
-      <p class="text-sm text-gray-500">
-        Manage user accounts and roles
-      </p>
+      <h2 class="text-xl font-semibold text-gray-800">Users</h2>
+      <p class="text-sm text-gray-500">Manage user accounts and roles</p>
     </div>
 
     <p-button
@@ -36,11 +31,8 @@
   <!-- EDIT CARD -->
   @if (selectedUser()) {
     <div class="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-5">
-
       <div class="flex items-center justify-between">
-        <h3 class="text-base font-medium text-gray-700">
-          Edit user
-        </h3>
+        <h3 class="text-base font-medium text-gray-700">Edit user</h3>
 
         <p-button
           label="Cancel"
@@ -51,12 +43,7 @@
         />
       </div>
 
-      <form
-        [formGroup]="form"
-        (ngSubmit)="saveUser()"
-        class="grid gap-4 md:grid-cols-2"
-      >
-
+      <form [formGroup]="form" (ngSubmit)="saveUser()" class="grid gap-4 md:grid-cols-2">
         <input pInputText formControlName="name" placeholder="Full name" />
         <input pInputText formControlName="email" placeholder="Email address" />
 
@@ -68,41 +55,22 @@
 
         <!-- ACTION -->
         <div class="md:col-span-2 flex justify-end pt-3">
-          <p-button
-            type="submit"
-            label="Update user"
-            icon="pi pi-save"
-            [disabled]="form.invalid"
-          />
+          <p-button type="submit" label="Update user" icon="pi pi-save" [disabled]="form.invalid" />
         </div>
-
       </form>
-
     </div>
   }
 
   <!-- TABLE -->
   <div class="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-4">
-
     <div class="flex items-center justify-between">
-      <h3 class="text-base font-medium text-gray-700">
-        Users list
-      </h3>
+      <h3 class="text-base font-medium text-gray-700">Users list</h3>
 
-      <span class="text-sm text-gray-500">
-        {{ users().length }} users
-      </span>
+      <span class="text-sm text-gray-500"> {{ users().length }} users </span>
     </div>
 
     <div class="overflow-x-auto">
-
-      <p-table
-        [value]="users()"
-        [paginator]="true"
-        [rows]="8"
-        class="text-sm"
-      >
-
+      <p-table [value]="users()" [paginator]="true" [rows]="8" class="text-sm">
         <!-- HEADER -->
         <ng-template pTemplate="header">
           <tr>
@@ -116,7 +84,6 @@
         <!-- BODY -->
         <ng-template pTemplate="body" let-user>
           <tr class="hover:bg-gray-50 transition">
-
             <!-- NAME -->
             <td class="font-medium text-gray-800">
               {{ user.name }}
@@ -136,14 +103,13 @@
                 [class.bg-gray-100]="!user.isAdmin"
                 [class.text-gray-600]="!user.isAdmin"
               >
-                {{ user.isAdmin ? 'Admin' : 'User' }}
+                {{ user.isAdmin ? "Admin" : "User" }}
               </span>
             </td>
 
             <!-- ACTIONS -->
             <td>
               <div class="flex justify-end gap-1">
-
                 <p-button
                   icon="pi pi-pencil"
                   size="small"
@@ -158,17 +124,11 @@
                   [text]="true"
                   (onClick)="deleteUser(user._id)"
                 />
-
               </div>
             </td>
-
           </tr>
         </ng-template>
-
       </p-table>
-
     </div>
-
   </div>
-
 </div>

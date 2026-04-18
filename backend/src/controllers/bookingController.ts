@@ -1,7 +1,7 @@
-import { Request, Response } from 'express';
-import { BookingModel } from '../models/bookingModel';
-import { BookingStatus } from '../interfaces/booking';
-import {AuthRequest} from "./authController";
+import { Request, Response } from "express";
+import { BookingModel } from "../models/bookingModel";
+import { BookingStatus } from "../interfaces/booking";
+import { AuthRequest } from "./authController";
 
 /**
  * Create a new booking
@@ -14,7 +14,7 @@ export async function createBooking(req: AuthRequest, res: Response) {
 
     if (!userId || !carId || !startDate || !endDate) {
       return res.status(400).json({
-        message: 'Missing required fields'
+        message: "Missing required fields",
       });
     }
 
@@ -27,11 +27,11 @@ export async function createBooking(req: AuthRequest, res: Response) {
 
     // Validate dates
     if (start >= end) {
-      return res.status(400).json({ message: 'Invalid date range' });
+      return res.status(400).json({ message: "Invalid date range" });
     }
 
     if (start < new Date()) {
-      return res.status(400).json({ message: 'Cannot book past dates' });
+      return res.status(400).json({ message: "Cannot book past dates" });
     }
 
     // OVERLAP CHECK
@@ -39,23 +39,22 @@ export async function createBooking(req: AuthRequest, res: Response) {
       carId,
       status: { $in: [BookingStatus.Pending, BookingStatus.Confirmed] },
       startDate: { $lte: end },
-      endDate: { $gte: start }
+      endDate: { $gte: start },
     });
 
     if (overlapping) {
       return res.status(409).json({
-        message: 'Car is already booked for selected dates'
+        message: "Car is already booked for selected dates",
       });
     }
 
-    const car = await (await import('../models/carModel')).CarModel.findById(carId);
+    const car = await (await import("../models/carModel")).CarModel.findById(carId);
 
     if (!car) {
-      return res.status(404).json({ message: 'Car not found' });
+      return res.status(404).json({ message: "Car not found" });
     }
 
-    const days =
-        (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
+    const days = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24);
 
     const totalPrice = days * car.pricePerDay;
 
@@ -65,17 +64,16 @@ export async function createBooking(req: AuthRequest, res: Response) {
       startDate: start,
       endDate: end,
       totalPrice,
-      status: BookingStatus.Confirmed
+      status: BookingStatus.Confirmed,
     });
 
     const savedBooking = await booking.save();
 
     res.status(201).json(savedBooking);
-
   } catch (error: any) {
     res.status(500).json({
-      message: 'Failed to create booking',
-      error: error.message
+      message: "Failed to create booking",
+      error: error.message,
     });
   }
 }
@@ -89,16 +87,15 @@ export async function getBookings(req: AuthRequest, res: Response) {
     const userId = req.user?.id;
 
     const bookings = await BookingModel.find({ userId })
-        .populate('userId', 'name email')
-        .populate('carId', 'brand modelName pricePerDay imageUrl')
-        .lean();
+      .populate("userId", "name email")
+      .populate("carId", "brand modelName pricePerDay imageUrl")
+      .lean();
 
     res.status(200).json(bookings);
-
   } catch (error: any) {
     res.status(500).json({
-      message: 'Failed to fetch bookings',
-      error: error.message
+      message: "Failed to fetch bookings",
+      error: error.message,
     });
   }
 }
@@ -110,20 +107,19 @@ export async function getBookings(req: AuthRequest, res: Response) {
 export async function getBookingById(req: Request, res: Response) {
   try {
     const booking = await BookingModel.findById(req.params.id)
-        .populate('userId', 'name email')
-        .populate('carId')
-        .lean();
+      .populate("userId", "name email")
+      .populate("carId")
+      .lean();
 
     if (!booking) {
-      return res.status(404).json({ message: 'Booking not found' });
+      return res.status(404).json({ message: "Booking not found" });
     }
 
     res.status(200).json(booking);
-
   } catch (error: any) {
     res.status(500).json({
-      message: 'Failed to fetch booking',
-      error: error.message
+      message: "Failed to fetch booking",
+      error: error.message,
     });
   }
 }
@@ -132,15 +128,14 @@ export async function getBookingsForCar(req: Request, res: Response) {
   try {
     const bookings = await BookingModel.find({
       carId: req.params.carId,
-      status: BookingStatus.Confirmed
-    }).select('startDate endDate');
+      status: BookingStatus.Confirmed,
+    }).select("startDate endDate");
 
     res.json(bookings);
-
   } catch (error: any) {
     res.status(500).json({
-      message: 'Failed to fetch bookings',
-      error: error.message
+      message: "Failed to fetch bookings",
+      error: error.message,
     });
   }
 }
@@ -151,28 +146,23 @@ export async function getBookingsForCar(req: Request, res: Response) {
  */
 export async function updateBooking(req: Request, res: Response) {
   try {
-    const updatedBooking = await BookingModel.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        {
-          new: true,
-          runValidators: true
-        }
-    )
-        .populate('userId', 'name email')
-        .populate('carId')
-        .lean();
+    const updatedBooking = await BookingModel.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    })
+      .populate("userId", "name email")
+      .populate("carId")
+      .lean();
 
     if (!updatedBooking) {
-      return res.status(404).json({ message: 'Booking not found' });
+      return res.status(404).json({ message: "Booking not found" });
     }
 
     res.status(200).json(updatedBooking);
-
   } catch (error: any) {
     res.status(500).json({
-      message: 'Failed to update booking',
-      error: error.message
+      message: "Failed to update booking",
+      error: error.message,
     });
   }
 }
@@ -186,17 +176,16 @@ export async function deleteBooking(req: Request, res: Response) {
     const deletedBooking = await BookingModel.findByIdAndDelete(req.params.id);
 
     if (!deletedBooking) {
-      return res.status(404).json({ message: 'Booking not found' });
+      return res.status(404).json({ message: "Booking not found" });
     }
 
     res.status(200).json({
-      message: 'Booking deleted successfully'
+      message: "Booking deleted successfully",
     });
-
   } catch (error: any) {
     res.status(500).json({
-      message: 'Failed to delete booking',
-      error: error.message
+      message: "Failed to delete booking",
+      error: error.message,
     });
   }
 }

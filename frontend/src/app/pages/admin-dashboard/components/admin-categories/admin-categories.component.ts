@@ -1,16 +1,16 @@
-import { Component, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { CategoryService } from '../../../../services/category.service';
-import { Category } from '../../../../models/category.model';
+import { Component, signal, inject } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { ReactiveFormsModule, FormBuilder, Validators } from "@angular/forms";
+import { CategoryService } from "../../../../services/category.service";
+import { Category } from "../../../../models/category.model";
 
-import { TableModule } from 'primeng/table';
-import { InputTextModule } from 'primeng/inputtext';
-import { ButtonModule } from 'primeng/button';
-import { TextareaModule } from 'primeng/textarea';
+import { TableModule } from "primeng/table";
+import { InputTextModule } from "primeng/inputtext";
+import { ButtonModule } from "primeng/button";
+import { TextareaModule } from "primeng/textarea";
 
 @Component({
-  selector: 'app-admin-categories',
+  selector: "app-admin-categories",
   standalone: true,
   imports: [
     CommonModule,
@@ -18,9 +18,9 @@ import { TextareaModule } from 'primeng/textarea';
     InputTextModule,
     TextareaModule,
     ButtonModule,
-    TableModule
+    TableModule,
   ],
-  templateUrl: './admin-categories.component.html'
+  templateUrl: "./admin-categories.component.html",
 })
 export class AdminCategoriesComponent {
   private fb = inject(FormBuilder);
@@ -35,8 +35,8 @@ export class AdminCategoriesComponent {
 
   // ✅ typed form (cleaner)
   form = this.fb.nonNullable.group({
-    name: ['', Validators.required],
-    description: ['']
+    name: ["", Validators.required],
+    description: [""],
   });
 
   constructor() {
@@ -58,9 +58,9 @@ export class AdminCategoriesComponent {
         this.loading.set(false);
       },
       error: (err) => {
-        this.error.set(err.error?.message || 'Failed to load categories');
+        this.error.set(err.error?.message || "Failed to load categories");
         this.loading.set(false);
-      }
+      },
     });
   }
 
@@ -73,7 +73,7 @@ export class AdminCategoriesComponent {
 
     this.form.patchValue({
       name: category.name,
-      description: category.description ?? ''
+      description: category.description ?? "",
     });
 
     this.error.set(null);
@@ -84,8 +84,8 @@ export class AdminCategoriesComponent {
     this.selectedCategory.set(null);
 
     this.form.reset({
-      name: '',
-      description: ''
+      name: "",
+      description: "",
     });
 
     this.error.set(null);
@@ -102,21 +102,19 @@ export class AdminCategoriesComponent {
     const data = this.form.getRawValue();
 
     const request = this.selectedCategory()
-      ? this.categoryService.updateCategory(this.selectedCategory()?._id ?? '', data)
+      ? this.categoryService.updateCategory(this.selectedCategory()?._id ?? "", data)
       : this.categoryService.createCategory(data);
 
     request.subscribe({
       next: () => {
-        this.success.set(
-          this.selectedCategory() ? 'Category updated' : 'Category created'
-        );
+        this.success.set(this.selectedCategory() ? "Category updated" : "Category created");
 
         this.cancelEdit();
         this.loadCategories();
       },
       error: (err) => {
-        this.error.set(err.error?.message || 'Failed to save category');
-      }
+        this.error.set(err.error?.message || "Failed to save category");
+      },
     });
   }
 
@@ -125,16 +123,16 @@ export class AdminCategoriesComponent {
   // ========================
 
   deleteCategory(id: string): void {
-    if (!confirm('Delete this category?')) return;
+    if (!confirm("Delete this category?")) return;
 
     this.categoryService.deleteCategory(id).subscribe({
       next: () => {
-        this.success.set('Category deleted');
+        this.success.set("Category deleted");
         this.loadCategories();
       },
       error: (err) => {
-        this.error.set(err.error?.message || 'Failed to delete category');
-      }
+        this.error.set(err.error?.message || "Failed to delete category");
+      },
     });
   }
 }

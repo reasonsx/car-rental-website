@@ -1,24 +1,23 @@
-import { Router } from 'express';
-import userRoutes from './userRoutes';
-import authRoutes from './authRoutes';
-import bookingRoutes from './bookingRoutes';
-import carRoutes from './carRoutes';
-import categoryRoutes from './categoryRoutes';
-import locationRoutes from './locationRoutes';
+import { Router } from "express";
+import userRoutes from "./userRoutes";
+import authRoutes from "./authRoutes";
+import bookingRoutes from "./bookingRoutes";
+import carRoutes from "./carRoutes";
+import categoryRoutes from "./categoryRoutes";
+import locationRoutes from "./locationRoutes";
 
 const router = Router();
 
 // Example route
-router.get('/ping', (req, res) => {
-  res.json({ message: 'pong' });
+router.get("/ping", (req, res) => {
+  res.json({ message: "pong" });
 });
 
-
-router.use("/auth", authRoutes);   // /api/auth/register, /api/auth/auth
-router.use("/users", userRoutes);  // /api/users, /api/users/:id
+router.use("/auth", authRoutes); // /api/auth/register, /api/auth/auth
+router.use("/users", userRoutes); // /api/users, /api/users/:id
 router.use("/bookings", bookingRoutes); // /api/bookings, /api/bookings/:id
-router.use('/cars', carRoutes);        // /api/cars, /api/cars/:id
-router.use('/categories', categoryRoutes); // /api/categories, /api/categories/:id
-router.use('/locations', locationRoutes); // /api/locations, /api/locations/:id
+router.use("/cars", carRoutes); // /api/cars, /api/cars/:id
+router.use("/categories", categoryRoutes); // /api/categories, /api/categories/:id
+router.use("/locations", locationRoutes); // /api/locations, /api/locations/:id
 
 export default router;

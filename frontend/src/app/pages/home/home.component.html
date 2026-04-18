@@ -1,59 +1,47 @@
 <div class="w-full max-w-7xl mx-auto px-6 py-8 min-h-[calc(100vh-64px)]">
-
   <!-- HEADER -->
   <div class="text-center mb-8">
-    <h1 class="text-3xl font-semibold text-gray-800">
-      Choose a location and browse cars
-    </h1>
-    <p class="text-sm text-gray-500 mt-2">
-      Find the perfect car for your next trip
-    </p>
+    <h1 class="text-3xl font-semibold text-gray-800">Choose a location and browse cars</h1>
+    <p class="text-sm text-gray-500 mt-2">Find the perfect car for your next trip</p>
   </div>
 
   <!-- LOADING -->
   @if (loading()) {
     <div class="flex flex-col items-center justify-center py-16 gap-4">
-      <p-progressSpinner strokeWidth="4"/>
+      <p-progressSpinner strokeWidth="4" />
       <span class="text-sm text-gray-500">Loading cars...</span>
     </div>
   } @else {
-
     <!-- LOCATION SELECTOR -->
     <p-card class="mb-6 shadow-sm rounded-xl w-full">
-
-        @if (locations().length === 0) {
-          <p-skeleton height="3rem" class="w-full"/>
-        } @else {
-          <app-location-selector
-            [locations]="locations()"
-            [selectedLocationId]="selectedLocationId()"
-            (selectedLocationChange)="selectLocation($event)"
-          />
-        }
-
+      @if (locations().length === 0) {
+        <p-skeleton height="3rem" class="w-full" />
+      } @else {
+        <app-location-selector
+          [locations]="locations()"
+          [selectedLocationId]="selectedLocationId()"
+          (selectedLocationChange)="selectLocation($event)"
+        />
+      }
     </p-card>
 
     <!-- CARS LIST -->
     <p-card class="shadow-none border-0 w-full">
       <div class="p-0">
-
         @if (filteredCars().length === 0) {
           <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            @for (i of [1,2,3,4,5,6]; track i) {
+            @for (i of [1, 2, 3, 4, 5, 6]; track i) {
               <div class="flex flex-col gap-2">
-                <p-skeleton height="150px" class="w-full rounded-lg"/>
-                <p-skeleton height="1rem" width="70%"/>
-                <p-skeleton height="1rem" width="50%"/>
+                <p-skeleton height="150px" class="w-full rounded-lg" />
+                <p-skeleton height="1rem" width="70%" />
+                <p-skeleton height="1rem" width="50%" />
               </div>
             }
           </div>
         } @else {
-          <app-car-list [cars]="filteredCars()"/>
+          <app-car-list [cars]="filteredCars()" />
         }
-
       </div>
     </p-card>
-
   }
-
 </div>

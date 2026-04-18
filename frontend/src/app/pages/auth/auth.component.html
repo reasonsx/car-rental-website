@@ -1,27 +1,19 @@
 <div class="h-auto flex items-center justify-center px-4">
   <p-card class="w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
-
-
-    <form
-      [formGroup]="form"
-      (ngSubmit)="submit()"
-      class="flex flex-col gap-6 p-8"
-    >
-
+    <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-6 p-8">
       <!-- HEADER -->
       <div class="text-center space-y-1">
         <h2 class="text-2xl font-semibold text-gray-800">
-          {{ isLogin() ? 'Welcome back' : 'Create account' }}
+          {{ isLogin() ? "Welcome back" : "Create account" }}
         </h2>
 
         <p class="text-sm text-gray-500">
-          {{ isLogin() ? 'Sign in to continue' : 'Start renting cars today' }}
+          {{ isLogin() ? "Sign in to continue" : "Start renting cars today" }}
         </p>
       </div>
 
       <!-- FORM FIELDS -->
       <div class="flex flex-col gap-4">
-
         @if (!isLogin()) {
           <input
             pInputText
@@ -57,19 +49,19 @@
             placeholder="Confirm password"
           />
         }
-
       </div>
 
       <!-- ERROR -->
       @if (error()) {
-        <div class="rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-600 text-center">
+        <div
+          class="rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-600 text-center"
+        >
           {{ error() }}
         </div>
       }
 
       <!-- ACTIONS -->
       <div class="flex flex-col gap-3">
-
         <!-- PRIMARY BUTTON -->
         <p-button
           type="submit"
@@ -88,7 +80,6 @@
           [icon]="isLogin() ? 'pi pi-user-plus' : 'pi pi-arrow-left'"
           styleClass="w-full text-sm"
         />
-
       </div>
 
       <!-- EXTRA -->
@@ -102,9 +93,6 @@
           </a>
         </div>
       }
-
     </form>
-
   </p-card>
-
 </div>

@@ -4,7 +4,8 @@ import {
   getBookings,
   getBookingById,
   updateBooking,
-  deleteBooking, getBookingsForCar
+  deleteBooking,
+  getBookingsForCar,
 } from "../controllers/bookingController";
 import { verifyToken } from "../controllers/authController";
 
@@ -14,8 +15,7 @@ router.post("/", verifyToken, createBooking);
 router.get("/", verifyToken, getBookings);
 router.put("/:id", verifyToken, updateBooking);
 router.delete("/:id", verifyToken, deleteBooking);
-router.get('/car/:carId', getBookingsForCar);
+router.get("/car/:carId", getBookingsForCar);
 router.get("/:id", verifyToken, getBookingById);
-
 
 export default router;

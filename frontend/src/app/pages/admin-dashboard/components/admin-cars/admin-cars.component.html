@@ -1,14 +1,9 @@
 <div class="flex flex-col gap-6">
-
   <!-- HEADER -->
   <div class="flex items-center justify-between">
     <div>
-      <h2 class="text-xl font-semibold text-gray-800">
-        Cars
-      </h2>
-      <p class="text-sm text-gray-500">
-        Manage your fleet
-      </p>
+      <h2 class="text-xl font-semibold text-gray-800">Cars</h2>
+      <p class="text-sm text-gray-500">Manage your fleet</p>
     </div>
 
     <p-button
@@ -35,10 +30,9 @@
 
   <!-- FORM CARD -->
   <div class="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-5">
-
     <div class="flex items-center justify-between">
       <h3 class="text-base font-medium text-gray-700">
-        {{ selectedCar() ? 'Edit car' : 'Create new car' }}
+        {{ selectedCar() ? "Edit car" : "Create new car" }}
       </h3>
 
       @if (selectedCar()) {
@@ -52,12 +46,7 @@
       }
     </div>
 
-    <form
-      [formGroup]="form"
-      (ngSubmit)="saveCar()"
-      class="grid gap-4 md:grid-cols-2"
-    >
-
+    <form [formGroup]="form" (ngSubmit)="saveCar()" class="grid gap-4 md:grid-cols-2">
       <!-- BASIC -->
       <input pInputText formControlName="brand" placeholder="Brand" />
       <input pInputText formControlName="modelName" placeholder="Model" />
@@ -66,12 +55,7 @@
       <input type="number" pInputText formControlName="pricePerDay" placeholder="Price / day" />
 
       <!-- IMAGE -->
-      <input
-        pInputText
-        formControlName="imageUrl"
-        placeholder="Image URL"
-        class="md:col-span-2"
-      />
+      <input pInputText formControlName="imageUrl" placeholder="Image URL" class="md:col-span-2" />
 
       <!-- SELECTS -->
       <p-select
@@ -107,31 +91,18 @@
           [disabled]="form.invalid"
         />
       </div>
-
     </form>
-
   </div>
 
   <!-- TABLE CARD -->
   <div class="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-4">
-
     <div class="flex items-center justify-between">
-      <h3 class="text-base font-medium text-gray-700">
-        Cars list
-      </h3>
+      <h3 class="text-base font-medium text-gray-700">Cars list</h3>
 
-      <span class="text-sm text-gray-500">
-        {{ cars().length }} items
-      </span>
+      <span class="text-sm text-gray-500"> {{ cars().length }} items </span>
     </div>
 
-    <p-table
-      [value]="cars()"
-      [paginator]="true"
-      [rows]="8"
-      class="text-sm"
-    >
-
+    <p-table [value]="cars()" [paginator]="true" [rows]="8" class="text-sm">
       <!-- HEADER -->
       <ng-template pTemplate="header">
         <tr>
@@ -148,17 +119,12 @@
       <!-- BODY -->
       <ng-template pTemplate="body" let-car>
         <tr class="hover:bg-gray-50 transition">
-
           <!-- CAR -->
-          <td class="font-medium text-gray-800">
-            {{ car.brand }} {{ car.modelName }}
-          </td>
+          <td class="font-medium text-gray-800">{{ car.brand }} {{ car.modelName }}</td>
 
           <td>{{ car.year }}</td>
 
-          <td class="font-medium">
-            {{ car.pricePerDay }} DKK
-          </td>
+          <td class="font-medium">{{ car.pricePerDay }} DKK</td>
 
           <!-- STATUS -->
           <td>
@@ -169,7 +135,7 @@
               [class.bg-gray-100]="!car.available"
               [class.text-gray-600]="!car.available"
             >
-              {{ car.available ? 'Available' : 'Unavailable' }}
+              {{ car.available ? "Available" : "Unavailable" }}
             </span>
           </td>
 
@@ -179,13 +145,7 @@
           <!-- ACTIONS -->
           <td>
             <div class="flex justify-end gap-1">
-
-              <p-button
-                icon="pi pi-pencil"
-                size="small"
-                [text]="true"
-                (onClick)="editCar(car)"
-              />
+              <p-button icon="pi pi-pencil" size="small" [text]="true" (onClick)="editCar(car)" />
 
               <p-button
                 icon="pi pi-trash"
@@ -194,15 +154,10 @@
                 [text]="true"
                 (onClick)="deleteCar(car._id)"
               />
-
             </div>
           </td>
-
         </tr>
       </ng-template>
-
     </p-table>
-
   </div>
-
 </div>

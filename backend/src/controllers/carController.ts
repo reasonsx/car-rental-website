@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import { CarModel } from '../models/carModel';
+import { Request, Response } from "express";
+import { CarModel } from "../models/carModel";
 
 /**
  * Create a new car
@@ -7,19 +7,11 @@ import { CarModel } from '../models/carModel';
  */
 export async function createCar(req: Request, res: Response) {
   try {
-    const {
-      brand,
-      modelName,
-      year,
-      pricePerDay,
-      imageUrl,
-      categoryId,
-      locationId,
-      available
-    } = req.body;
+    const { brand, modelName, year, pricePerDay, imageUrl, categoryId, locationId, available } =
+      req.body;
 
     if (!brand || !modelName || !year || !pricePerDay || !categoryId || !locationId) {
-      return res.status(400).json({ message: 'Missing required fields' });
+      return res.status(400).json({ message: "Missing required fields" });
     }
 
     const car = new CarModel({
@@ -30,16 +22,15 @@ export async function createCar(req: Request, res: Response) {
       available: available ?? true,
       imageUrl,
       categoryId,
-      locationId
+      locationId,
     });
 
     const savedCar = await car.save();
     res.status(201).json(savedCar);
-
   } catch (error: any) {
     res.status(500).json({
-      message: 'Failed to create car',
-      error: error.message
+      message: "Failed to create car",
+      error: error.message,
     });
   }
 }
@@ -50,17 +41,13 @@ export async function createCar(req: Request, res: Response) {
  */
 export async function getCars(_req: Request, res: Response) {
   try {
-    const cars = await CarModel.find()
-        .populate('categoryId')
-        .populate('locationId')
-        .lean();
+    const cars = await CarModel.find().populate("categoryId").populate("locationId").lean();
 
     res.status(200).json(cars);
-
   } catch (error: any) {
     res.status(500).json({
-      message: 'Failed to fetch cars',
-      error: error.message
+      message: "Failed to fetch cars",
+      error: error.message,
     });
   }
 }
@@ -72,20 +59,19 @@ export async function getCars(_req: Request, res: Response) {
 export async function getCarById(req: Request, res: Response) {
   try {
     const car = await CarModel.findById(req.params.id)
-        .populate('categoryId')
-        .populate('locationId')
-        .lean();
+      .populate("categoryId")
+      .populate("locationId")
+      .lean();
 
     if (!car) {
-      return res.status(404).json({ message: 'Car not found' });
+      return res.status(404).json({ message: "Car not found" });
     }
 
     res.status(200).json(car);
-
   } catch (error: any) {
     res.status(500).json({
-      message: 'Failed to fetch car',
-      error: error.message
+      message: "Failed to fetch car",
+      error: error.message,
     });
   }
 }
@@ -96,28 +82,23 @@ export async function getCarById(req: Request, res: Response) {
  */
 export async function updateCar(req: Request, res: Response) {
   try {
-    const updatedCar = await CarModel.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        {
-          new: true,
-          runValidators: true
-        }
-    )
-        .populate('categoryId')
-        .populate('locationId')
-        .lean();
+    const updatedCar = await CarModel.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    })
+      .populate("categoryId")
+      .populate("locationId")
+      .lean();
 
     if (!updatedCar) {
-      return res.status(404).json({ message: 'Car not found' });
+      return res.status(404).json({ message: "Car not found" });
     }
 
     res.status(200).json(updatedCar);
-
   } catch (error: any) {
     res.status(500).json({
-      message: 'Failed to update car',
-      error: error.message
+      message: "Failed to update car",
+      error: error.message,
     });
   }
 }
@@ -131,17 +112,16 @@ export async function deleteCar(req: Request, res: Response) {
     const deletedCar = await CarModel.findByIdAndDelete(req.params.id);
 
     if (!deletedCar) {
-      return res.status(404).json({ message: 'Car not found' });
+      return res.status(404).json({ message: "Car not found" });
     }
 
     res.status(200).json({
-      message: 'Car deleted successfully'
+      message: "Car deleted successfully",
     });
-
   } catch (error: any) {
     res.status(500).json({
-      message: 'Failed to delete car',
-      error: error.message
+      message: "Failed to delete car",
+      error: error.message,
     });
   }
 }

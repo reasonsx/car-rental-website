@@ -1,14 +1,9 @@
 <div class="flex flex-col gap-6">
-
   <!-- HEADER -->
   <div class="flex items-center justify-between">
     <div>
-      <h2 class="text-xl font-semibold text-gray-800">
-        Categories
-      </h2>
-      <p class="text-sm text-gray-500">
-        Manage car categories
-      </p>
+      <h2 class="text-xl font-semibold text-gray-800">Categories</h2>
+      <p class="text-sm text-gray-500">Manage car categories</p>
     </div>
 
     <p-button
@@ -35,10 +30,9 @@
 
   <!-- FORM -->
   <div class="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-5">
-
     <div class="flex items-center justify-between">
       <h3 class="text-base font-medium text-gray-700">
-        {{ selectedCategory() ? 'Edit category' : 'Create category' }}
+        {{ selectedCategory() ? "Edit category" : "Create category" }}
       </h3>
 
       @if (selectedCategory()) {
@@ -52,17 +46,8 @@
       }
     </div>
 
-    <form
-      [formGroup]="form"
-      (ngSubmit)="saveCategory()"
-      class="grid gap-4"
-    >
-
-      <input
-        pInputText
-        formControlName="name"
-        placeholder="Category name"
-      />
+    <form [formGroup]="form" (ngSubmit)="saveCategory()" class="grid gap-4">
+      <input pInputText formControlName="name" placeholder="Category name" />
 
       <textarea
         pInputTextarea
@@ -79,33 +64,19 @@
           [disabled]="form.invalid"
         />
       </div>
-
     </form>
-
   </div>
 
   <!-- TABLE -->
   <div class="bg-white rounded-2xl shadow-sm p-6 flex flex-col gap-4">
-
     <div class="flex items-center justify-between">
-      <h3 class="text-base font-medium text-gray-700">
-        Categories list
-      </h3>
+      <h3 class="text-base font-medium text-gray-700">Categories list</h3>
 
-      <span class="text-sm text-gray-500">
-        {{ categories().length }} items
-      </span>
+      <span class="text-sm text-gray-500"> {{ categories().length }} items </span>
     </div>
 
     <div class="overflow-x-auto">
-
-      <p-table
-        [value]="categories()"
-        [paginator]="true"
-        [rows]="8"
-        class="text-sm"
-      >
-
+      <p-table [value]="categories()" [paginator]="true" [rows]="8" class="text-sm">
         <!-- HEADER -->
         <ng-template pTemplate="header">
           <tr>
@@ -118,18 +89,16 @@
         <!-- BODY -->
         <ng-template pTemplate="body" let-category>
           <tr class="hover:bg-gray-50 transition">
-
             <td class="font-medium text-gray-800">
               {{ category.name }}
             </td>
 
             <td class="text-gray-600">
-              {{ category.description || '—' }}
+              {{ category.description || "—" }}
             </td>
 
             <td>
               <div class="flex justify-end gap-1">
-
                 <p-button
                   icon="pi pi-pencil"
                   size="small"
@@ -144,17 +113,11 @@
                   [text]="true"
                   (onClick)="deleteCategory(category._id)"
                 />
-
               </div>
             </td>
-
           </tr>
         </ng-template>
-
       </p-table>
-
     </div>
-
   </div>
-
 </div>

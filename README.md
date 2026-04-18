@@ -4,42 +4,44 @@ Full-stack car rental system built with Angular, Node.js, Express, MongoDB, Tail
 
 ## ✨ Features
 
-* Authentication (login/register)
-* Browse & filter cars by location
-* Booking system
-* User profile management
-* Admin dashboard (cars, users, bookings, categories, locations)
+- Authentication (login/register)
+- Browse & filter cars by location
+- Booking system
+- User profile management
+- Admin dashboard (cars, users, bookings, categories, locations)
 
 ## ⚙️ Setup
 
 ### 🛠 Backend
+
 Create `.env`:
 
-* PORT=
-* MONGO_URI=
-* JWT_SECRET=
+- PORT=
+- MONGO_URI=
+- JWT_SECRET=
 
 Then run:
-* cd backend
-* npm install
-* npm run dev
+
+- cd backend
+- npm install
+- npm run dev
 
 ### 🎨 Frontend
 
-* cd frontend
-* npm install
-* ng serve
+- cd frontend
+- npm install
+- ng serve
 
 ## 🔌 API
 
-* /api/cars
-* /api/users
-* /api/bookings
-* /api/locations
-* /api/categories
+- /api/cars
+- /api/users
+- /api/bookings
+- /api/locations
+- /api/categories
 
 ## 🛠 Tech
 
-* Frontend: Angular 21, Tailwind CSS 4, PrimeNG 21, PrimeIcons 7  
-* Backend: Node.js, Express  
-* Database: MongoDB 
+- Frontend: Angular 21, Tailwind CSS 4, PrimeNG 21, PrimeIcons 7
+- Backend: Node.js, Express
+- Database: MongoDB

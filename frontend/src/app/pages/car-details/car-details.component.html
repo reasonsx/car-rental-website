@@ -1,5 +1,4 @@
 <div class="max-w-[1400px] mx-auto px-6 py-8">
-
   <!-- LOADING -->
   @if (loading()) {
     <div class="flex flex-col items-center justify-center py-20 gap-4">
@@ -7,26 +6,19 @@
       <span class="text-gray-500 text-sm">Loading car details...</span>
     </div>
   } @else {
-
     <!-- ERROR -->
     @if (error()) {
       <div class="text-center text-red-500 font-medium py-10">
         {{ error() }}
       </div>
     } @else {
-
       @if (car(); as car) {
-
         <div class="grid lg:grid-cols-2 gap-8">
-
           <!-- LEFT: CAR INFO -->
           <p-card class="rounded-2xl shadow-md overflow-hidden">
-
             <div class="flex flex-col">
-
               <!-- IMAGE -->
               <div class="relative w-full aspect-[16/9] overflow-hidden rounded-xl mb-5">
-
                 @if (car.imageUrl) {
                   <p-image
                     [src]="car.imageUrl!"
@@ -49,60 +41,52 @@
                   [class.text-green-700]="car.available"
                   [class.text-red-600]="!car.available"
                 >
-        {{ car.available ? 'Available' : 'Unavailable' }}
-      </span>
-
+                  {{ car.available ? "Available" : "Unavailable" }}
+                </span>
               </div>
 
               <!-- TITLE + PRICE -->
               <div class="flex items-start justify-between gap-4">
-
                 <div class="flex flex-col gap-1">
                   <h1 class="text-2xl font-semibold text-gray-900 leading-tight">
                     {{ car.brand }} {{ car.modelName }}
                   </h1>
                   <span class="text-sm text-gray-500">
-          {{ car.year }}
-        </span>
+                    {{ car.year }}
+                  </span>
                 </div>
 
                 <div class="text-right">
-                  <div class="text-xl font-semibold text-gray-900">
-                    {{ car.pricePerDay }} DKK
-                  </div>
+                  <div class="text-xl font-semibold text-gray-900">{{ car.pricePerDay }} DKK</div>
                   <span class="text-xs text-gray-500">per day</span>
                 </div>
-
               </div>
 
               <p-divider></p-divider>
 
               <!-- INFO GRID -->
               <div class="flex flex-col gap-4 text-sm">
-
                 <!-- MAIN INFO -->
                 <div class="grid grid-cols-2 gap-y-3 gap-x-4">
-
                   <div class="flex items-center gap-2 text-gray-600">
                     <i class="pi pi-list text-gray-400 text-sm"></i>
-                    <span>{{ car.categoryId?.name ?? 'N/A' }}</span>
+                    <span>{{ car.categoryId?.name ?? "N/A" }}</span>
                   </div>
 
                   <div class="flex items-center gap-2 text-gray-600">
                     <i class="pi pi-map-marker text-gray-400 text-sm"></i>
-                    <span>{{ car.locationId?.city ?? 'N/A' }}</span>
+                    <span>{{ car.locationId?.city ?? "N/A" }}</span>
                   </div>
 
                   <div class="flex items-center gap-2 text-gray-600">
                     <i class="pi pi-building text-gray-400 text-sm"></i>
-                    <span>{{ car.locationId?.name ?? 'N/A' }}</span>
+                    <span>{{ car.locationId?.name ?? "N/A" }}</span>
                   </div>
 
                   <div class="flex items-center gap-2 text-gray-600">
                     <i class="pi pi-car text-gray-400 text-sm"></i>
-                    <span>{{ car.available ? 'Ready to rent' : 'Unavailable' }}</span>
+                    <span>{{ car.available ? "Ready to rent" : "Unavailable" }}</span>
                   </div>
-
                 </div>
 
                 <p-divider></p-divider>
@@ -112,33 +96,25 @@
                     {{ car.categoryId.description }}
                   </p>
                 }
-
               </div>
 
               <p-divider></p-divider>
 
               <!-- CTA -->
               <div class="flex items-center justify-between">
-
                 <!-- LEFT -->
                 <div class="flex flex-col">
-
                   @if (selectedRange() && totalPrice() > 0) {
                     <span class="text-xs text-gray-500">
-        {{ selectedRange()![0] | date:'mediumDate' }} →
-                      {{ selectedRange()![1] | date:'mediumDate' }}
-      </span>
+                      {{ selectedRange()![0] | date: "mediumDate" }} →
+                      {{ selectedRange()![1] | date: "mediumDate" }}
+                    </span>
 
-                    <div class="text-xl font-semibold text-gray-900">
-                      {{ totalPrice() }} DKK
-                    </div>
+                    <div class="text-xl font-semibold text-gray-900">{{ totalPrice() }} DKK</div>
                   } @else {
                     <span class="text-xs text-gray-500">Price per day</span>
-                    <div class="text-xl font-semibold text-gray-900">
-                      {{ car.pricePerDay }} DKK
-                    </div>
+                    <div class="text-xl font-semibold text-gray-900">{{ car.pricePerDay }} DKK</div>
                   }
-
                 </div>
 
                 <!-- BUTTON -->
@@ -148,38 +124,40 @@
                   [disabled]="!car.available || !selectedRange() || totalPrice() === 0"
                   (onClick)="bookCar()"
                 />
-
               </div>
-
             </div>
-
           </p-card>
 
           <!-- RIGHT: CALENDAR -->
           <p-card class="rounded-2xl shadow-md">
-
             <div class="flex flex-col gap-4">
-
               <!-- HEADER -->
               <div class="flex items-center justify-between">
-                <h2 class="text-lg font-semibold text-gray-700">
-                  Booking calendar
-                </h2>
+                <h2 class="text-lg font-semibold text-gray-700">Booking calendar</h2>
 
                 <div class="flex items-center gap-2">
-                  <p-button icon="pi pi-chevron-left" size="small" [text]="true" (onClick)="prevMonth()" />
+                  <p-button
+                    icon="pi pi-chevron-left"
+                    size="small"
+                    [text]="true"
+                    (onClick)="prevMonth()"
+                  />
                   <span class="text-sm font-medium text-gray-600">
                     {{ monthName() }}
                   </span>
-                  <p-button icon="pi pi-chevron-right" size="small" [text]="true" (onClick)="nextMonth()" />
+                  <p-button
+                    icon="pi pi-chevron-right"
+                    size="small"
+                    [text]="true"
+                    (onClick)="nextMonth()"
+                  />
                 </div>
               </div>
 
               <!-- GRID -->
               <div class="grid grid-cols-7 gap-1 text-xs text-center">
-
                 <!-- WEEKDAYS -->
-                @for (w of ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']; track w) {
+                @for (w of ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]; track w) {
                   <div class="font-medium text-gray-400 py-1">
                     {{ w }}
                   </div>
@@ -189,39 +167,28 @@
                 @for (cell of days(); track cell.date) {
                   <div
                     class="rounded-md h-9 flex items-center justify-center text-xs transition"
-
                     [class.bg-gray-100]="!cell.date"
                     [class.bg-red-100]="cell.date && cell.booked"
                     [class.text-red-600]="cell.date && cell.booked"
                     [class.bg-green-100]="cell.date && !cell.booked"
                     [class.text-green-700]="cell.date && !cell.booked"
-
                     [class.!bg-blue-100]="cell.date && isSelected(cell.date)"
                     [class.!text-blue-700]="cell.date && isSelected(cell.date)"
-
                     [class.opacity-40]="cell.date && isPast(cell.date)"
-
                     [class.cursor-pointer]="cell.date && !cell.booked && !isPast(cell.date)"
                     [class.cursor-not-allowed]="cell.date && isPast(cell.date)"
-
-                    (click)="cell.date && !cell.booked && !isPast(cell.date) && selectDate(cell.date)"
+                    (click)="
+                      cell.date && !cell.booked && !isPast(cell.date) && selectDate(cell.date)
+                    "
                   >
-                    {{ cell.date ? cell.date.getDate() : '' }}
+                    {{ cell.date ? cell.date.getDate() : "" }}
                   </div>
                 }
-
               </div>
-
             </div>
-
           </p-card>
-
         </div>
-
       }
-
     }
-
   }
-
 </div>

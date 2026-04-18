@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose';
-import { Car } from '../interfaces/car';
+import { Schema, model } from "mongoose";
+import { Car } from "../interfaces/car";
 
 const carSchema = new Schema<Car>({
   brand: { type: String, required: true },
@@ -8,8 +8,8 @@ const carSchema = new Schema<Car>({
   pricePerDay: { type: Number, required: true },
   available: { type: Boolean, default: true },
   imageUrl: { type: String },
-  categoryId: { type: Schema.Types.ObjectId, ref: 'Category', required: true },
-  locationId: { type: Schema.Types.ObjectId, ref: 'Location', required: true }
+  categoryId: { type: Schema.Types.ObjectId, ref: "Category", required: true },
+  locationId: { type: Schema.Types.ObjectId, ref: "Location", required: true },
 });
 
-export const CarModel = model<Car>('Car', carSchema);
+export const CarModel = model<Car>("Car", carSchema);

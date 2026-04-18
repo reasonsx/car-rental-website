@@ -10,11 +10,11 @@ export async function getAllUsers(req: AuthRequest, res: Response) {
 
     const users = await UserModel.find().select("-password");
 
-    const mappedUsers = users.map(u => ({
+    const mappedUsers = users.map((u) => ({
       id: u._id.toString(),
       name: u.name,
       email: u.email,
-      isAdmin: u.isAdmin
+      isAdmin: u.isAdmin,
     }));
 
     res.status(200).json({ error: null, data: mappedUsers });
@@ -52,7 +52,7 @@ export async function updateUser(req: AuthRequest, res: Response) {
 
     const updateData: any = {
       name: req.body.name,
-      email: req.body.email
+      email: req.body.email,
     };
 
     if (req.user?.isAdmin && typeof req.body.isAdmin !== "undefined") {
@@ -60,9 +60,9 @@ export async function updateUser(req: AuthRequest, res: Response) {
     }
 
     const updatedUser = await UserModel.findByIdAndUpdate(
-        id,
-        { $set: updateData },
-        { new: true, runValidators: true }
+      id,
+      { $set: updateData },
+      { new: true, runValidators: true },
     ).select("-password");
 
     if (!updatedUser) {
