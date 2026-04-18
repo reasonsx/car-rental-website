@@ -1,13 +1,13 @@
-import { Component, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { UserService } from '../../../../services/user.service';
-import { User } from '../../../../models/auth.model';
+import {Component, inject, signal} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
+import {UserService} from '../../../../services/user.service';
+import {User} from '../../../../models/auth.model';
 
-import { TableModule } from 'primeng/table';
-import { ButtonModule } from 'primeng/button';
-import { CheckboxModule } from 'primeng/checkbox';
-import { InputTextModule } from 'primeng/inputtext';
+import {TableModule} from 'primeng/table';
+import {ButtonModule} from 'primeng/button';
+import {CheckboxModule} from 'primeng/checkbox';
+import {InputTextModule} from 'primeng/inputtext';
 
 @Component({
   selector: 'app-admin-users',
@@ -23,20 +23,18 @@ import { InputTextModule } from 'primeng/inputtext';
   templateUrl: './admin-users.component.html'
 })
 export class AdminUsersComponent {
-  private fb = inject(FormBuilder);
-  private userService = inject(UserService);
-
   users = signal<User[]>([]);
   selectedUser = signal<User | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
   success = signal<string | null>(null);
-
+  private fb = inject(FormBuilder);
   form = this.fb.nonNullable.group({
     name: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
     isAdmin: false
   });
+  private userService = inject(UserService);
 
   constructor() {
     this.loadUsers();
