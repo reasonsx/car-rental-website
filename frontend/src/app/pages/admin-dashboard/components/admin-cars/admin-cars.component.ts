@@ -87,6 +87,7 @@ export class AdminCarsComponent {
 
   editCar(car: Car): void {
     this.selectedCar.set(car);
+
     this.form.setValue({
       brand: car.brand,
       modelName: car.modelName,
@@ -94,9 +95,10 @@ export class AdminCarsComponent {
       pricePerDay: car.pricePerDay,
       available: car.available,
       imageUrl: car.imageUrl ?? "",
-      categoryId: typeof car.categoryId === "string" ? car.categoryId : (car.categoryId?._id ?? ""),
-      locationId: typeof car.locationId === "string" ? car.locationId : (car.locationId?._id ?? ""),
+      categoryId: car.categoryId,
+      locationId: car.locationId,
     });
+
     this.success.set(null);
     this.error.set(null);
   }
@@ -107,7 +109,7 @@ export class AdminCarsComponent {
     const carData = this.form.value;
 
     const request = this.selectedCar()
-      ? this.carService.updateCar(this.selectedCar()?._id ?? "", carData)
+      ? this.carService.updateCar(this.selectedCar()?.id ?? "", carData)
       : this.carService.createCar(carData);
 
     request.subscribe({

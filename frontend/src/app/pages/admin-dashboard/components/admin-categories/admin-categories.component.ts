@@ -102,7 +102,7 @@ export class AdminCategoriesComponent {
     const data = this.form.getRawValue();
 
     const request = this.selectedCategory()
-      ? this.categoryService.updateCategory(this.selectedCategory()?._id ?? "", data)
+      ? this.categoryService.updateCategory(this.selectedCategory()?.id ?? "", data)
       : this.categoryService.createCategory(data);
 
     request.subscribe({

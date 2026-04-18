@@ -35,8 +35,10 @@ export class CarListComponent {
 
   constructor() {
     effect(() => {
-      const [min, max] = this.priceBounds();
-      this.priceRange.set([min, max]);
+      const cars = this.cars();
+      if (cars.length) {
+        this.priceRange.set(this.priceBounds());
+      }
     });
   }
 
@@ -67,11 +69,7 @@ export class CarListComponent {
 
     // filter by category
     if (this.selectedCategory()) {
-      result = result.filter((car) => {
-        const categoryId = typeof car.categoryId === "object" ? car.categoryId._id : car.categoryId;
-
-        return categoryId === this.selectedCategory();
-      });
+      result = result.filter((car) => car.categoryId === this.selectedCategory());
     }
 
     // filter by price

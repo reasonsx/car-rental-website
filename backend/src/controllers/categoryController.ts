@@ -1,113 +1,127 @@
 import { Request, Response } from "express";
+import mongoose from "mongoose";
+import Joi from "joi";
 import { CategoryModel } from "../models/categoryModel";
+import {
+  CategoryResponse,
+  CreateCategoryRequest,
+  UpdateCategoryRequest,
+} from "../types/category.types";
 
-/**
- * Create a new category
- * @route POST /api/categories
- */
-export async function createCategory(req: Request, res: Response) {
+// validation
+const createSchema = Joi.object({
+  name: Joi.string().min(2).max(100).required(),
+  description: Joi.string().allow("").optional(),
+});
+
+const updateSchema = Joi.object({
+  name: Joi.string().min(2).max(100).optional(),
+  description: Joi.string().allow("").optional(),
+});
+
+// mapper
+const mapCategory = (c: any): CategoryResponse => ({
+  id: c._id.toString(),
+  name: c.name,
+  description: c.description,
+});
+
+// CREATE
+export async function createCategory(req: Request<{}, {}, CreateCategoryRequest>, res: Response) {
   try {
-    const { name, description } = req.body;
-
-    if (!name) {
-      return res.status(400).json({ message: "Category name is required" });
+    const { error } = createSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
     }
 
-    const category = new CategoryModel({
-      name,
-      description,
-    });
+    const category = await CategoryModel.create(req.body);
 
-    const savedCategory = await category.save();
-    res.status(201).json(savedCategory);
-  } catch (error: any) {
-    res.status(500).json({
-      message: "Failed to create category",
-      error: error.message,
-    });
+    res.status(201).json(mapCategory(category));
+  } catch {
+    res.status(500).json({ message: "Internal server error" });
   }
 }
 
-/**
- * Get all categories
- * @route GET /api/categories
- */
+// GET ALL
 export async function getCategories(_req: Request, res: Response) {
   try {
     const categories = await CategoryModel.find().lean();
-    res.status(200).json(categories);
-  } catch (error: any) {
-    res.status(500).json({
-      message: "Failed to fetch categories",
-      error: error.message,
-    });
+    res.json(categories.map(mapCategory));
+  } catch {
+    res.status(500).json({ message: "Internal server error" });
   }
 }
 
-/**
- * Get category by ID
- * @route GET /api/categories/:id
- */
-export async function getCategoryById(req: Request, res: Response) {
+// GET ONE
+export async function getCategoryById(req: Request<{ id: string }>, res: Response) {
   try {
-    const category = await CategoryModel.findById(req.params.id).lean();
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid ID" });
+    }
+
+    const category = await CategoryModel.findById(id).lean();
 
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
     }
 
-    res.status(200).json(category);
-  } catch (error: any) {
-    res.status(500).json({
-      message: "Failed to fetch category",
-      error: error.message,
-    });
+    res.json(mapCategory(category));
+  } catch {
+    res.status(500).json({ message: "Internal server error" });
   }
 }
 
-/**
- * Update category by ID
- * @route PUT /api/categories/:id
- */
-export async function updateCategory(req: Request, res: Response) {
+// UPDATE
+export async function updateCategory(
+  req: Request<{ id: string }, {}, UpdateCategoryRequest>,
+  res: Response,
+) {
   try {
-    const updatedCategory = await CategoryModel.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid ID" });
+    }
+
+    const { error } = updateSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+
+    const updated = await CategoryModel.findByIdAndUpdate(id, req.body, {
+      returnDocument: "after",
       runValidators: true,
     }).lean();
 
-    if (!updatedCategory) {
+    if (!updated) {
       return res.status(404).json({ message: "Category not found" });
     }
 
-    res.status(200).json(updatedCategory);
-  } catch (error: any) {
-    res.status(500).json({
-      message: "Failed to update category",
-      error: error.message,
-    });
+    res.json(mapCategory(updated));
+  } catch {
+    res.status(500).json({ message: "Internal server error" });
   }
 }
 
-/**
- * Delete category by ID
- * @route DELETE /api/categories/:id
- */
-export async function deleteCategory(req: Request, res: Response) {
+// DELETE
+export async function deleteCategory(req: Request<{ id: string }>, res: Response) {
   try {
-    const deletedCategory = await CategoryModel.findByIdAndDelete(req.params.id);
+    const { id } = req.params;
 
-    if (!deletedCategory) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid ID" });
+    }
+
+    const deleted = await CategoryModel.findByIdAndDelete(id);
+
+    if (!deleted) {
       return res.status(404).json({ message: "Category not found" });
     }
 
-    res.status(200).json({
-      message: "Category deleted successfully",
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      message: "Failed to delete category",
-      error: error.message,
-    });
+    res.json({ message: "Category deleted successfully" });
+  } catch {
+    res.status(500).json({ message: "Internal server error" });
   }
 }

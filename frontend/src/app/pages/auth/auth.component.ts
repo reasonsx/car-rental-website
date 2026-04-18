@@ -41,16 +41,25 @@ export class AuthComponent {
 
   form = new FormGroup(
     {
-      name: new FormControl("", { nonNullable: true }),
+      name: new FormControl("", {
+        nonNullable: true,
+        validators: [Validators.minLength(3)],
+      }),
       email: new FormControl("", {
         nonNullable: true,
         validators: [Validators.required, Validators.email],
       }),
       password: new FormControl("", {
         nonNullable: true,
-        validators: [Validators.required, Validators.minLength(6)],
+        validators: [
+          Validators.required,
+          Validators.minLength(6),
+          Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d).+$/), // at least 1 letter + number
+        ],
       }),
-      confirmPassword: new FormControl("", { nonNullable: true }),
+      confirmPassword: new FormControl("", {
+        nonNullable: true,
+      }),
     },
     { validators: this.passwordMatchValidator() },
   );
@@ -64,9 +73,28 @@ export class AuthComponent {
     this.isLogin.update((v) => !v);
     this.error.set("");
     this.form.reset();
+
+    if (this.isLogin()) {
+      // LOGIN MODE
+      this.form.get("name")?.clearValidators();
+      this.form.get("confirmPassword")?.clearValidators();
+    } else {
+      // REGISTER MODE
+      this.form.get("name")?.setValidators([Validators.required, Validators.minLength(3)]);
+
+      this.form.get("confirmPassword")?.setValidators([Validators.required]);
+    }
+
+    this.form.get("name")?.updateValueAndValidity();
+    this.form.get("confirmPassword")?.updateValueAndValidity();
   }
 
   submit() {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
     this.loading.set(true);
     this.error.set("");
 
@@ -106,11 +134,13 @@ export class AuthComponent {
   }
 
   private passwordMatchValidator(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const group = control as FormGroup;
-      return group.get("password")?.value === group.get("confirmPassword")?.value
-        ? null
-        : { passwordMismatch: true };
+    return (group: AbstractControl): ValidationErrors | null => {
+      const password = group.get("password")?.value;
+      const confirm = group.get("confirmPassword")?.value;
+
+      if (!confirm) return null;
+
+      return password === confirm ? null : { passwordMismatch: true };
     };
   }
 }

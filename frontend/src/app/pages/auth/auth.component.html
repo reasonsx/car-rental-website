@@ -68,6 +68,7 @@
           [label]="isLogin() ? 'Sign in' : 'Create account'"
           [icon]="isLogin() ? 'pi pi-sign-in' : 'pi pi-user-plus'"
           [loading]="loading()"
+          [disabled]="form.invalid || loading()"
           styleClass="w-full"
         />
 
