@@ -41,8 +41,7 @@ export async function registerUser(req: Request, res: Response) {
 
         res.status(201).json({ error: null, data: user._id });
     } catch (error) {
-        res.status(500).json({ message: "Failed to register user: " + error });
-    }
+        res.status(500).json({ message: "Internal server error" });    }
 }
 
 export function validateUserRegistrationInfo(data: User): ValidationResult {
