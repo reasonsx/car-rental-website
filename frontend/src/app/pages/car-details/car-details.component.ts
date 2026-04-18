@@ -1,18 +1,18 @@
-import { Component, computed, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
-import { CarService } from '../../services/car.service';
-import { BookingService } from '../../services/booking.service';
-import { Car } from '../../models/car.model';
-import { Booking } from '../../models/booking.model';
-import { CardModule } from 'primeng/card';
-import { ButtonModule } from 'primeng/button';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { ImageModule } from 'primeng/image';
-import { DividerModule } from 'primeng/divider';
+import { Component, computed, signal, inject } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { ActivatedRoute } from "@angular/router";
+import { CarService } from "../../services/car.service";
+import { BookingService } from "../../services/booking.service";
+import { Car } from "../../models/car.model";
+import { Booking } from "../../models/booking.model";
+import { CardModule } from "primeng/card";
+import { ButtonModule } from "primeng/button";
+import { ProgressSpinnerModule } from "primeng/progressspinner";
+import { ImageModule } from "primeng/image";
+import { DividerModule } from "primeng/divider";
 
 @Component({
-  selector: 'app-car-details',
+  selector: "app-car-details",
   standalone: true,
   imports: [
     CommonModule,
@@ -20,9 +20,9 @@ import { DividerModule } from 'primeng/divider';
     ButtonModule,
     ProgressSpinnerModule,
     ImageModule,
-    DividerModule
+    DividerModule,
   ],
-  templateUrl: './car-details.component.html'
+  templateUrl: "./car-details.component.html",
 })
 export class CarDetailsComponent {
   private route = inject(ActivatedRoute);
@@ -86,11 +86,9 @@ export class CarDetailsComponent {
     }
 
     // build range
-    const newStart =
-      this.normalize(normalized) < this.normalize(start) ? normalized : start;
+    const newStart = this.normalize(normalized) < this.normalize(start) ? normalized : start;
 
-    const newEnd =
-      this.normalize(normalized) < this.normalize(start) ? start : normalized;
+    const newEnd = this.normalize(normalized) < this.normalize(start) ? start : normalized;
 
     // block overlap with bookings
     if (!this.isRangeValid(newStart, newEnd)) return;
@@ -109,9 +107,10 @@ export class CarDetailsComponent {
   }
 
   isRangeValid(start: Date, end: Date): boolean {
-    return !this.bookedRanges().some(range =>
-      this.normalize(start) <= this.normalize(range.endDate) &&
-      this.normalize(end) >= this.normalize(range.startDate)
+    return !this.bookedRanges().some(
+      (range) =>
+        this.normalize(start) <= this.normalize(range.endDate) &&
+        this.normalize(end) >= this.normalize(range.startDate),
     );
   }
 
@@ -123,9 +122,7 @@ export class CarDetailsComponent {
 
     const [start, end] = range;
 
-    const days =
-      (this.normalize(end) - this.normalize(start)) /
-      (1000 * 60 * 60 * 24);
+    const days = (this.normalize(end) - this.normalize(start)) / (1000 * 60 * 60 * 24);
 
     return days > 0 ? days * car.pricePerDay : 0;
   });
@@ -135,7 +132,7 @@ export class CarDetailsComponent {
   // =========================================
 
   get carId(): string {
-    return this.route.snapshot.paramMap.get('id') ?? '';
+    return this.route.snapshot.paramMap.get("id") ?? "";
   }
 
   loadData(): void {
@@ -143,29 +140,29 @@ export class CarDetailsComponent {
     this.error.set(null);
 
     this.carService.getCarById(this.carId).subscribe({
-      next: car => this.car.set(car),
-      error: err => {
-        this.error.set(err.error?.message || 'Unable to load car details');
-      }
+      next: (car) => this.car.set(car),
+      error: (err) => {
+        this.error.set(err.error?.message || "Unable to load car details");
+      },
     });
 
     this.bookingService.getBookingsForCar(this.carId).subscribe({
-      next: bookings => {
+      next: (bookings) => {
         this.bookings.set(bookings);
         this.loading.set(false);
       },
-      error: err => {
-        this.error.set(err.error?.message || 'Unable to load bookings');
+      error: (err) => {
+        this.error.set(err.error?.message || "Unable to load bookings");
         this.loading.set(false);
-      }
+      },
     });
   }
 
   bookedRanges = computed(() =>
-    this.bookings().map(b => ({
+    this.bookings().map((b) => ({
       startDate: new Date(b.startDate),
-      endDate: new Date(b.endDate)
-    }))
+      endDate: new Date(b.endDate),
+    })),
   );
 
   // =========================================
@@ -176,9 +173,9 @@ export class CarDetailsComponent {
     const date = new Date();
     date.setMonth(date.getMonth() + this.monthOffset());
 
-    return date.toLocaleString('default', {
-      month: 'long',
-      year: 'numeric'
+    return date.toLocaleString("default", {
+      month: "long",
+      year: "numeric",
     });
   });
 
@@ -188,11 +185,7 @@ export class CarDetailsComponent {
     date.setDate(1);
 
     const firstDay = date.getDay();
-    const daysInMonth = new Date(
-      date.getFullYear(),
-      date.getMonth() + 1,
-      0
-    ).getDate();
+    const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
 
     const cells: { date: Date | null; booked: boolean }[] = [];
 
@@ -203,15 +196,11 @@ export class CarDetailsComponent {
 
     // actual days
     for (let day = 1; day <= daysInMonth; day++) {
-      const activeDate = new Date(
-        date.getFullYear(),
-        date.getMonth(),
-        day
-      );
+      const activeDate = new Date(date.getFullYear(), date.getMonth(), day);
 
       cells.push({
         date: activeDate,
-        booked: this.isDateBooked(activeDate)
+        booked: this.isDateBooked(activeDate),
       });
     }
 
@@ -221,18 +210,17 @@ export class CarDetailsComponent {
   isDateBooked(d: Date): boolean {
     const t = this.normalize(d);
 
-    return this.bookedRanges().some(range =>
-      t >= this.normalize(range.startDate) &&
-      t <= this.normalize(range.endDate)
+    return this.bookedRanges().some(
+      (range) => t >= this.normalize(range.startDate) && t <= this.normalize(range.endDate),
     );
   }
 
   prevMonth(): void {
-    this.monthOffset.update(v => v - 1);
+    this.monthOffset.update((v) => v - 1);
   }
 
   nextMonth(): void {
-    this.monthOffset.update(v => v + 1);
+    this.monthOffset.update((v) => v + 1);
   }
 
   // =========================================
@@ -245,16 +233,18 @@ export class CarDetailsComponent {
 
     const [start, end] = range;
 
-    this.bookingService.createBooking({
-      carId: this.carId,
-      startDate: start,
-      endDate: end
-    }).subscribe({
-      next: () => {
-        this.loadData();
-        this.selectedRange.set(null);
-      },
-      error: err => console.error(err)
-    });
+    this.bookingService
+      .createBooking({
+        carId: this.carId,
+        startDate: start,
+        endDate: end,
+      })
+      .subscribe({
+        next: () => {
+          this.loadData();
+          this.selectedRange.set(null);
+        },
+        error: (err) => console.error(err),
+      });
   }
 }

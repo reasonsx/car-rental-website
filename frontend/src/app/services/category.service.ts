@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { Category } from '../models/category.model';
-import { API_BASE_URL } from './api.constants';
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Observable } from "rxjs";
+import { Category } from "../models/category.model";
+import { API_BASE_URL } from "./api.constants";
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class CategoryService {
   private readonly baseUrl = `${API_BASE_URL}/categories`;
 
