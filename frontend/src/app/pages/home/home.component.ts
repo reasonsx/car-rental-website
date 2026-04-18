@@ -1,17 +1,17 @@
-import { Component, signal, computed, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { LocationSelectorComponent } from '../../components/location-selector/location-selector.component';
-import { CarListComponent } from '../../components/car-list/car-list.component';
-import { LocationService } from '../../services/location.service';
-import { CarService } from '../../services/car.service';
-import { Location } from '../../models/location.model';
-import { Car } from '../../models/car.model';
-import { CardModule } from 'primeng/card';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { SkeletonModule } from 'primeng/skeleton';
+import { Component, signal, computed, inject } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { LocationSelectorComponent } from "../../components/location-selector/location-selector.component";
+import { CarListComponent } from "../../components/car-list/car-list.component";
+import { LocationService } from "../../services/location.service";
+import { CarService } from "../../services/car.service";
+import { Location } from "../../models/location.model";
+import { Car } from "../../models/car.model";
+import { CardModule } from "primeng/card";
+import { ProgressSpinnerModule } from "primeng/progressspinner";
+import { SkeletonModule } from "primeng/skeleton";
 
 @Component({
-  selector: 'app-home',
+  selector: "app-home",
   standalone: true,
   imports: [
     CommonModule,
@@ -19,12 +19,11 @@ import { SkeletonModule } from 'primeng/skeleton';
     CarListComponent,
     CardModule,
     SkeletonModule,
-    ProgressSpinnerModule
+    ProgressSpinnerModule,
   ],
-  templateUrl: './home.component.html'
+  templateUrl: "./home.component.html",
 })
 export class HomeComponent {
-
   // services
   private locationService = inject(LocationService);
   private carService = inject(CarService);
@@ -43,9 +42,8 @@ export class HomeComponent {
 
     if (!selectedId) return all;
 
-    return all.filter(car => {
-      const id =
-        typeof car.locationId === 'object' ? car.locationId._id : car.locationId;
+    return all.filter((car) => {
+      const id = typeof car.locationId === "object" ? car.locationId._id : car.locationId;
       return id === selectedId;
     });
   });
@@ -65,18 +63,18 @@ export class HomeComponent {
 
     this.locationService.getLocations().subscribe({
       next: (locations) => this.locations.set(locations),
-      error: () => this.error.set('Failed to load locations')
+      error: () => this.error.set("Failed to load locations"),
     });
 
     this.carService.getCars().subscribe({
       next: (cars) => {
-        this.cars.set(cars.filter(c => c.available));
+        this.cars.set(cars.filter((c) => c.available));
         this.loading.set(false);
       },
       error: () => {
-        this.error.set('Failed to load cars');
+        this.error.set("Failed to load cars");
         this.loading.set(false);
-      }
+      },
     });
   }
 }
