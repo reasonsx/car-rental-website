@@ -22,7 +22,32 @@ const mapCategory = (c: any): CategoryResponse => ({
   description: c.description,
 });
 
-// CREATE
+/**
+ * @swagger
+ * /categories:
+ *   post:
+ *     summary: Create a new category
+ *     tags: [Categories]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name]
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: SUV
+ *               description:
+ *                 type: string
+ *                 example: Sport Utility Vehicles
+ *     responses:
+ *       201:
+ *         description: Category created
+ *       400:
+ *         description: Validation error
+ */
 export async function createCategory(req: Request<{}, {}, CreateCategoryRequest>, res: Response) {
   try {
     const { error } = createSchema.validate(req.body);
@@ -38,7 +63,18 @@ export async function createCategory(req: Request<{}, {}, CreateCategoryRequest>
   }
 }
 
-// GET ALL
+/**
+ * @swagger
+ * /categories:
+ *   get:
+ *     summary: Get all categories
+ *     tags: [Categories]
+ *     responses:
+ *       200:
+ *         description: List of categories
+ *       500:
+ *         description: Server error
+ */
 export async function getCategories(_req: Request, res: Response) {
   try {
     const categories = await CategoryModel.find().lean();
@@ -48,7 +84,26 @@ export async function getCategories(_req: Request, res: Response) {
   }
 }
 
-// GET ONE
+/**
+ * @swagger
+ * /categories/{id}:
+ *   get:
+ *     summary: Get category by ID
+ *     tags: [Categories]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Category found
+ *       400:
+ *         description: Invalid ID
+ *       404:
+ *         description: Category not found
+ */
 export async function getCategoryById(req: Request<{ id: string }>, res: Response) {
   try {
     const { id } = req.params;
@@ -69,7 +124,37 @@ export async function getCategoryById(req: Request<{ id: string }>, res: Respons
   }
 }
 
-// UPDATE
+/**
+ * @swagger
+ * /categories/{id}:
+ *   put:
+ *     summary: Update a category
+ *     tags: [Categories]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Category updated
+ *       400:
+ *         description: Validation error or invalid ID
+ *       404:
+ *         description: Category not found
+ */
 export async function updateCategory(
   req: Request<{ id: string }, {}, UpdateCategoryRequest>,
   res: Response,
@@ -101,7 +186,26 @@ export async function updateCategory(
   }
 }
 
-// DELETE
+/**
+ * @swagger
+ * /categories/{id}:
+ *   delete:
+ *     summary: Delete a category
+ *     tags: [Categories]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Category deleted
+ *       400:
+ *         description: Invalid ID
+ *       404:
+ *         description: Category not found
+ */
 export async function deleteCategory(req: Request<{ id: string }>, res: Response) {
   try {
     const { id } = req.params;

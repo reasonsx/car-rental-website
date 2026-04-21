@@ -12,11 +12,11 @@ export function setupDocumentation(app: Application) {
       },
       servers: [
         {
-          url: "http://localhost:4000/api", // 🔥 THIS FIXES YOUR 404
+          url: "http://localhost:4000/api",
         },
       ],
     },
-    apis: ["./src/**/*.ts"], // 🔥 safer than modules/*
+    apis: ["./src/**/*.ts"],
   };
 
   const specs = swaggerJsdoc(options);
