@@ -7,7 +7,6 @@ import { Location } from "../../models/location.model";
 import { CardModule } from "primeng/card";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
 import { SkeletonModule } from "primeng/skeleton";
-import { CarStore } from "../../stores/car.store";
 
 @Component({
   selector: "app-home",
@@ -24,18 +23,13 @@ import { CarStore } from "../../stores/car.store";
 })
 export class HomeComponent {
   private locationService = inject(LocationService);
-  private carStore = inject(CarStore);
 
   locations = signal<Location[]>([]);
+  selectedLocationId = signal<string | null>(null);
   error = signal<string | null>(null);
-
-  cars = this.carStore.filteredCars;
-  loading = this.carStore.loading;
-  selectedLocationId = this.carStore.selectedLocationId;
 
   constructor() {
     this.loadLocations();
-    this.carStore.loadCars();
   }
 
   selectLocation(locationId?: string) {

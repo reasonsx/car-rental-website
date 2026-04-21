@@ -1,11 +1,12 @@
-import { Component, computed, signal, effect, inject } from "@angular/core";
+import { Component, computed, signal, effect, inject, Input } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { CarCardComponent } from "../car-card/car-card.component";
 import { ButtonModule } from "primeng/button";
 import { SelectModule } from "primeng/select";
 import { FormsModule } from "@angular/forms";
 import { SliderModule } from "primeng/slider";
-import { CarStore } from "../../stores/car.store";
+import { CarService } from "../../services/car.service";
+import { Car } from "../../models/car.model";
 
 type SortOption = "priceAsc" | "priceDesc" | "yearDesc";
 
@@ -16,10 +17,12 @@ type SortOption = "priceAsc" | "priceDesc" | "yearDesc";
   templateUrl: "./car-list.component.html",
 })
 export class CarListComponent {
-  private carStore = inject(CarStore);
+  private carService = inject(CarService);
 
-  // 🔥 use filtered cars from store
-  cars = this.carStore.filteredCars;
+  @Input() selectedLocationId: string | null = null;
+
+  cars = signal<Car[]>([]);
+  loading = signal(true);
 
   selectedCategory = signal<string | null>(null);
   selectedBrand = signal<string | null>(null);
@@ -28,11 +31,24 @@ export class CarListComponent {
   sort = signal<SortOption>("priceAsc");
 
   constructor() {
+    this.loadCars();
+
     effect(() => {
-      const cars = this.cars();
-      if (cars.length) {
+      if (this.cars().length) {
         this.priceRange.set(this.priceBounds());
       }
+    });
+  }
+
+  loadCars() {
+    this.loading.set(true);
+
+    this.carService.getCars().subscribe({
+      next: (cars) => {
+        this.cars.set(cars);
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false),
     });
   }
 
@@ -42,7 +58,12 @@ export class CarListComponent {
   });
 
   filteredCars = computed(() => {
-    let result = [...this.cars()];
+    let result = [...this.cars()].filter((c) => c.available);
+
+    // 🔥 location filter
+    if (this.selectedLocationId) {
+      result = result.filter((c) => c.locationId._id === this.selectedLocationId);
+    }
 
     if (this.selectedCategory()) {
       result = result.filter((c) => c.categoryId._id === this.selectedCategory());
@@ -74,37 +95,18 @@ export class CarListComponent {
     return result;
   });
 
-  brands = computed(() => {
-    const unique = new Set(this.cars().map((c) => c.brand));
-    return Array.from(unique).map((b) => ({
+  brands = computed(() =>
+    Array.from(new Set(this.cars().map((c) => c.brand))).map((b) => ({
       label: b,
       value: b,
-    }));
-  });
+    })),
+  );
 
-  years = computed(() => {
-    const unique = new Set(this.cars().map((c) => c.year));
-    return Array.from(unique)
+  years = computed(() =>
+    Array.from(new Set(this.cars().map((c) => c.year)))
       .sort((a, b) => b - a)
-      .map((y) => ({
-        label: y.toString(),
-        value: y,
-      }));
-  });
-
-  hasActiveFilters = computed(() => {
-    const [min, max] = this.priceRange();
-    const [defaultMin, defaultMax] = this.priceBounds();
-
-    return (
-      min !== defaultMin ||
-      max !== defaultMax ||
-      this.selectedCategory() !== null ||
-      this.selectedBrand() !== null ||
-      this.selectedYear() !== null ||
-      this.sort() !== "priceAsc"
-    );
-  });
+      .map((y) => ({ label: y.toString(), value: y })),
+  );
 
   resetFilters() {
     this.selectedCategory.set(null);
