@@ -12,9 +12,22 @@ function mapUser(user: any) {
   };
 }
 
-// ========================
-// GET ALL USERS (ADMIN)
-// ========================
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     summary: Get all users (Admin only)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of users
+ *       403:
+ *         description: Admins only
+ *       500:
+ *         description: Server error
+ */
 export async function getAllUsers(req: AuthRequest, res: Response) {
   try {
     if (!req.user?.isAdmin) {
@@ -32,9 +45,28 @@ export async function getAllUsers(req: AuthRequest, res: Response) {
   }
 }
 
-// ========================
-// GET USER BY ID
-// ========================
+/**
+ * @swagger
+ * /users/{id}:
+ *   get:
+ *     summary: Get user by ID (self or admin)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User found
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: User not found
+ */
 export async function getUserById(req: AuthRequest, res: Response) {
   try {
     const { id } = req.params;
@@ -55,9 +87,42 @@ export async function getUserById(req: AuthRequest, res: Response) {
   }
 }
 
-// ========================
-// UPDATE USER
-// ========================
+/**
+ * @swagger
+ * /users/{id}:
+ *   put:
+ *     summary: Update user (self or admin)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               isAdmin:
+ *                 type: boolean
+ *                 description: Only admins can change this
+ *     responses:
+ *       200:
+ *         description: User updated
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: User not found
+ */
 export async function updateUser(req: AuthRequest, res: Response) {
   try {
     const { id } = req.params;
@@ -95,9 +160,28 @@ export async function updateUser(req: AuthRequest, res: Response) {
   }
 }
 
-// ========================
-// DELETE USER (ADMIN)
-// ========================
+/**
+ * @swagger
+ * /users/{id}:
+ *   delete:
+ *     summary: Delete user (Admin only)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User deleted
+ *       403:
+ *         description: Admins only
+ *       404:
+ *         description: User not found
+ */
 export async function deleteUser(req: AuthRequest, res: Response) {
   try {
     if (!req.user?.isAdmin) {
