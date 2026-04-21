@@ -1,32 +1,36 @@
-// src/repository/db.ts
 import mongoose from "mongoose";
 
-let isConnected = false; // track connection status
+let isConnected = false;
 
-export async function connect() {
-  if (isConnected) return; // already connected, skip
+export const connectDB = async () => {
+  if (isConnected) return;
 
-  const dbHost = process.env.DBHOST;
-  if (!dbHost) throw new Error("DBHOST environment variable is not defined");
+  const uri = process.env.DBHOST;
+  if (!uri) {
+    throw new Error("DBHOST environment variable is not defined");
+  }
 
   try {
-    await mongoose.connect(dbHost);
-    isConnected = true;
-    console.log("✅ Successfully connected to the database");
-  } catch (error) {
-    console.error("❌ Error connecting to the database:", error);
-    throw error;
-  }
-}
+    await mongoose.connect(uri, {
+      dbName: "car-rental",
+    });
 
-// optional: only call if server shuts down
-export async function disconnect() {
+    isConnected = true;
+    console.log("✅ MongoDB connected");
+  } catch (error: unknown) {
+    console.error("❌ MongoDB connection error:", error);
+    process.exit(1); // 🔥 important
+  }
+};
+
+export const disconnectDB = async () => {
   if (!isConnected) return;
+
   try {
     await mongoose.disconnect();
     isConnected = false;
-    console.log("✅ Successfully disconnected from the database");
-  } catch (error) {
-    console.error("❌ Error disconnecting from the database:", error);
+    console.log("🔌 MongoDB disconnected");
+  } catch (error: unknown) {
+    console.error("❌ MongoDB disconnect error:", error);
   }
-}
+};
