@@ -5,7 +5,7 @@ import {
   getLocationById,
   updateLocation,
   deleteLocation,
-} from "../controllers/locationController";
+} from "./location.controller";
 
 const router = Router();
 

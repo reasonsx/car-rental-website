@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { BookingModel } from "../models/bookingModel";
-import { BookingStatus } from "../interfaces/booking";
-import { AuthRequest } from "./authController";
+import { BookingModel } from "./booking.model";
+import { BookingStatus } from "./booking";
+import { AuthRequest } from "../../controllers/authController";
 
 /**
  * Create a new booking
@@ -48,7 +48,7 @@ export async function createBooking(req: AuthRequest, res: Response) {
       });
     }
 
-    const car = await (await import("../models/carModel")).CarModel.findById(carId);
+    const car = await (await import("../car/car.model")).CarModel.findById(carId);
 
     if (!car) {
       return res.status(404).json({ message: "Car not found" });

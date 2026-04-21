@@ -1,6 +1,6 @@
-// routes/carRoutes.ts
+// routes/car.routes.ts
 import { Router } from "express";
-import { createCar, getCars, getCarById, updateCar, deleteCar } from "../controllers/carController";
+import { createCar, getCars, getCarById, updateCar, deleteCar } from "./car.controller";
 
 const router = Router();
 

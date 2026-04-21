@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { Car } from "../types/car.types";
+import { Car } from "./car.types";
 
 const carSchema = new Schema<Car>(
   {

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
-import { CarModel } from "../models/carModel";
-import { CreateCarRequest, UpdateCarRequest, CarResponse } from "../types/car.types";
+import { CarModel } from "./car.model";
+import { CreateCarRequest, UpdateCarRequest, CarResponse } from "./car.types";
 
 const mapCar = (c: any): CarResponse => ({
   id: c._id.toString(),

@@ -1,10 +1,10 @@
 import { Router } from "express";
-import userRoutes from "./userRoutes";
+import userRoutes from "../modules/user/userRoutes";
 import authRoutes from "./authRoutes";
-import bookingRoutes from "./bookingRoutes";
-import carRoutes from "./carRoutes";
-import categoryRoutes from "./categoryRoutes";
-import locationRoutes from "./locationRoutes";
+import bookingRoutes from "../modules/booking/booking.routes";
+import carRoutes from "../modules/car/car.routes";
+import categoryRoutes from "../modules/category/category.routes";
+import locationRoutes from "../modules/location/location.routes";
 
 const router = Router();
 

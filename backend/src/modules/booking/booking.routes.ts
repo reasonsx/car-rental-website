@@ -6,8 +6,8 @@ import {
   updateBooking,
   deleteBooking,
   getBookingsForCar,
-} from "../controllers/bookingController";
-import { verifyToken } from "../controllers/authController";
+} from "./booking.controller";
+import { verifyToken } from "../../controllers/authController";
 
 const router = Router();
 

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { LocationModel } from "../models/locationModel";
+import { LocationModel } from "./location.model";
 
 /**
  * Create a new location

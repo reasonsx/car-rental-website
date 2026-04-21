@@ -3,7 +3,7 @@ import dotenvFlow from "dotenv-flow";
 import cors from "cors";
 import routes from "./routes";
 import { connect } from "./repository/database";
-import { setupDocumentation } from "./util/documentation";
+import { setupDocumentation } from "./utils/documentation";
 
 dotenvFlow.config();
 const app: Application = express();

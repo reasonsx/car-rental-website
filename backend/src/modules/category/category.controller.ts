@@ -1,12 +1,8 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
 import Joi from "joi";
-import { CategoryModel } from "../models/categoryModel";
-import {
-  CategoryResponse,
-  CreateCategoryRequest,
-  UpdateCategoryRequest,
-} from "../types/category.types";
+import { CategoryModel } from "./category.model";
+import { CategoryResponse, CreateCategoryRequest, UpdateCategoryRequest } from "./category.types";
 
 // validation
 const createSchema = Joi.object({
