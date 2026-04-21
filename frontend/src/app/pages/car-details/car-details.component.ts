@@ -29,23 +29,17 @@ export class CarDetailsComponent {
   private carService = inject(CarService);
   private bookingService = inject(BookingService);
 
-  // state
   car = signal<Car | null>(null);
   bookings = signal<Booking[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
   monthOffset = signal(0);
 
-  // selection
   selectedRange = signal<[Date, Date] | null>(null);
 
   constructor() {
     this.loadData();
   }
-
-  // =========================================
-  // HELPERS
-  // =========================================
 
   private normalize(d: Date): number {
     return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
@@ -59,19 +53,13 @@ export class CarDetailsComponent {
     return this.normalize(d) < this.today();
   }
 
-  // =========================================
-  // BOOKING LOGIC
-  // =========================================
-
   selectDate(date: Date) {
     const normalized = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-    // block past
     if (this.normalize(normalized) < this.today()) return;
 
     const current = this.selectedRange();
 
-    // first click
     if (!current) {
       this.selectedRange.set([normalized, normalized]);
       return;
@@ -79,18 +67,14 @@ export class CarDetailsComponent {
 
     const [start, end] = current;
 
-    // restart if full range already selected
     if (this.normalize(start) !== this.normalize(end)) {
       this.selectedRange.set([normalized, normalized]);
       return;
     }
 
-    // build range
     const newStart = this.normalize(normalized) < this.normalize(start) ? normalized : start;
-
     const newEnd = this.normalize(normalized) < this.normalize(start) ? start : normalized;
 
-    // block overlap with bookings
     if (!this.isRangeValid(newStart, newEnd)) return;
 
     this.selectedRange.set([newStart, newEnd]);
@@ -108,9 +92,9 @@ export class CarDetailsComponent {
 
   isRangeValid(start: Date, end: Date): boolean {
     return !this.bookedRanges().some(
-      (range) =>
-        this.normalize(start) <= this.normalize(range.endDate) &&
-        this.normalize(end) >= this.normalize(range.startDate),
+      (r) =>
+        this.normalize(start) <= this.normalize(r.endDate) &&
+        this.normalize(end) >= this.normalize(r.startDate),
     );
   }
 
@@ -121,21 +105,16 @@ export class CarDetailsComponent {
     if (!range || !car) return 0;
 
     const [start, end] = range;
-
     const days = (this.normalize(end) - this.normalize(start)) / (1000 * 60 * 60 * 24);
 
     return days > 0 ? days * car.pricePerDay : 0;
   });
 
-  // =========================================
-  // DATA
-  // =========================================
-
   get carId(): string {
     return this.route.snapshot.paramMap.get("id") ?? "";
   }
 
-  loadData(): void {
+  loadData() {
     this.loading.set(true);
     this.error.set(null);
 
@@ -165,42 +144,36 @@ export class CarDetailsComponent {
     })),
   );
 
-  // =========================================
-  // CALENDAR
-  // =========================================
-
   monthName = computed(() => {
-    const date = new Date();
-    date.setMonth(date.getMonth() + this.monthOffset());
+    const d = new Date();
+    d.setMonth(d.getMonth() + this.monthOffset());
 
-    return date.toLocaleString("default", {
+    return d.toLocaleString("default", {
       month: "long",
       year: "numeric",
     });
   });
 
   days = computed(() => {
-    const date = new Date();
-    date.setMonth(date.getMonth() + this.monthOffset());
-    date.setDate(1);
+    const base = new Date();
+    base.setMonth(base.getMonth() + this.monthOffset());
+    base.setDate(1);
 
-    const firstDay = date.getDay();
-    const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+    const firstDay = base.getDay();
+    const daysInMonth = new Date(base.getFullYear(), base.getMonth() + 1, 0).getDate();
 
     const cells: { date: Date | null; booked: boolean }[] = [];
 
-    // empty cells
     for (let i = 0; i < firstDay; i++) {
       cells.push({ date: null, booked: false });
     }
 
-    // actual days
     for (let day = 1; day <= daysInMonth; day++) {
-      const activeDate = new Date(date.getFullYear(), date.getMonth(), day);
+      const date = new Date(base.getFullYear(), base.getMonth(), day);
 
       cells.push({
-        date: activeDate,
-        booked: this.isDateBooked(activeDate),
+        date,
+        booked: this.isDateBooked(date),
       });
     }
 
@@ -209,23 +182,18 @@ export class CarDetailsComponent {
 
   isDateBooked(d: Date): boolean {
     const t = this.normalize(d);
-
     return this.bookedRanges().some(
-      (range) => t >= this.normalize(range.startDate) && t <= this.normalize(range.endDate),
+      (r) => t >= this.normalize(r.startDate) && t <= this.normalize(r.endDate),
     );
   }
 
-  prevMonth(): void {
+  prevMonth() {
     this.monthOffset.update((v) => v - 1);
   }
 
-  nextMonth(): void {
+  nextMonth() {
     this.monthOffset.update((v) => v + 1);
   }
-
-  // =========================================
-  // ACTION
-  // =========================================
 
   bookCar() {
     const range = this.selectedRange();
@@ -241,13 +209,10 @@ export class CarDetailsComponent {
       })
       .subscribe({
         next: () => {
-          console.log("BOOKED SUCCESS");
           this.loadData();
           this.selectedRange.set(null);
         },
-        error: (err) => {
-          console.error("BOOKING ERROR:", err);
-        },
+        error: (err) => console.error("BOOKING ERROR:", err),
       });
   }
 }
