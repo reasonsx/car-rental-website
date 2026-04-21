@@ -31,8 +31,12 @@
 
       <ng-template pTemplate="body" let-b>
         <tr>
-          <td>{{ b.carId?.brand }} {{ b.carId?.modelName }}</td>
+          <td class="font-medium">
+            {{ b.carId?.brand }} {{ b.carId?.modelName }}
+          </td>
+
           <td>{{ b.userId?.name }}</td>
+
           <td>
             <div class="inline-flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-md text-xs">
               <span>{{ b.startDate | date:'MMM d, y' }}</span>
@@ -40,39 +44,45 @@
               <span>{{ b.endDate | date:'MMM d, y' }}</span>
             </div>
           </td>
-          <td>{{ b.totalPrice }} DKK</td>
 
-          <td>
-            <span
-              class="px-2 py-1 rounded text-xs font-medium"
-              [class.bg-green-100]="b.status === 'confirmed'"
-              [class.text-green-700]="b.status === 'confirmed'"
-              [class.bg-yellow-100]="b.status === 'pending'"
-              [class.text-yellow-700]="b.status === 'pending'"
-              [class.bg-red-100]="b.status === 'cancelled'"
-              [class.text-red-700]="b.status === 'cancelled'"
-            >
-              {{ b.status }}
-            </span>
+          <td class="whitespace-nowrap">
+            {{ b.totalPrice | number }} DKK
           </td>
 
-          <td class="flex items-center gap-2">
-            <p-select
-              [options]="statusOptions"
-              optionLabel="label"
-              optionValue="value"
-              [ngModel]="b.status"
-              (ngModelChange)="updateStatus(b, $event)"
-              class="w-32"
-            />
+          <td>
+    <span
+      class="px-3 py-1 rounded-full text-xs font-semibold uppercase"
+      [class.bg-green-100]="b.status === 'confirmed'"
+      [class.text-green-700]="b.status === 'confirmed'"
+      [class.bg-yellow-100]="b.status === 'pending'"
+      [class.text-yellow-700]="b.status === 'pending'"
+      [class.bg-red-100]="b.status === 'cancelled'"
+      [class.text-red-700]="b.status === 'cancelled'"
+    >
+      {{ b.status }}
+    </span>
+          </td>
 
-            <p-button
-              icon="pi pi-trash"
-              size="small"
-              severity="danger"
-              [text]="true"
-              (onClick)="delete(b._id)"
-            />
+          <!-- 🔥 FIXED ACTIONS -->
+          <td class="text-right whitespace-nowrap">
+            <div class="inline-flex items-center gap-2">
+              <p-select
+                [options]="statusOptions"
+                optionLabel="label"
+                optionValue="value"
+                [ngModel]="b.status"
+                (ngModelChange)="updateStatus(b, $event)"
+                class="w-40"
+              />
+
+              <p-button
+                icon="pi pi-trash"
+                size="small"
+                severity="danger"
+                [text]="true"
+                (onClick)="delete(b._id)"
+              />
+            </div>
           </td>
         </tr>
       </ng-template>
