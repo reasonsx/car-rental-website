@@ -1,4 +1,4 @@
-import { Component, signal, inject } from "@angular/core";
+import { Component, inject, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ReactiveFormsModule, FormBuilder, Validators } from "@angular/forms";
 import { CategoryService } from "../../../../services/category.service";
@@ -26,49 +26,35 @@ export class AdminCategoriesComponent {
   private fb = inject(FormBuilder);
   private categoryService = inject(CategoryService);
 
-  // state
   categories = signal<Category[]>([]);
   selectedCategory = signal<Category | null>(null);
+
   loading = signal(false);
   error = signal<string | null>(null);
   success = signal<string | null>(null);
 
-  // ✅ typed form (cleaner)
   form = this.fb.nonNullable.group({
     name: ["", Validators.required],
     description: [""],
   });
 
   constructor() {
-    this.loadCategories();
+    this.fetchCategories();
   }
 
-  // ========================
-  // DATA
-  // ========================
-
-  loadCategories(): void {
-    this.loading.set(true);
-    this.error.set(null);
-    this.success.set(null);
+  fetchCategories() {
+    this.setLoading();
 
     this.categoryService.getCategories().subscribe({
-      next: (categories) => {
-        this.categories.set(categories);
+      next: (res) => {
+        this.categories.set(res);
         this.loading.set(false);
       },
-      error: (err) => {
-        this.error.set(err.error?.message || "Failed to load categories");
-        this.loading.set(false);
-      },
+      error: (err) => this.setError(err, "Failed to load categories"),
     });
   }
 
-  // ========================
-  // EDIT
-  // ========================
-
-  editCategory(category: Category): void {
+  edit(category: Category) {
     this.selectedCategory.set(category);
 
     this.form.patchValue({
@@ -76,63 +62,59 @@ export class AdminCategoriesComponent {
       description: category.description ?? "",
     });
 
-    this.error.set(null);
-    this.success.set(null);
+    this.clearMessages();
   }
 
-  cancelEdit(): void {
+  cancel() {
     this.selectedCategory.set(null);
-
-    this.form.reset({
-      name: "",
-      description: "",
-    });
-
-    this.error.set(null);
-    this.success.set(null);
+    this.form.reset({ name: "", description: "" });
+    this.clearMessages();
   }
 
-  // ========================
-  // SAVE
-  // ========================
-
-  saveCategory(): void {
+  save() {
     if (this.form.invalid) return;
 
     const data = this.form.getRawValue();
+    const current = this.selectedCategory();
 
-    const request = this.selectedCategory()
-      ? this.categoryService.updateCategory(this.selectedCategory()?.id ?? "", data)
+    const request = current
+      ? this.categoryService.updateCategory(current.id, data)
       : this.categoryService.createCategory(data);
 
     request.subscribe({
       next: () => {
-        this.success.set(this.selectedCategory() ? "Category updated" : "Category created");
-
-        this.cancelEdit();
-        this.loadCategories();
+        this.success.set(current ? "Category updated" : "Category created");
+        this.cancel();
+        this.fetchCategories();
       },
-      error: (err) => {
-        this.error.set(err.error?.message || "Failed to save category");
-      },
+      error: (err) => this.setError(err, "Failed to save category"),
     });
   }
 
-  // ========================
-  // DELETE
-  // ========================
-
-  deleteCategory(id: string): void {
+  remove(id: string) {
     if (!confirm("Delete this category?")) return;
 
     this.categoryService.deleteCategory(id).subscribe({
       next: () => {
         this.success.set("Category deleted");
-        this.loadCategories();
+        this.fetchCategories();
       },
-      error: (err) => {
-        this.error.set(err.error?.message || "Failed to delete category");
-      },
+      error: (err) => this.setError(err, "Failed to delete category"),
     });
+  }
+
+  private setLoading() {
+    this.loading.set(true);
+    this.clearMessages();
+  }
+
+  private setError(err: any, fallback: string) {
+    this.error.set(err?.error?.message || fallback);
+    this.loading.set(false);
+  }
+
+  private clearMessages() {
+    this.error.set(null);
+    this.success.set(null);
   }
 }

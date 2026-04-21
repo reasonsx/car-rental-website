@@ -5,14 +5,6 @@
       <h2 class="text-xl font-semibold text-gray-800">Categories</h2>
       <p class="text-sm text-gray-500">Manage car categories</p>
     </div>
-
-    <p-button
-      icon="pi pi-refresh"
-      label="Refresh"
-      severity="secondary"
-      size="small"
-      (onClick)="loadCategories()"
-    />
   </div>
 
   <!-- ALERTS -->
@@ -41,12 +33,12 @@
           icon="pi pi-times"
           severity="secondary"
           size="small"
-          (onClick)="cancelEdit()"
+          (onClick)="cancel()"
         />
       }
     </div>
 
-    <form [formGroup]="form" (ngSubmit)="saveCategory()" class="grid gap-4">
+    <form [formGroup]="form" (ngSubmit)="save()" class="grid gap-4">
       <input pInputText formControlName="name" placeholder="Category name" />
 
       <textarea
@@ -103,7 +95,7 @@
                   icon="pi pi-pencil"
                   size="small"
                   [text]="true"
-                  (onClick)="editCategory(category)"
+                  (onClick)="edit(category)"
                 />
 
                 <p-button
@@ -111,7 +103,7 @@
                   size="small"
                   severity="danger"
                   [text]="true"
-                  (onClick)="deleteCategory(category.id)"
+                  (onClick)="remove(category.id)"
                 />
               </div>
             </td>
