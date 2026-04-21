@@ -1,6 +1,6 @@
-import { Component, OnInit, signal, computed, inject } from "@angular/core";
+import { Component, signal, computed, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from "@angular/forms";
 import { Router } from "@angular/router";
 import { AuthService } from "../../services/auth.service";
 import { User } from "../../models/auth.model";
@@ -22,13 +22,14 @@ import { PasswordModule } from "primeng/password";
   ],
   templateUrl: "./profile.component.html",
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent {
   private authService = inject(AuthService);
   private fb = inject(FormBuilder);
   private router = inject(Router);
 
   currentUser = computed(() => this.authService.currentUser());
   isAdmin = computed(() => this.authService.isAdmin());
+
   isLoading = signal(false);
   error = signal<string | null>(null);
   success = signal<string | null>(null);
@@ -44,8 +45,9 @@ export class ProfileComponent implements OnInit {
     { validators: this.passwordMatchValidator },
   );
 
-  ngOnInit(): void {
+  constructor() {
     const user = this.currentUser();
+
     if (user) {
       this.profileForm.patchValue({
         name: user.name,
@@ -54,7 +56,7 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  onUpdateProfile(): void {
+  onUpdateProfile() {
     if (this.profileForm.invalid) return;
 
     this.isLoading.set(true);
@@ -62,14 +64,13 @@ export class ProfileComponent implements OnInit {
     this.success.set(null);
 
     const formValue = this.profileForm.value;
+
     const updateData: Partial<User> = {
       name: formValue.name,
       email: formValue.email,
     };
 
-    // Only include password if user wants to change it
     if (formValue.newPassword) {
-      // In a real app, you'd verify current password on backend
       updateData.password = formValue.newPassword;
     }
 
@@ -77,32 +78,29 @@ export class ProfileComponent implements OnInit {
       next: () => {
         this.isLoading.set(false);
         this.success.set("Profile updated successfully!");
-        // Clear password fields
+
         this.profileForm.patchValue({
           currentPassword: "",
           newPassword: "",
           confirmNewPassword: "",
         });
       },
-      error: (error) => {
+      error: (err) => {
         this.isLoading.set(false);
-        this.error.set(error.error?.message || "Failed to update profile");
+        this.error.set(err.error?.message || "Failed to update profile");
       },
     });
   }
 
-  goToAdminDashboard(): void {
+  goToAdminDashboard() {
     this.router.navigate(["/admin"]);
   }
 
-  private passwordMatchValidator(group: FormGroup): { [key: string]: any } | null {
-    const newPassword = group.get("newPassword");
-    const confirmNewPassword = group.get("confirmNewPassword");
+  private passwordMatchValidator(group: FormGroup) {
+    const newPassword = group.get("newPassword")?.value;
+    const confirm = group.get("confirmNewPassword")?.value;
 
-    if (newPassword && confirmNewPassword && newPassword.value !== confirmNewPassword.value) {
-      return { passwordMismatch: true };
-    }
-    return null;
+    return newPassword && confirm && newPassword !== confirm ? { passwordMismatch: true } : null;
   }
 
   get profileFormControls() {
