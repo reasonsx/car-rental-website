@@ -52,7 +52,7 @@ export class AuthService {
 
   updateUser(userData: Partial<User>): Observable<User> {
     const userId = this._currentUser()?.id;
-    if (!userId) return throwError(() => new Error("User not found"));
+    if (!userId) return throwError(() => new Error("UserTypes not found"));
 
     return this.http
       .put<{ error: null; data: User }>(`${API_BASE_URL}/users/${userId}`, userData)

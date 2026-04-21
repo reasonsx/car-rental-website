@@ -1,48 +1,38 @@
 import express, { Application } from "express";
 import dotenvFlow from "dotenv-flow";
 import cors from "cors";
-
 import routes from "./routes";
-import { connectDB } from "./config/db";
 import { setupDocumentation } from "./utils/documentation";
+import { connect } from "./config/db";
 
 dotenvFlow.config();
-
 const app: Application = express();
 
 export async function startServer() {
-  try {
-    await connectDB();
+  // Connect once
+  await connect();
 
-    app.use(cors());
-    app.use(express.json());
+  app.use(
+    cors({
+      origin: "*",
+      methods: ["GET", "PUT", "POST", "DELETE"],
+      allowedHeaders: ["Authorization", "Content-Type", "Origin", "X-Requested-With", "Accept"],
+      credentials: true,
+    }),
+  );
 
-    app.get("/", (_req, res) => {
-      res.json({
-        message: "Car Rental API is running 🚀",
-        api: "/api/v1",
-        docs: "/api-docs",
-      });
-    });
+  app.use(express.json());
+  app.use("/api", routes);
 
-    app.use("/api/v1", routes);
+  setupDocumentation(app);
 
-    setupDocumentation(app);
-
-    const PORT = Number(process.env.PORT) || 4000;
-
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
-      console.log(`🌍 API: http://localhost:${PORT}/api/v1`);
-      console.log(`📄 Docs: http://localhost:${PORT}/api-docs`);
-    });
-  } catch (error) {
-    console.error("❌ Failed to start server:", error);
-    process.exit(1);
-  }
+  const PORT: number = parseInt(process.env.PORT as string) || 4000;
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
 }
 
-// Run only if executed directly
+// Only start server if this file is executed directly
 if (require.main === module) {
   startServer();
 }

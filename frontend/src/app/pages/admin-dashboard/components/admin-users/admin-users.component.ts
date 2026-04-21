@@ -77,7 +77,7 @@ export class AdminUsersComponent {
 
     this.userService.updateUser(userId!, this.form.getRawValue()).subscribe({
       next: () => {
-        this.success.set("User updated successfully");
+        this.success.set("UserTypes updated successfully");
         this.cancelEdit();
         this.loadUsers();
       },
@@ -92,7 +92,7 @@ export class AdminUsersComponent {
 
     this.userService.deleteUser(id).subscribe({
       next: () => {
-        this.success.set("User deleted successfully");
+        this.success.set("UserTypes deleted successfully");
         this.loadUsers();
       },
       error: (err) => {

@@ -16,10 +16,10 @@ router.get("/", (_req, res) => {
     message: "Car Rental API running 🚀",
     version: "v1",
     endpoints: {
-      ping: "/api/v1/ping",
-      cars: "/api/v1/cars",
-      auth: "/api/v1/auth",
-      bookings: "/api/v1/bookings",
+      ping: "/api/ping",
+      cars: "/api/cars",
+      auth: "/api/auth",
+      bookings: "/api/bookings",
     },
   });
 });

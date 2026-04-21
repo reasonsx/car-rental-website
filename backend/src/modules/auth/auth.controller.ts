@@ -1,9 +1,9 @@
 import { type Request, type Response, type NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import Joi, { ValidationResult } from "joi";
+import Joi from "joi";
+
 import { UserModel } from "../user/user.model";
-import { User } from "../user/user";
 
 export interface AuthRequest extends Request {
   user?: {
@@ -14,66 +14,80 @@ export interface AuthRequest extends Request {
   };
 }
 
+// ========================
+// VALIDATION SCHEMAS
+// ========================
+
+const registerSchema = Joi.object({
+  name: Joi.string().min(3).max(100).required(),
+  email: Joi.string().email().required(),
+  password: Joi.string().min(6).required(),
+});
+
+const loginSchema = Joi.object({
+  email: Joi.string().email().required(),
+  password: Joi.string().min(6).required(),
+});
+
+// ========================
+// REGISTER
+// ========================
+
 export async function registerUser(req: Request, res: Response) {
   try {
-    const { error } = validateUserRegistrationInfo(req.body);
+    const { error } = registerSchema.validate(req.body);
     if (error) {
-      return res.status(400).json({ message: error.details[0].message });
+      return res.status(400).json({ error: error.details[0].message });
     }
 
-    const emailExists = await UserModel.findOne({ email: req.body.email });
-    if (emailExists) {
-      return res.status(400).json({ message: "Email already exists" });
+    const existingUser = await UserModel.findOne({ email: req.body.email });
+    if (existingUser) {
+      return res.status(400).json({ error: "Email already exists" });
     }
 
-    const hashedPassword = await bcrypt.hash(req.body.password, await bcrypt.genSalt(10));
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
-    const user = new UserModel({
+    const user = await UserModel.create({
       name: req.body.name,
       email: req.body.email,
       password: hashedPassword,
     });
 
-    await user.save();
-
-    res.status(201).json({ error: null, data: user._id });
-  } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    res.status(201).json({
+      error: null,
+      data: {
+        id: user._id.toString(),
+      },
+    });
+  } catch {
+    res.status(500).json({ error: "Failed to register user" });
   }
 }
 
-export function validateUserRegistrationInfo(data: User): ValidationResult {
-  return Joi.object({
-    name: Joi.string().min(3).max(100).required(),
-    email: Joi.string().email().required(),
-    password: Joi.string().min(6).required(),
-  }).validate(data);
-}
-
-export function validateUserLoginInfo(data: User): ValidationResult {
-  return Joi.object({
-    email: Joi.string().email().required(),
-    password: Joi.string().min(6).required(),
-  }).validate(data);
-}
+// ========================
+// LOGIN
+// ========================
 
 export async function loginUser(req: Request, res: Response) {
   try {
-    const { error } = validateUserLoginInfo(req.body);
+    const { error } = loginSchema.validate(req.body);
     if (error) {
-      return res.status(400).json({ message: error.details[0].message });
+      return res.status(400).json({ error: error.details[0].message });
     }
 
     const user = await UserModel.findOne({ email: req.body.email });
-
     if (!user) {
-      return res.status(400).json({ message: "Invalid email or password" });
+      return res.status(400).json({ error: "Invalid email or password" });
     }
 
     const isMatch = await bcrypt.compare(req.body.password, user.password);
-
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid email or password" });
+      return res.status(400).json({ error: "Invalid email or password" });
+    }
+
+    const secret = process.env.TOKEN_SECRET;
+    if (!secret) {
+      return res.status(500).json({ error: "Server misconfiguration" });
     }
 
     const token = jwt.sign(
@@ -83,11 +97,11 @@ export async function loginUser(req: Request, res: Response) {
         email: user.email,
         isAdmin: user.isAdmin,
       },
-      process.env.TOKEN_SECRET as string,
+      secret,
       { expiresIn: "2h" },
     );
 
-    res.status(200).json({
+    res.json({
       error: null,
       data: {
         token,
@@ -99,35 +113,34 @@ export async function loginUser(req: Request, res: Response) {
         },
       },
     });
-  } catch (error) {
-    res.status(500).json({ message: "Failed to auth user: " + error });
+  } catch {
+    res.status(500).json({ error: "Failed to login user" });
   }
 }
+
+// ========================
+// VERIFY TOKEN (MIDDLEWARE)
+// ========================
 
 export function verifyToken(req: AuthRequest, res: Response, next: NextFunction) {
   const authHeader = req.header("Authorization");
 
-  if (!authHeader) {
-    return res.status(401).json({
-      message: "Access denied. No token provided.",
-    });
+  if (!authHeader?.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Access denied. No token." });
   }
 
-  const token = authHeader.replace("Bearer ", "");
-
-  if (!token) {
-    return res.status(401).json({
-      message: "Access denied. No token provided.",
-    });
-  }
+  const token = authHeader.split(" ")[1];
 
   try {
-    req.user = jwt.verify(token, process.env.TOKEN_SECRET as string) as AuthRequest["user"];
+    const secret = process.env.TOKEN_SECRET;
+    if (!secret) {
+      return res.status(500).json({ error: "Server misconfiguration" });
+    }
+
+    req.user = jwt.verify(token, secret) as AuthRequest["user"];
 
     next();
   } catch {
-    return res.status(400).json({
-      message: "Invalid token.",
-    });
+    return res.status(401).json({ error: "Invalid token" });
   }
 }

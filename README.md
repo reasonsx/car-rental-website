@@ -7,7 +7,7 @@ Full-stack car rental system built with Angular, Node.js, Express, MongoDB, Tail
 - Authentication (login/register)
 - Browse & filter cars by location
 - Booking system
-- User profile management
+- UserTypes profile management
 - Admin dashboard (cars, users, bookings, categories, locations)
 
 ## ⚙️ Setup
