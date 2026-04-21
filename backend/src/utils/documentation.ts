@@ -3,15 +3,20 @@ import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
 
 export function setupDocumentation(app: Application) {
-  const options = {
+  const options: swaggerJsdoc.Options = {
     definition: {
       openapi: "3.0.0",
       info: {
         title: "Car Rental API",
         version: "1.0.0",
       },
+      servers: [
+        {
+          url: "http://localhost:4000/api", // 🔥 THIS FIXES YOUR 404
+        },
+      ],
     },
-    apis: ["./src/modules/**/*.ts"],
+    apis: ["./src/**/*.ts"], // 🔥 safer than modules/*
   };
 
   const specs = swaggerJsdoc(options);

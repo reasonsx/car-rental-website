@@ -29,10 +29,35 @@ const loginSchema = Joi.object({
   password: Joi.string().min(6).required(),
 });
 
-// ========================
-// REGISTER
-// ========================
-
+/**
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, email, password]
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: John Doe
+ *               email:
+ *                 type: string
+ *                 example: john@example.com
+ *               password:
+ *                 type: string
+ *                 example: 123456
+ *     responses:
+ *       201:
+ *         description: User created
+ *       400:
+ *         description: Validation error
+ */
 export async function registerUser(req: Request, res: Response) {
   try {
     const { error } = registerSchema.validate(req.body);
@@ -64,10 +89,32 @@ export async function registerUser(req: Request, res: Response) {
   }
 }
 
-// ========================
-// LOGIN
-// ========================
-
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Login user and receive JWT token
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [email, password]
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: john@example.com
+ *               password:
+ *                 type: string
+ *                 example: 123456
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *       400:
+ *         description: Invalid credentials
+ */
 export async function loginUser(req: Request, res: Response) {
   try {
     const { error } = loginSchema.validate(req.body);
