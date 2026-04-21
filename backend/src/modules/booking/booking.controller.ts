@@ -4,8 +4,36 @@ import { BookingStatus } from "./booking";
 import { AuthRequest } from "../auth/auth.controller";
 
 /**
- * Create a new booking
- * @route POST /api/bookings
+ * @swagger
+ * /bookings:
+ *   post:
+ *     summary: Create a new booking
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [carId, startDate, endDate]
+ *             properties:
+ *               carId:
+ *                 type: string
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *               endDate:
+ *                 type: string
+ *                 format: date
+ *     responses:
+ *       201:
+ *         description: Booking created
+ *       400:
+ *         description: Validation error
+ *       409:
+ *         description: Overlapping booking
  */
 export async function createBooking(req: AuthRequest, res: Response) {
   try {
@@ -79,8 +107,22 @@ export async function createBooking(req: AuthRequest, res: Response) {
 }
 
 /**
- * Get all bookings
- * @route GET /api/bookings
+ * @swagger
+ * /bookings:
+ *   get:
+ *     summary: Get bookings for logged-in user
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of bookings
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Booking'
  */
 export async function getBookings(req: AuthRequest, res: Response) {
   try {
@@ -101,8 +143,22 @@ export async function getBookings(req: AuthRequest, res: Response) {
 }
 
 /**
- * Get booking by ID
- * @route GET /api/bookings/:id
+ * @swagger
+ * /bookings/{id}:
+ *   get:
+ *     summary: Get booking by ID
+ *     tags: [Bookings]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Booking found
+ *       404:
+ *         description: Not found
  */
 export async function getBookingById(req: Request, res: Response) {
   try {
@@ -124,6 +180,22 @@ export async function getBookingById(req: Request, res: Response) {
   }
 }
 
+/**
+ * @swagger
+ * /bookings/car/{carId}:
+ *   get:
+ *     summary: Get bookings for a specific car
+ *     tags: [Bookings]
+ *     parameters:
+ *       - in: path
+ *         name: carId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Booking dates
+ */
 export async function getBookingsForCar(req: Request, res: Response) {
   try {
     const bookings = await BookingModel.find({
@@ -141,8 +213,27 @@ export async function getBookingsForCar(req: Request, res: Response) {
 }
 
 /**
- * Update booking by ID
- * @route PUT /api/bookings/:id
+ * @swagger
+ * /bookings/{id}:
+ *   put:
+ *     summary: Update booking
+ *     tags: [Bookings]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Booking'
+ *     responses:
+ *       200:
+ *         description: Updated booking
+ *       404:
+ *         description: Not found
  */
 export async function updateBooking(req: Request, res: Response) {
   try {
@@ -168,8 +259,22 @@ export async function updateBooking(req: Request, res: Response) {
 }
 
 /**
- * Delete booking by ID
- * @route DELETE /api/bookings/:id
+ * @swagger
+ * /bookings/{id}:
+ *   delete:
+ *     summary: Delete booking
+ *     tags: [Bookings]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Booking deleted
+ *       404:
+ *         description: Not found
  */
 export async function deleteBooking(req: Request, res: Response) {
   try {
