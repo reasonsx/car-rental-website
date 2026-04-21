@@ -33,7 +33,13 @@
         <tr>
           <td>{{ b.carId?.brand }} {{ b.carId?.modelName }}</td>
           <td>{{ b.userId?.name }}</td>
-          <td>{{ b.startDate | date }} → {{ b.endDate | date }}</td>
+          <td>
+            <div class="inline-flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-md text-xs">
+              <span>{{ b.startDate | date:'MMM d, y' }}</span>
+              <span class="text-gray-400">–</span>
+              <span>{{ b.endDate | date:'MMM d, y' }}</span>
+            </div>
+          </td>
           <td>{{ b.totalPrice }} DKK</td>
 
           <td>
