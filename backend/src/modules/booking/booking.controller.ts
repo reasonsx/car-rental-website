@@ -58,7 +58,10 @@ export async function createBooking(req: AuthRequest, res: Response) {
       return res.status(400).json({ message: "Invalid date range" });
     }
 
-    if (start < new Date()) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (start < today) {
       return res.status(400).json({ message: "Cannot book past dates" });
     }
 

@@ -241,10 +241,13 @@ export class CarDetailsComponent {
       })
       .subscribe({
         next: () => {
+          console.log("BOOKED SUCCESS");
           this.loadData();
           this.selectedRange.set(null);
         },
-        error: (err) => console.error(err),
+        error: (err) => {
+          console.error("BOOKING ERROR:", err);
+        },
       });
   }
 }

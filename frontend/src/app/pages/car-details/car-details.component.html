@@ -163,7 +163,7 @@
                   </div>
                 }
 
-                @for (cell of days(); track cell.date) {
+                @for (cell of days(); track $index) {
                   <div
                     class="rounded-md h-9 flex items-center justify-center text-xs transition"
                     [class.bg-gray-100]="!cell.date"

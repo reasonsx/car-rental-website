@@ -19,7 +19,13 @@ export class BookingService {
   }
 
   createBooking(data: { carId: string; startDate: Date; endDate: Date }): Observable<Booking> {
-    return this.http.post<Booking>(this.baseUrl, data);
+    const token = localStorage.getItem("token");
+
+    return this.http.post<Booking>(this.baseUrl, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
   }
 
   updateBooking(id: string, data: Partial<Booking>): Observable<Booking> {
