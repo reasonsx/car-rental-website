@@ -1,6 +1,7 @@
-import { Component, signal } from "@angular/core";
+import { Component, inject, signal } from "@angular/core";
 import { RouterOutlet } from "@angular/router";
 import { NavComponent } from "./components/nav/nav.component";
+import { CarStore } from "./stores/car.store";
 
 @Component({
   selector: "app-root",
@@ -9,5 +10,9 @@ import { NavComponent } from "./components/nav/nav.component";
   templateUrl: "./app.component.html",
 })
 export class App {
-  protected readonly title = signal("frontend");
+  private carStore = inject(CarStore);
+
+  constructor() {
+    this.carStore.loadCars();
+  }
 }

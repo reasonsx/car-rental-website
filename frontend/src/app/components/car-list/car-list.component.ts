@@ -1,37 +1,31 @@
-import { Component, input, computed, signal, effect } from "@angular/core";
+import { Component, computed, signal, effect, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { CarCardComponent } from "../car-card/car-card.component";
-import { Car } from "../../models/car.model";
 import { ButtonModule } from "primeng/button";
-import { InputTextModule } from "primeng/inputtext";
 import { SelectModule } from "primeng/select";
 import { FormsModule } from "@angular/forms";
 import { SliderModule } from "primeng/slider";
+import { CarStore } from "../../stores/car.store";
 
 type SortOption = "priceAsc" | "priceDesc" | "yearDesc";
 
 @Component({
   selector: "app-car-list",
   standalone: true,
-  imports: [
-    CommonModule,
-    CarCardComponent,
-    ButtonModule,
-    InputTextModule,
-    SelectModule,
-    FormsModule,
-    SliderModule,
-  ],
+  imports: [CommonModule, CarCardComponent, ButtonModule, SelectModule, FormsModule, SliderModule],
   templateUrl: "./car-list.component.html",
 })
 export class CarListComponent {
-  cars = input<Car[]>([]);
+  private carStore = inject(CarStore);
 
-  // filters
+  // 🔥 use filtered cars from store
+  cars = this.carStore.filteredCars;
+
   selectedCategory = signal<string | null>(null);
   selectedBrand = signal<string | null>(null);
-  priceRange = signal<[number, number]>([0, 100]);
   selectedYear = signal<number | null>(null);
+  priceRange = signal<[number, number]>([0, 100]);
+  sort = signal<SortOption>("priceAsc");
 
   constructor() {
     effect(() => {
@@ -42,51 +36,29 @@ export class CarListComponent {
     });
   }
 
-  years = computed(() => {
-    const unique = new Set(this.cars().map((car) => car.year));
-    return Array.from(unique)
-      .sort((a, b) => b - a) // newest first
-      .map((y) => ({
-        label: y.toString(),
-        value: y,
-      }));
-  });
-
   priceBounds = computed<[number, number]>(() => {
-    const cars = this.cars();
-    if (!cars.length) return [0, 100];
-
-    const prices = cars.map((c) => c.pricePerDay);
-    return [Math.min(...prices), Math.max(...prices)];
+    const prices = this.cars().map((c) => c.pricePerDay);
+    return prices.length ? [Math.min(...prices), Math.max(...prices)] : [0, 100];
   });
 
-  // sorting
-  sort = signal<SortOption>("priceAsc");
-
-  // computed
   filteredCars = computed(() => {
     let result = [...this.cars()];
 
-    // filter by category
     if (this.selectedCategory()) {
-      result = result.filter((car) => car.categoryId === this.selectedCategory());
+      result = result.filter((c) => c.categoryId._id === this.selectedCategory());
     }
 
-    // filter by price
     const [min, max] = this.priceRange();
-    result = result.filter((car) => car.pricePerDay >= min && car.pricePerDay <= max);
+    result = result.filter((c) => c.pricePerDay >= min && c.pricePerDay <= max);
 
-    // filter by brand
     if (this.selectedBrand()) {
-      result = result.filter((car) => car.brand === this.selectedBrand());
+      result = result.filter((c) => c.brand === this.selectedBrand());
     }
 
-    // filter by year
     if (this.selectedYear()) {
-      result = result.filter((car) => car.year === this.selectedYear());
+      result = result.filter((c) => c.year === this.selectedYear());
     }
 
-    // sorting
     switch (this.sort()) {
       case "priceAsc":
         result.sort((a, b) => a.pricePerDay - b.pricePerDay);
@@ -103,11 +75,21 @@ export class CarListComponent {
   });
 
   brands = computed(() => {
-    const unique = new Set(this.cars().map((car) => car.brand));
+    const unique = new Set(this.cars().map((c) => c.brand));
     return Array.from(unique).map((b) => ({
       label: b,
       value: b,
     }));
+  });
+
+  years = computed(() => {
+    const unique = new Set(this.cars().map((c) => c.year));
+    return Array.from(unique)
+      .sort((a, b) => b - a)
+      .map((y) => ({
+        label: y.toString(),
+        value: y,
+      }));
   });
 
   hasActiveFilters = computed(() => {

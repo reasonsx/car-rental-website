@@ -1,11 +1,24 @@
 import { Request, Response } from "express";
+import mongoose from "mongoose";
 import { CarModel } from "../models/carModel";
+import { CreateCarRequest, UpdateCarRequest, CarResponse } from "../types/car.types";
+
+const mapCar = (c: any): CarResponse => ({
+  id: c._id.toString(),
+  brand: c.brand,
+  modelName: c.modelName,
+  year: c.year,
+  pricePerDay: c.pricePerDay,
+  available: c.available,
+  imageUrl: c.imageUrl,
+  categoryId: c.categoryId, // now object
+  locationId: c.locationId, // now object
+});
 
 /**
- * Create a new car
- * @route POST /api/cars
+ * CREATE
  */
-export async function createCar(req: Request, res: Response) {
+export async function createCar(req: Request<{}, {}, CreateCarRequest>, res: Response) {
   try {
     const { brand, modelName, year, pricePerDay, imageUrl, categoryId, locationId, available } =
       req.body;
@@ -14,7 +27,7 @@ export async function createCar(req: Request, res: Response) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const car = new CarModel({
+    const car = await CarModel.create({
       brand,
       modelName,
       year,
@@ -25,8 +38,7 @@ export async function createCar(req: Request, res: Response) {
       locationId,
     });
 
-    const savedCar = await car.save();
-    res.status(201).json(savedCar);
+    res.status(201).json(mapCar(car));
   } catch (error: any) {
     res.status(500).json({
       message: "Failed to create car",
@@ -36,14 +48,12 @@ export async function createCar(req: Request, res: Response) {
 }
 
 /**
- * Get all cars
- * @route GET /api/cars
+ * GET ALL
  */
 export async function getCars(_req: Request, res: Response) {
   try {
     const cars = await CarModel.find().populate("categoryId").populate("locationId").lean();
-
-    res.status(200).json(cars);
+    res.status(200).json(cars.map(mapCar));
   } catch (error: any) {
     res.status(500).json({
       message: "Failed to fetch cars",
@@ -53,21 +63,23 @@ export async function getCars(_req: Request, res: Response) {
 }
 
 /**
- * Get a car by ID
- * @route GET /api/cars/:id
+ * GET ONE
  */
-export async function getCarById(req: Request, res: Response) {
+export async function getCarById(req: Request<{ id: string }>, res: Response) {
   try {
-    const car = await CarModel.findById(req.params.id)
-      .populate("categoryId")
-      .populate("locationId")
-      .lean();
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid ID" });
+    }
+
+    const car = await CarModel.findById(id).populate("categoryId").populate("locationId").lean();
 
     if (!car) {
       return res.status(404).json({ message: "Car not found" });
     }
 
-    res.status(200).json(car);
+    res.status(200).json(mapCar(car));
   } catch (error: any) {
     res.status(500).json({
       message: "Failed to fetch car",
@@ -77,24 +89,26 @@ export async function getCarById(req: Request, res: Response) {
 }
 
 /**
- * Update a car by ID
- * @route PUT /api/cars/:id
+ * UPDATE
  */
-export async function updateCar(req: Request, res: Response) {
+export async function updateCar(req: Request<{ id: string }, {}, UpdateCarRequest>, res: Response) {
   try {
-    const updatedCar = await CarModel.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid ID" });
+    }
+
+    const updatedCar = await CarModel.findByIdAndUpdate(id, req.body, {
+      returnDocument: "after",
       runValidators: true,
-    })
-      .populate("categoryId")
-      .populate("locationId")
-      .lean();
+    }).lean();
 
     if (!updatedCar) {
       return res.status(404).json({ message: "Car not found" });
     }
 
-    res.status(200).json(updatedCar);
+    res.status(200).json(mapCar(updatedCar));
   } catch (error: any) {
     res.status(500).json({
       message: "Failed to update car",
@@ -104,12 +118,17 @@ export async function updateCar(req: Request, res: Response) {
 }
 
 /**
- * Delete a car by ID
- * @route DELETE /api/cars/:id
+ * DELETE
  */
-export async function deleteCar(req: Request, res: Response) {
+export async function deleteCar(req: Request<{ id: string }>, res: Response) {
   try {
-    const deletedCar = await CarModel.findByIdAndDelete(req.params.id);
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid ID" });
+    }
+
+    const deletedCar = await CarModel.findByIdAndDelete(id);
 
     if (!deletedCar) {
       return res.status(404).json({ message: "Car not found" });
