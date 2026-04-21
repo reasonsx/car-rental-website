@@ -1,6 +1,7 @@
 import { Router } from "express";
-import userRoutes from "../modules/user/userRoutes";
-import authRoutes from "./authRoutes";
+
+import userRoutes from "../modules/user/user.routes";
+import authRoutes from "../modules/auth/auth.routes";
 import bookingRoutes from "../modules/booking/booking.routes";
 import carRoutes from "../modules/car/car.routes";
 import categoryRoutes from "../modules/category/category.routes";
@@ -8,16 +9,16 @@ import locationRoutes from "../modules/location/location.routes";
 
 const router = Router();
 
-// Example route
-router.get("/ping", (req, res) => {
+// Health check
+router.get("/ping", (_req, res) => {
   res.json({ message: "pong" });
 });
 
-router.use("/auth", authRoutes); // /api/auth/register, /api/auth/auth
-router.use("/users", userRoutes); // /api/users, /api/users/:id
-router.use("/bookings", bookingRoutes); // /api/bookings, /api/bookings/:id
-router.use("/cars", carRoutes); // /api/cars, /api/cars/:id
-router.use("/categories", categoryRoutes); // /api/categories, /api/categories/:id
-router.use("/locations", locationRoutes); // /api/locations, /api/locations/:id
+router.use("/auth", authRoutes);
+router.use("/users", userRoutes);
+router.use("/bookings", bookingRoutes);
+router.use("/cars", carRoutes);
+router.use("/categories", categoryRoutes);
+router.use("/locations", locationRoutes);
 
 export default router;

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { BookingModel } from "./booking.model";
 import { BookingStatus } from "./booking";
-import { AuthRequest } from "../../controllers/authController";
+import { AuthRequest } from "../auth/auth.controller";
 
 /**
  * Create a new booking

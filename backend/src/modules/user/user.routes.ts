@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { getAllUsers, getUserById, updateUser, deleteUser } from "./userController";
-import { verifyToken } from "../../controllers/authController";
+import { getAllUsers, getUserById, updateUser, deleteUser } from "./user.controller";
+import { verifyToken } from "../auth/auth.controller";
 
 const router = Router();
 

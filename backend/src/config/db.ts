@@ -1,4 +1,4 @@
-// src/repository/database.ts
+// src/repository/db.ts
 import mongoose from "mongoose";
 
 let isConnected = false; // track connection status

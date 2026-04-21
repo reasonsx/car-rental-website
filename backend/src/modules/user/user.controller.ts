@@ -1,6 +1,6 @@
 import { Response } from "express";
-import { UserModel } from "./userModel";
-import { AuthRequest } from "../../controllers/authController";
+import { UserModel } from "./user.model";
+import { AuthRequest } from "../auth/auth.controller";
 
 export async function getAllUsers(req: AuthRequest, res: Response) {
   try {

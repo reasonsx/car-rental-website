@@ -2,8 +2,8 @@ import { type Request, type Response, type NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import Joi, { ValidationResult } from "joi";
-import { UserModel } from "../modules/user/userModel";
-import { User } from "../modules/user/user";
+import { UserModel } from "../user/user.model";
+import { User } from "../user/user";
 
 export interface AuthRequest extends Request {
   user?: {

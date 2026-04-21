@@ -11,9 +11,10 @@ export function setupDocumentation(app: Application) {
         version: "1.0.0",
       },
     },
-    apis: ["./src/routes.ts"], // later point to all your route files
+    apis: ["./src/modules/**/*.ts"],
   };
 
   const specs = swaggerJsdoc(options);
-  app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(specs));
+
+  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 }

@@ -20,7 +20,7 @@
       "node_modules",
       "dist"
     ],
-    "exec": "npx ts-node ./src/index.ts"
+    "exec": "npx ts-node ./src/server.ts"
   },
   "repository": {
     "type": "git",

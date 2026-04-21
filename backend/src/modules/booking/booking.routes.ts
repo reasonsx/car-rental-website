@@ -7,7 +7,7 @@ import {
   deleteBooking,
   getBookingsForCar,
 } from "./booking.controller";
-import { verifyToken } from "../../controllers/authController";
+import { verifyToken } from "../auth/auth.controller";
 
 const router = Router();
 
