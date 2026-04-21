@@ -2,7 +2,7 @@ import { Component, inject, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { UserService } from "../../../../services/user.service";
-import { User } from "../../../../models/auth.model";
+import { User } from "../../../../models/user.model"; // ✅ FIXED
 
 import { TableModule } from "primeng/table";
 import { ButtonModule } from "primeng/button";
@@ -23,31 +23,37 @@ import { InputTextModule } from "primeng/inputtext";
   templateUrl: "./admin-users.component.html",
 })
 export class AdminUsersComponent {
+  private fb = inject(FormBuilder);
+  private userService = inject(UserService);
+
   users = signal<User[]>([]);
   selectedUser = signal<User | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
   success = signal<string | null>(null);
-  private fb = inject(FormBuilder);
+
   form = this.fb.nonNullable.group({
     name: ["", Validators.required],
     email: ["", [Validators.required, Validators.email]],
     isAdmin: false,
   });
-  private userService = inject(UserService);
 
   constructor() {
     this.loadUsers();
   }
 
+  // ========================
+  // LOAD
+  // ========================
   loadUsers(): void {
     this.loading.set(true);
     this.error.set(null);
     this.success.set(null);
 
     this.userService.getAllUsers().subscribe({
-      next: (res) => {
-        this.users.set(res.data);
+      next: (users) => {
+        // ✅ FIXED
+        this.users.set(users);
         this.loading.set(false);
       },
       error: (err) => {
@@ -57,6 +63,9 @@ export class AdminUsersComponent {
     });
   }
 
+  // ========================
+  // EDIT
+  // ========================
   editUser(user: User): void {
     this.selectedUser.set(user);
 
@@ -70,14 +79,17 @@ export class AdminUsersComponent {
     this.success.set(null);
   }
 
+  // ========================
+  // SAVE
+  // ========================
   saveUser(): void {
     if (this.form.invalid || !this.selectedUser()) return;
 
-    const userId = this.selectedUser()?.id;
+    const userId = this.selectedUser()!.id;
 
-    this.userService.updateUser(userId!, this.form.getRawValue()).subscribe({
+    this.userService.updateUser(userId, this.form.getRawValue()).subscribe({
       next: () => {
-        this.success.set("UserTypes updated successfully");
+        this.success.set("User updated successfully"); // ✅ FIXED TEXT
         this.cancelEdit();
         this.loadUsers();
       },
@@ -87,12 +99,15 @@ export class AdminUsersComponent {
     });
   }
 
+  // ========================
+  // DELETE
+  // ========================
   deleteUser(id: string): void {
     if (!confirm("Delete this user?")) return;
 
     this.userService.deleteUser(id).subscribe({
       next: () => {
-        this.success.set("UserTypes deleted successfully");
+        this.success.set("User deleted successfully"); // ✅ FIXED TEXT
         this.loadUsers();
       },
       error: (err) => {
@@ -101,8 +116,12 @@ export class AdminUsersComponent {
     });
   }
 
+  // ========================
+  // RESET
+  // ========================
   cancelEdit(): void {
     this.selectedUser.set(null);
+
     this.form.reset({
       name: "",
       email: "",

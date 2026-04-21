@@ -1,8 +1,14 @@
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { Observable } from "rxjs";
-import { User } from "../models/auth.model";
+import { HttpClient } from "@angular/common/http";
+import { Observable, map } from "rxjs";
+import { User } from "../models/user.model";
 import { API_BASE_URL } from "./api.constants";
+
+// API wrapper
+interface ApiResponse<T> {
+  error: string | null;
+  data: T;
+}
 
 @Injectable({ providedIn: "root" })
 export class UserService {
@@ -10,19 +16,35 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
-  getAllUsers(): Observable<{ error: null; data: User[] }> {
-    return this.http.get<{ error: null; data: User[] }>(this.baseUrl, {});
+  // ========================
+  // GET ALL
+  // ========================
+  getAllUsers(): Observable<User[]> {
+    return this.http.get<ApiResponse<User[]>>(this.baseUrl).pipe(map((res) => res.data));
   }
 
-  getUserById(id: string): Observable<{ error: null; data: User }> {
-    return this.http.get<{ error: null; data: User }>(`${this.baseUrl}/${id}`, {});
+  // ========================
+  // GET ONE
+  // ========================
+  getUserById(id: string): Observable<User> {
+    return this.http.get<ApiResponse<User>>(`${this.baseUrl}/${id}`).pipe(map((res) => res.data));
   }
 
-  updateUser(id: string, user: Partial<User>): Observable<{ error: null; data: User }> {
-    return this.http.put<{ error: null; data: User }>(`${this.baseUrl}/${id}`, user, {});
+  // ========================
+  // UPDATE
+  // ========================
+  updateUser(id: string, user: Partial<User>): Observable<User> {
+    return this.http
+      .put<ApiResponse<User>>(`${this.baseUrl}/${id}`, user)
+      .pipe(map((res) => res.data));
   }
 
-  deleteUser(id: string): Observable<{ error: null; data: string }> {
-    return this.http.delete<{ error: null; data: string }>(`${this.baseUrl}/${id}`, {});
+  // ========================
+  // DELETE
+  // ========================
+  deleteUser(id: string): Observable<string> {
+    return this.http
+      .delete<ApiResponse<string>>(`${this.baseUrl}/${id}`)
+      .pipe(map((res) => res.data));
   }
 }
