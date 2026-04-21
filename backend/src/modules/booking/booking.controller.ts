@@ -126,9 +126,9 @@ export async function createBooking(req: AuthRequest, res: Response) {
  */
 export async function getBookings(req: AuthRequest, res: Response) {
   try {
-    const userId = req.user?.id;
+    const query = req.user?.isAdmin ? {} : { userId: req.user?.id };
 
-    const bookings = await BookingModel.find({ userId })
+    const bookings = await BookingModel.find(query)
       .populate("userId", "name email")
       .populate("carId", "brand modelName pricePerDay imageUrl")
       .lean();

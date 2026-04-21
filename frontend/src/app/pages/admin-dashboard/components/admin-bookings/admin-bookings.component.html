@@ -1,12 +1,85 @@
-<div class="admin-bookings">
-  <h2>Bookings Management</h2>
-  <p>Booking management functionality will be implemented here.</p>
-  <p>Features to include:</p>
-  <ul>
-    <li>View all bookings</li>
-    <li>Approve/reject bookings</li>
-    <li>Edit booking details</li>
-    <li>Cancel bookings</li>
-    <li>View booking history</li>
-  </ul>
+<div class="h-full flex flex-col overflow-hidden">
+
+  <div class="mb-6">
+    <h2 class="text-xl font-semibold">Bookings Management</h2>
+
+    @if (error()) {
+      <div class="text-red-500">{{ error() }}</div>
+    }
+  </div>
+
+  <!-- TABLE AREA -->
+  <div class="flex-1 overflow-hidden">
+    <p-table
+      [value]="bookings()"
+      [paginator]="true"
+      [rows]="8"
+      scrollable="true"
+      scrollHeight="flex"
+      class="h-full"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Car</th>
+          <th>User</th>
+          <th>Dates</th>
+          <th>Price</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-b>
+        <tr>
+          <td>{{ b.carId?.brand }} {{ b.carId?.modelName }}</td>
+          <td>{{ b.userId?.name }}</td>
+          <td>{{ b.startDate | date }} → {{ b.endDate | date }}</td>
+          <td>{{ b.totalPrice }} DKK</td>
+
+          <td>
+            <span
+              class="px-2 py-1 rounded text-xs font-medium"
+              [class.bg-green-100]="b.status === 'confirmed'"
+              [class.text-green-700]="b.status === 'confirmed'"
+              [class.bg-yellow-100]="b.status === 'pending'"
+              [class.text-yellow-700]="b.status === 'pending'"
+              [class.bg-red-100]="b.status === 'cancelled'"
+              [class.text-red-700]="b.status === 'cancelled'"
+            >
+              {{ b.status }}
+            </span>
+          </td>
+
+          <td class="flex items-center gap-2">
+            <p-select
+              [options]="statusOptions"
+              optionLabel="label"
+              optionValue="value"
+              [ngModel]="b.status"
+              (ngModelChange)="updateStatus(b, $event)"
+              class="w-32"
+            />
+
+            <p-button
+              icon="pi pi-trash"
+              size="small"
+              severity="danger"
+              [text]="true"
+              (onClick)="delete(b._id)"
+            />
+          </td>
+        </tr>
+      </ng-template>
+
+      <!-- EMPTY STATE -->
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6" class="text-center py-10 text-gray-500">
+            No bookings found
+          </td>
+        </tr>
+      </ng-template>
+
+    </p-table>
+  </div>
 </div>

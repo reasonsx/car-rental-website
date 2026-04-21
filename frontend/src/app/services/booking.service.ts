@@ -21,4 +21,12 @@ export class BookingService {
   createBooking(data: { carId: string; startDate: Date; endDate: Date }): Observable<Booking> {
     return this.http.post<Booking>(this.baseUrl, data);
   }
+
+  updateBooking(id: string, data: Partial<Booking>): Observable<Booking> {
+    return this.http.put<Booking>(`${this.baseUrl}/${id}`, data);
+  }
+
+  deleteBooking(id: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.baseUrl}/${id}`);
+  }
 }
