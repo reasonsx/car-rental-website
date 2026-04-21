@@ -26,13 +26,12 @@ export class HomeComponent {
   private locationService = inject(LocationService);
   private carStore = inject(CarStore);
 
-  // state
   locations = signal<Location[]>([]);
   error = signal<string | null>(null);
 
-  // 🔥 store-driven
   cars = this.carStore.filteredCars;
   loading = this.carStore.loading;
+  selectedLocationId = this.carStore.selectedLocationId;
 
   constructor() {
     this.loadLocations();
@@ -40,12 +39,12 @@ export class HomeComponent {
   }
 
   selectLocation(locationId?: string) {
-    this.carStore.selectedLocationId.set(locationId ?? null);
+    this.selectedLocationId.set(locationId ?? null);
   }
-  selectedLocationId = this.carStore.selectedLocationId;
+
   private loadLocations() {
     this.locationService.getLocations().subscribe({
-      next: (locations) => this.locations.set(locations),
+      next: this.locations.set,
       error: () => this.error.set("Failed to load locations"),
     });
   }
