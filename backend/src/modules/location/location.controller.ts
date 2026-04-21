@@ -2,8 +2,36 @@ import { Request, Response } from "express";
 import { LocationModel } from "./location.model";
 
 /**
- * Create a new location
- * @route POST /api/locations
+ * @swagger
+ * /locations:
+ *   post:
+ *     summary: Create a new location
+ *     tags: [Locations]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, city, address, phone]
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Copenhagen Office
+ *               city:
+ *                 type: string
+ *                 example: Copenhagen
+ *               address:
+ *                 type: string
+ *                 example: Main Street 1
+ *               phone:
+ *                 type: string
+ *                 example: +4512345678
+ *     responses:
+ *       201:
+ *         description: Location created
+ *       400:
+ *         description: Validation error
  */
 export async function createLocation(req: Request, res: Response) {
   try {
@@ -33,8 +61,16 @@ export async function createLocation(req: Request, res: Response) {
 }
 
 /**
- * Get all locations
- * @route GET /api/locations
+ * @swagger
+ * /locations:
+ *   get:
+ *     summary: Get all locations
+ *     tags: [Locations]
+ *     responses:
+ *       200:
+ *         description: List of locations
+ *       500:
+ *         description: Server error
  */
 export async function getLocations(_req: Request, res: Response) {
   try {
@@ -49,8 +85,22 @@ export async function getLocations(_req: Request, res: Response) {
 }
 
 /**
- * Get a location by ID
- * @route GET /api/locations/:id
+ * @swagger
+ * /locations/{id}:
+ *   get:
+ *     summary: Get location by ID
+ *     tags: [Locations]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Location found
+ *       404:
+ *         description: Location not found
  */
 export async function getLocationById(req: Request, res: Response) {
   try {
@@ -70,8 +120,37 @@ export async function getLocationById(req: Request, res: Response) {
 }
 
 /**
- * Update a location by ID
- * @route PUT /api/locations/:id
+ * @swagger
+ * /locations/{id}:
+ *   put:
+ *     summary: Update a location
+ *     tags: [Locations]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               city:
+ *                 type: string
+ *               address:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Location updated
+ *       404:
+ *         description: Location not found
  */
 export async function updateLocation(req: Request, res: Response) {
   try {
@@ -94,8 +173,22 @@ export async function updateLocation(req: Request, res: Response) {
 }
 
 /**
- * Delete a location by ID
- * @route DELETE /api/locations/:id
+ * @swagger
+ * /locations/{id}:
+ *   delete:
+ *     summary: Delete a location
+ *     tags: [Locations]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Location deleted
+ *       404:
+ *         description: Location not found
  */
 export async function deleteLocation(req: Request, res: Response) {
   try {
