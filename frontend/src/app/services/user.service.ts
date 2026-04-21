@@ -16,32 +16,20 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
-  // ========================
-  // GET ALL
-  // ========================
   getAllUsers(): Observable<User[]> {
     return this.http.get<ApiResponse<User[]>>(this.baseUrl).pipe(map((res) => res.data));
   }
 
-  // ========================
-  // GET ONE
-  // ========================
   getUserById(id: string): Observable<User> {
     return this.http.get<ApiResponse<User>>(`${this.baseUrl}/${id}`).pipe(map((res) => res.data));
   }
 
-  // ========================
-  // UPDATE
-  // ========================
   updateUser(id: string, user: Partial<User>): Observable<User> {
     return this.http
       .put<ApiResponse<User>>(`${this.baseUrl}/${id}`, user)
       .pipe(map((res) => res.data));
   }
 
-  // ========================
-  // DELETE
-  // ========================
   deleteUser(id: string): Observable<string> {
     return this.http
       .delete<ApiResponse<string>>(`${this.baseUrl}/${id}`)
