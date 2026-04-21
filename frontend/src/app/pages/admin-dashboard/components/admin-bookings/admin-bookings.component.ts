@@ -7,11 +7,12 @@ import { TableModule } from "primeng/table";
 import { ButtonModule } from "primeng/button";
 import { SelectModule } from "primeng/select";
 import { FormsModule } from "@angular/forms";
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: "app-admin-bookings",
   standalone: true,
-  imports: [CommonModule, TableModule, ButtonModule, SelectModule, FormsModule],
+  imports: [CommonModule, TableModule, ButtonModule, SelectModule, FormsModule, RouterLink],
   templateUrl: "./admin-bookings.component.html",
 })
 export class AdminBookingsComponent {

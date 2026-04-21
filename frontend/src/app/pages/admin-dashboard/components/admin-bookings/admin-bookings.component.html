@@ -32,7 +32,13 @@
       <ng-template pTemplate="body" let-b>
         <tr>
           <td class="font-medium">
-            {{ b.carId?.brand }} {{ b.carId?.modelName }}
+            <a
+              [routerLink]="['/car', b.carId?._id]"
+              target="_blank"
+              class="text-blue-600 hover:underline"
+            >
+              {{ b.carId?.brand }} {{ b.carId?.modelName }}
+            </a>
           </td>
 
           <td>{{ b.userId?.name }}</td>
