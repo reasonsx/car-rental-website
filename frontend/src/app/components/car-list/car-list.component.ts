@@ -1,4 +1,4 @@
-import { Component, computed, signal, effect, inject, Input } from "@angular/core";
+import { Component, computed, signal, effect, inject, input } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { CarCardComponent } from "../car-card/car-card.component";
 import { ButtonModule } from "primeng/button";
@@ -19,7 +19,7 @@ type SortOption = "priceAsc" | "priceDesc" | "yearDesc";
 export class CarListComponent {
   private carService = inject(CarService);
 
-  @Input() selectedLocationId: string | null = null;
+  selectedLocationId = input<string | null>(null);
 
   cars = signal<Car[]>([]);
   loading = signal(true);
@@ -62,7 +62,7 @@ export class CarListComponent {
 
     // 🔥 location filter
     if (this.selectedLocationId) {
-      result = result.filter((c) => c.locationId._id === this.selectedLocationId);
+      result = result.filter((c) => c.locationId._id === this.selectedLocationId());
     }
 
     if (this.selectedCategory()) {
