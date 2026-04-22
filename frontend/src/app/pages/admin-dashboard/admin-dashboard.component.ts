@@ -1,4 +1,5 @@
-import { Component } from "@angular/core";
+import { Component, inject, signal, effect } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "primeng/tabs";
 
 import { AdminCarsComponent } from "./components/admin-cars/admin-cars.component";
@@ -27,6 +28,9 @@ type TabKey = "cars" | "users" | "bookings" | "categories" | "locations";
   templateUrl: "./admin-dashboard.component.html",
 })
 export class AdminDashboardComponent {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+
   tabs = [
     { key: "cars" as TabKey, label: "Cars" },
     { key: "users" as TabKey, label: "Users" },
@@ -34,5 +38,30 @@ export class AdminDashboardComponent {
     { key: "categories" as TabKey, label: "Categories" },
     { key: "locations" as TabKey, label: "Locations" },
   ];
-  activeTab: TabKey = "cars";
+  
+  activeTab = signal<TabKey>("cars");
+
+  constructor() {
+    // Read tab from URL query parameter on init
+    this.route.queryParams.subscribe((params) => {
+      const tab = params["tab"] as TabKey;
+      if (tab && this.tabs.some((t) => t.key === tab)) {
+        this.activeTab.set(tab);
+      }
+    });
+
+    // Update URL when tab changes
+    effect(() => {
+      const currentTab = this.activeTab();
+      this.router.navigate([], {
+        relativeTo: this.route,
+        queryParams: { tab: currentTab },
+        queryParamsHandling: "merge",
+      });
+    });
+  }
+
+  onTabChange(tabKey: TabKey): void {
+    this.activeTab.set(tabKey);
+  }
 }
