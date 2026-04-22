@@ -9,6 +9,7 @@ function mapUser(user: any) {
     name: user.name,
     email: user.email,
     isAdmin: user.isAdmin,
+    isDeleted: user.isDeleted,
   };
 }
 
@@ -135,6 +136,7 @@ export async function updateUser(req: AuthRequest, res: Response) {
       name: string;
       email: string;
       isAdmin: boolean;
+      isDeleted: boolean;
     }> = {};
 
     if (req.body.name) updateData.name = req.body.name;
@@ -143,6 +145,11 @@ export async function updateUser(req: AuthRequest, res: Response) {
     // only admin can change role
     if (req.user?.isAdmin && typeof req.body.isAdmin === "boolean") {
       updateData.isAdmin = req.body.isAdmin;
+    }
+
+    // only admin can change deleted status
+    if (req.user?.isAdmin && typeof req.body.isDeleted === "boolean") {
+      updateData.isDeleted = req.body.isDeleted;
     }
 
     const user = await UserModel.findByIdAndUpdate(id, updateData, {
@@ -164,7 +171,7 @@ export async function updateUser(req: AuthRequest, res: Response) {
  * @swagger
  * /users/{id}:
  *   delete:
- *     summary: Delete user (Admin only)
+ *     summary: Soft delete user (Admin only) - sets isDeleted to true
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -176,7 +183,7 @@ export async function updateUser(req: AuthRequest, res: Response) {
  *           type: string
  *     responses:
  *       200:
- *         description: User deleted
+ *         description: User soft deleted
  *       403:
  *         description: Admins only
  *       404:
@@ -190,14 +197,18 @@ export async function deleteUser(req: AuthRequest, res: Response) {
 
     const { id } = req.params;
 
-    const user = await UserModel.findByIdAndDelete(id);
+    const user = await UserModel.findByIdAndUpdate(
+      id,
+      { isDeleted: true },
+      { returnDocument: "after" }
+    ).select("-password");
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    res.json({ error: null, data: "User deleted" });
+    res.json({ error: null, data: "User soft deleted" });
   } catch {
-    res.status(500).json({ error: "Failed to delete user" });
+    res.status(500).json({ error: "Failed to soft delete user" });
   }
 }
