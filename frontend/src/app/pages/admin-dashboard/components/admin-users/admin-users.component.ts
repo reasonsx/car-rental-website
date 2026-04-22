@@ -36,6 +36,7 @@ export class AdminUsersComponent {
     name: ["", Validators.required],
     email: ["", [Validators.required, Validators.email]],
     isAdmin: false,
+    isDeleted: false,
   });
 
   constructor() {
@@ -73,6 +74,7 @@ export class AdminUsersComponent {
       name: user.name,
       email: user.email,
       isAdmin: user.isAdmin,
+      isDeleted: user.isDeleted,
     });
 
     this.error.set(null);
@@ -100,18 +102,19 @@ export class AdminUsersComponent {
   }
 
   // ========================
-  // DELETE
+  // SOFT DELETE
   // ========================
   deleteUser(id: string): void {
-    if (!confirm("Delete this user?")) return;
+    if (!confirm("Soft delete this user? This will mark the user as deleted but not remove them permanently.")) return;
 
-    this.userService.deleteUser(id).subscribe({
+    this.userService.updateUser(id, { isDeleted: true }).subscribe({
       next: () => {
-        this.success.set("User deleted successfully"); // ✅ FIXED TEXT
+        this.success.set("User soft deleted successfully");
+        this.cancelEdit();
         this.loadUsers();
       },
       error: (err) => {
-        this.error.set(err.error?.message || "Failed to delete user");
+        this.error.set(err.error?.message || "Failed to soft delete user");
       },
     });
   }
@@ -126,6 +129,7 @@ export class AdminUsersComponent {
       name: "",
       email: "",
       isAdmin: false,
+      isDeleted: false,
     });
 
     this.error.set(null);

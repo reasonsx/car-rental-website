@@ -53,6 +53,12 @@
           <span class="text-sm text-gray-600">Administrator</span>
         </div>
 
+        <!-- DELETED -->
+        <div class="flex items-center gap-2 md:col-span-2 pt-1">
+          <p-checkbox formControlName="isDeleted" binary="true" />
+          <span class="text-sm text-gray-600">Soft deleted</span>
+        </div>
+
         <!-- ACTION -->
         <div class="md:col-span-2 flex justify-end pt-3">
           <p-button type="submit" label="Update user" icon="pi pi-save" [disabled]="form.invalid" />
@@ -77,6 +83,7 @@
             <th>Name</th>
             <th>Email</th>
             <th>Role</th>
+            <th>Status</th>
             <th class="w-24"></th>
           </tr>
         </ng-template>
@@ -104,6 +111,19 @@
                 [class.text-gray-600]="!user.isAdmin"
               >
                 {{ user.isAdmin ? "Admin" : "User" }}
+              </span>
+            </td>
+
+            <!-- STATUS -->
+            <td>
+              <span
+                class="px-2 py-1 rounded-md text-xs font-medium"
+                [class.bg-green-100]="!user.isDeleted"
+                [class.text-green-700]="!user.isDeleted"
+                [class.bg-red-100]="user.isDeleted"
+                [class.text-red-700]="user.isDeleted"
+              >
+                {{ user.isDeleted ? "Deleted" : "Active" }}
               </span>
             </td>
 
