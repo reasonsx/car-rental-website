@@ -60,8 +60,7 @@ export class CarListComponent {
   filteredCars = computed(() => {
     let result = [...this.cars()].filter((c) => c.available);
 
-    // 🔥 location filter
-    if (this.selectedLocationId) {
+    if (this.selectedLocationId()) {
       result = result.filter((c) => c.locationId._id === this.selectedLocationId());
     }
 
