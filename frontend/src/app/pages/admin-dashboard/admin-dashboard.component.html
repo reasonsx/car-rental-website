@@ -4,15 +4,20 @@
       Admin Dashboard
     </h1>
 
-    <p-tabs [value]="activeTab()" (onChange)="onTabChange($event.value)" class="flex flex-col flex-1 overflow-hidden rounded-lg">
-
-      <p-tablist>
-        @for (tab of tabs; track tab.key) {
-          <p-tab [value]="tab.key">
-            {{ tab.label }}
-          </p-tab>
-        }
-      </p-tablist>
+    <p-tabs
+  [value]="activeTab()"
+  class="flex flex-col flex-1 overflow-hidden rounded-lg"
+>
+  <p-tablist>
+    @for (tab of tabs; track tab.key) {
+      <p-tab
+        [value]="tab.key"
+        (click)="onTabChange(tab.key)"
+      >
+        {{ tab.label }}
+      </p-tab>
+    }
+  </p-tablist>
 
       <p-tabpanels class="flex-1 overflow-hidden">
 
