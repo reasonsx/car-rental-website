@@ -30,9 +30,9 @@ export class UserService {
       .pipe(map((res) => res.data));
   }
 
-  deleteUser(id: string): Observable<string> {
-    return this.http
-      .delete<ApiResponse<string>>(`${this.baseUrl}/${id}`)
-      .pipe(map((res) => res.data));
-  }
+  // deleteUser(id: string): Observable<string> {
+  //   return this.http
+  //     .delete<ApiResponse<string>>(`${this.baseUrl}/${id}`)
+  //     .pipe(map((res) => res.data));
+  // } // We cannot delete the user now, we soft delete by setting isDeleted to true
 }
