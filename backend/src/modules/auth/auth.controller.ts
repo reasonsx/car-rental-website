@@ -127,6 +127,10 @@ export async function loginUser(req: Request, res: Response) {
       return res.status(400).json({ error: "Invalid email or password" });
     }
 
+    if (user.isDeleted) {
+      return res.status(400).json({ error: "Account is deactivated" });
+    }
+
     const isMatch = await bcrypt.compare(req.body.password, user.password);
     if (!isMatch) {
       return res.status(400).json({ error: "Invalid email or password" });
@@ -169,7 +173,7 @@ export async function loginUser(req: Request, res: Response) {
 // VERIFY TOKEN (MIDDLEWARE)
 // ========================
 
-export function verifyToken(req: AuthRequest, res: Response, next: NextFunction) {
+export async function verifyToken(req: AuthRequest, res: Response, next: NextFunction) {
   const authHeader = req.header("Authorization");
 
   if (!authHeader?.startsWith("Bearer ")) {
@@ -185,6 +189,16 @@ export function verifyToken(req: AuthRequest, res: Response, next: NextFunction)
     }
 
     req.user = jwt.verify(token, secret) as AuthRequest["user"];
+
+    if (!req.user) {
+      return res.status(401).json({ error: "Invalid token" });
+    }
+
+    // Check if user is deleted
+    const user = await UserModel.findById(req.user.id);
+    if (!user || user.isDeleted) {
+      return res.status(401).json({ error: "Account is deactivated" });
+    }
 
     next();
   } catch {
