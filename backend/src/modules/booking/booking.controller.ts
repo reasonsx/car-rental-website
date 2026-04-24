@@ -277,8 +277,8 @@ export async function getBookingsForCar(req: Request, res: Response) {
   try {
     const bookings = await BookingModel.find({
       carId: req.params.carId,
-      status: BookingStatus.Confirmed,
-    }).select("startDate endDate");
+      status: { $in: [BookingStatus.Confirmed, BookingStatus.Pending] },
+    }).select("startDate endDate status");
 
     res.json(bookings);
   } catch (error: any) {

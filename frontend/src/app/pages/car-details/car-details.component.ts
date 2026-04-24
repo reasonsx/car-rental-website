@@ -141,10 +141,12 @@ export class CarDetailsComponent {
   }
 
   bookedRanges = computed(() =>
-    this.bookings().map((b) => ({
-      startDate: new Date(b.startDate),
-      endDate: new Date(b.endDate),
-    })),
+    this.bookings()
+      .filter(b => b.status === 'pending' || b.status === 'confirmed')
+      .map((b) => ({
+        startDate: new Date(b.startDate),
+        endDate: new Date(b.endDate),
+      })),
   );
 
   monthName = computed(() => {
