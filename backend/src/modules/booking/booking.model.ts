@@ -8,6 +8,7 @@ const bookingSchema = new Schema<Booking>({
   endDate: { type: Date, required: true },
   totalPrice: { type: Number, required: true },
   status: { type: String, enum: Object.values(BookingStatus), default: BookingStatus.Pending },
+  paymentIntentId: { type: String },
 });
 
 export const BookingModel = model<Booking>("Booking", bookingSchema);

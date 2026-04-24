@@ -1,11 +1,12 @@
-import express, { Application } from "express";
 import dotenvFlow from "dotenv-flow";
+dotenvFlow.config();
+
+import express, { Application } from "express";
 import cors from "cors";
 import routes from "./routes";
 import { setupDocumentation } from "./utils/swagger";
 import { connect } from "./config/db";
 
-dotenvFlow.config();
 const app: Application = express();
 
 export async function startServer() {

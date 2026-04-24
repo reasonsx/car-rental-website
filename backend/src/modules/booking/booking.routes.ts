@@ -6,12 +6,14 @@ import {
   updateBooking,
   deleteBooking,
   getBookingsForCar,
+  confirmBooking,
 } from "./booking.controller";
 import { verifyToken } from "../auth/auth.controller";
 
 const router = Router();
 
 router.post("/", verifyToken, createBooking);
+router.put("/:id/confirm", verifyToken, confirmBooking);
 router.get("/", verifyToken, getBookings);
 router.put("/:id", verifyToken, updateBooking);
 router.delete("/:id", verifyToken, deleteBooking);

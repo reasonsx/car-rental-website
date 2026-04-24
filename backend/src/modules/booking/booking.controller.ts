@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { BookingModel } from "./booking.model";
 import { BookingStatus } from "./booking";
 import { AuthRequest } from "../auth/auth.controller";
+import stripe from "../../config/stripe";
 
 /**
  * @swagger
@@ -29,11 +30,18 @@ import { AuthRequest } from "../auth/auth.controller";
  *                 format: date
  *     responses:
  *       201:
- *         description: Booking created
- *       400:
- *         description: Validation error
- *       409:
- *         description: Overlapping booking
+ *         description: Booking created with payment intent
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 bookingId:
+ *                   type: string
+ *                 clientSecret:
+ *                   type: string
+ *                 totalPrice:
+ *                   type: number
  */
 export async function createBooking(req: AuthRequest, res: Response) {
   try {
@@ -95,15 +103,81 @@ export async function createBooking(req: AuthRequest, res: Response) {
       startDate: start,
       endDate: end,
       totalPrice,
-      status: BookingStatus.Confirmed,
+      status: BookingStatus.Pending,
     });
 
     const savedBooking = await booking.save();
 
-    res.status(201).json(savedBooking);
+    // Create payment intent
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(totalPrice * 100), // in cents
+      currency: 'usd',
+      metadata: {
+        bookingId: savedBooking._id.toString(),
+      },
+    });
+
+    // Update booking with payment intent id
+    savedBooking.paymentIntentId = paymentIntent.id;
+    await savedBooking.save();
+
+    res.status(201).json({
+      bookingId: savedBooking._id,
+      clientSecret: paymentIntent.client_secret,
+      totalPrice,
+    });
   } catch (error: any) {
     res.status(500).json({
       message: "Failed to create booking",
+      error: error.message,
+    });
+  }
+}
+
+/**
+ * @swagger
+ * /bookings/{id}/confirm:
+ *   put:
+ *     summary: Confirm booking after payment
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Booking confirmed
+ *       400:
+ *         description: Invalid request
+ *       404:
+ *         description: Booking not found
+ */
+export async function confirmBooking(req: AuthRequest, res: Response) {
+  try {
+    const { id } = req.params;
+    const userId = req.user?.id;
+
+    const booking = await BookingModel.findOne({ _id: id, userId });
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    if (booking.status !== BookingStatus.Pending) {
+      return res.status(400).json({ message: "Booking is not pending" });
+    }
+
+    booking.status = BookingStatus.Confirmed;
+    await booking.save();
+
+    res.status(200).json({ message: "Booking confirmed" });
+  } catch (error: any) {
+    res.status(500).json({
+      message: "Failed to confirm booking",
       error: error.message,
     });
   }

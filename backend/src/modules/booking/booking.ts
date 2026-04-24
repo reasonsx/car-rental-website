@@ -13,4 +13,5 @@ export interface Booking extends Document {
   endDate: Date;
   totalPrice: number;
   status: BookingStatus;
+  paymentIntentId?: string;
 }
