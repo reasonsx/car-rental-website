@@ -6,9 +6,9 @@ import { ButtonModule } from "primeng/button";
 
 @Component({
   selector: "app-confirmation",
+  standalone: true,
   imports: [CommonModule, CardModule, ButtonModule],
   templateUrl: "./confirmation.html",
-  styleUrl: "./confirmation.scss",
 })
 export class ConfirmationComponent {
   private router = inject(Router);

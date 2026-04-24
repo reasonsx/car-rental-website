@@ -8,9 +8,9 @@ import { BookingFlowService } from "../../services/booking-flow";
 
 @Component({
   selector: "app-checkout",
+  standalone: true,
   imports: [CommonModule, CardModule, ButtonModule, DividerModule],
   templateUrl: "./checkout.html",
-  styleUrl: "./checkout.scss",
 })
 export class CheckoutComponent {
   router = inject(Router);
