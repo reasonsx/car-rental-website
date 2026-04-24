@@ -1,0 +1,79 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-2xl mx-auto px-4">
+    <div class="text-center">
+      <!-- Success Icon -->
+      <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
+        <i class="pi pi-check text-2xl text-green-600"></i>
+      </div>
+
+      <!-- Title -->
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Booking Confirmed!</h1>
+      <p class="text-lg text-gray-600 mb-8">
+        Your car rental has been successfully booked and paid for.
+      </p>
+
+      <!-- Confirmation Card -->
+      <p-card class="shadow-sm mb-8">
+        <div class="text-center">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">What's Next?</h3>
+          <div class="space-y-4 text-left">
+            <div class="flex items-start gap-3">
+              <i class="pi pi-calendar text-blue-600 mt-1"></i>
+              <div>
+                <p class="font-medium text-gray-900">Pickup Instructions</p>
+                <p class="text-sm text-gray-600">
+                  You'll receive pickup instructions via email with the exact location and time.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <i class="pi pi-id-card text-blue-600 mt-1"></i>
+              <div>
+                <p class="font-medium text-gray-900">Required Documents</p>
+                <p class="text-sm text-gray-600">
+                  Please bring a valid driver's license and credit card used for booking.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <i class="pi pi-envelope text-blue-600 mt-1"></i>
+              <div>
+                <p class="font-medium text-gray-900">Confirmation Email</p>
+                <p class="text-sm text-gray-600">
+                  A detailed confirmation email has been sent to your registered email address.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </p-card>
+
+      <!-- Actions -->
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <p-button
+          label="View My Bookings"
+          icon="pi pi-list"
+          class="flex-1 sm:flex-none"
+          (onClick)="goToProfile()"
+        />
+        <p-button
+          label="Book Another Car"
+          icon="pi pi-plus"
+          [outlined]="true"
+          class="flex-1 sm:flex-none"
+          (onClick)="goToHome()"
+        />
+      </div>
+
+      <!-- Additional Info -->
+      <div class="mt-8 text-center">
+        <p class="text-sm text-gray-500">
+          Need help? Contact our support team at
+          <a href="mailto:support@carrental.com" class="text-blue-600 hover:underline">
+            support@carrental.com
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
