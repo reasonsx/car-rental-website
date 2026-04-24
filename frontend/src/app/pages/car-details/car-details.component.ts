@@ -1,6 +1,6 @@
 import { Component, computed, signal, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { CarService } from "../../services/car.service";
 import { BookingService } from "../../services/booking.service";
 import { Car } from "../../models/car.model";
@@ -10,6 +10,7 @@ import { ButtonModule } from "primeng/button";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
 import { ImageModule } from "primeng/image";
 import { DividerModule } from "primeng/divider";
+import { BookingFlowService } from "../../services/booking-flow";
 
 @Component({
   selector: "app-car-details",
@@ -26,8 +27,10 @@ import { DividerModule } from "primeng/divider";
 })
 export class CarDetailsComponent {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private carService = inject(CarService);
   private bookingService = inject(BookingService);
+  private bookingFlowService = inject(BookingFlowService);
 
   car = signal<Car | null>(null);
   bookings = signal<Booking[]>([]);
@@ -197,22 +200,21 @@ export class CarDetailsComponent {
 
   bookCar() {
     const range = this.selectedRange();
-    if (!range) return;
+    if (!range || !this.car()) return;
 
     const [start, end] = range;
+    const car = this.car()!;
 
-    this.bookingService
-      .createBooking({
-        carId: this.carId,
-        startDate: start,
-        endDate: end,
-      })
-      .subscribe({
-        next: () => {
-          this.loadData();
-          this.selectedRange.set(null);
-        },
-        error: (err) => console.error("BOOKING ERROR:", err),
-      });
+    // Set booking data in service
+    this.bookingFlowService.setBookingData({
+      carId: this.carId,
+      startDate: start,
+      endDate: end,
+      car: car,
+      totalPrice: this.totalPrice(),
+    });
+
+    // Navigate to checkout
+    this.router.navigate(['/checkout']);
   }
 }
