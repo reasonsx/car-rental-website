@@ -59,6 +59,175 @@
           </div>
         </p-card>
 
+        <!-- User Information Form -->
+        <p-card class="shadow-sm">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Driver Information</h3>
+          @if (userInfoForm) {
+            <form [formGroup]="userInfoForm" class="space-y-4">
+            <!-- Personal Information -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
+                <input
+                  pInputText
+                  formControlName="firstName"
+                  class="w-full"
+                  placeholder="Enter your first name"
+                />
+                @if (userInfoForm.get('firstName')?.invalid && userInfoForm.get('firstName')?.touched) {
+                  <small class="text-red-500">First name is required</small>
+                }
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
+                <input
+                  pInputText
+                  formControlName="lastName"
+                  class="w-full"
+                  placeholder="Enter your last name"
+                />
+                @if (userInfoForm.get('lastName')?.invalid && userInfoForm.get('lastName')?.touched) {
+                  <small class="text-red-500">Last name is required</small>
+                }
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                <input
+                  pInputText
+                  type="email"
+                  formControlName="email"
+                  class="w-full"
+                  placeholder="Enter your email"
+                />
+                @if (userInfoForm.get('email')?.invalid && userInfoForm.get('email')?.touched) {
+                  <small class="text-red-500">
+                    @if (userInfoForm.get('email')?.errors?.['required']) {
+                      Email is required
+                    } @else if (userInfoForm.get('email')?.errors?.['email']) {
+                      Please enter a valid email
+                    }
+                  </small>
+                }
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                <input
+                  pInputText
+                  formControlName="phone"
+                  class="w-full"
+                  placeholder="Enter your phone number"
+                />
+                @if (userInfoForm.get('phone')?.invalid && userInfoForm.get('phone')?.touched) {
+                  <small class="text-red-500">Phone number is required</small>
+                }
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Date of Birth *</label>
+              <input
+                pInputText
+                type="date"
+                formControlName="dateOfBirth"
+                class="w-full"
+                [max]="maxDateOfBirth | date:'yyyy-MM-dd'"
+              />
+              @if (userInfoForm.get('dateOfBirth')?.invalid && userInfoForm.get('dateOfBirth')?.touched) {
+                <small class="text-red-500">Date of birth is required</small>
+              }
+            </div>
+
+            <!-- Driver's License Information -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Driver's License Number *</label>
+                <input
+                  pInputText
+                  formControlName="driversLicenseNumber"
+                  class="w-full"
+                  placeholder="Enter license number"
+                />
+                @if (userInfoForm.get('driversLicenseNumber')?.invalid && userInfoForm.get('driversLicenseNumber')?.touched) {
+                  <small class="text-red-500">License number is required</small>
+                }
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">License Expiry Date *</label>
+                <input
+                  pInputText
+                  type="date"
+                  formControlName="driversLicenseExpiry"
+                  class="w-full"
+                  [min]="today | date:'yyyy-MM-dd'"
+                />
+                @if (userInfoForm.get('driversLicenseExpiry')?.invalid && userInfoForm.get('driversLicenseExpiry')?.touched) {
+                  <small class="text-red-500">License expiry date is required</small>
+                }
+              </div>
+            </div>
+
+            <!-- Address Information -->
+            <div class="space-y-4" formGroupName="address">
+              <h4 class="text-md font-medium text-gray-900">Address</h4>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Street Address *</label>
+                <input
+                  pInputText
+                  formControlName="street"
+                  class="w-full"
+                  placeholder="Enter street address"
+                />
+                @if (userInfoForm.get('address')?.get('street')?.invalid && userInfoForm.get('address')?.get('street')?.touched) {
+                  <small class="text-red-500">Street address is required</small>
+                }
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">City *</label>
+                  <input
+                    pInputText
+                    formControlName="city"
+                    class="w-full"
+                    placeholder="Enter city"
+                  />
+                  @if (userInfoForm.get('address')?.get('city')?.invalid && userInfoForm.get('address')?.get('city')?.touched) {
+                    <small class="text-red-500">City is required</small>
+                  }
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Postal Code *</label>
+                  <input
+                    pInputText
+                    formControlName="postalCode"
+                    class="w-full"
+                    placeholder="Enter postal code"
+                  />
+                  @if (userInfoForm.get('address')?.get('postalCode')?.invalid && userInfoForm.get('address')?.get('postalCode')?.touched) {
+                    <small class="text-red-500">Postal code is required</small>
+                  }
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Country *</label>
+                  <input
+                    pInputText
+                    formControlName="country"
+                    class="w-full"
+                    placeholder="Enter country"
+                  />
+                  @if (userInfoForm.get('address')?.get('country')?.invalid && userInfoForm.get('address')?.get('country')?.touched) {
+                    <small class="text-red-500">Country is required</small>
+                  }
+                </div>
+              </div>
+            </div>
+          </form>
+          }
+        </p-card>
+
         <!-- Actions -->
         <div class="flex gap-4">
           <p-button
