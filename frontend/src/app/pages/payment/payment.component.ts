@@ -79,6 +79,7 @@ export class PaymentComponent implements OnInit, AfterViewInit {
         carId: this.bookingData.carId,
         startDate: this.bookingData.startDate,
         endDate: this.bookingData.endDate,
+        userInfo: this.bookingData.userInfo,
       })
       .subscribe({
         next: (response) => {
