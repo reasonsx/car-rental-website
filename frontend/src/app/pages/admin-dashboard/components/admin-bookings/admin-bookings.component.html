@@ -23,7 +23,8 @@
       <ng-template pTemplate="header">
         <tr>
           <th>Car</th>
-          <th>User</th>
+          <th>User Info</th>
+          <th>Contact</th>
           <th>Dates</th>
           <th>Price</th>
           <th>Status</th>
@@ -43,7 +44,19 @@
             </a>
           </td>
 
-          <td>{{ b.userId?.name }}</td>
+          <td>
+            <div class="flex flex-col">
+              <span class="font-medium">{{ b.userInfo?.firstName }} {{ b.userInfo?.lastName }}</span>
+              <span class="text-xs text-gray-500">{{ b.userInfo?.driversLicenseNumber }}</span>
+            </div>
+          </td>
+
+          <td>
+            <div class="flex flex-col text-sm">
+              <span>{{ b.userInfo?.email }}</span>
+              <span class="text-gray-600">{{ b.userInfo?.phone }}</span>
+            </div>
+          </td>
 
           <td>
             <div class="inline-flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-md text-xs">
@@ -98,7 +111,7 @@
       <!-- EMPTY STATE -->
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="6" class="text-center py-10 text-gray-500">
+          <td colspan="7" class="text-center py-10 text-gray-500">
             No bookings found
           </td>
         </tr>
