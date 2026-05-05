@@ -1,9 +1,11 @@
-import { Component, signal, computed, inject } from "@angular/core";
+import { Component, signal, computed, inject, effect } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from "@angular/forms";
 import { Router } from "@angular/router";
 import { AuthService } from "../../services/auth.service";
+import { BookingService } from "../../services/booking.service";
 import { User } from "../../models/auth.model";
+import { Booking } from "../../models/booking.model";
 import { InputTextModule } from "primeng/inputtext";
 import { CardModule } from "primeng/card";
 import { ButtonModule } from "primeng/button";
@@ -24,6 +26,7 @@ import { PasswordModule } from "primeng/password";
 })
 export class ProfileComponent {
   private authService = inject(AuthService);
+  private bookingService = inject(BookingService);
   private fb = inject(FormBuilder);
   private router = inject(Router);
 
@@ -33,6 +36,10 @@ export class ProfileComponent {
   isLoading = signal(false);
   error = signal<string | null>(null);
   success = signal<string | null>(null);
+
+  bookings = signal<Booking[]>([]);
+  bookingsLoading = signal(false);
+  bookingsError = signal<string | null>(null);
 
   profileForm: FormGroup = this.fb.group(
     {
@@ -54,6 +61,13 @@ export class ProfileComponent {
         email: user.email,
       });
     }
+
+    // Load user bookings
+    effect(() => {
+      if (this.currentUser()) {
+        this.loadBookings();
+      }
+    });
   }
 
   onUpdateProfile() {
@@ -105,5 +119,38 @@ export class ProfileComponent {
 
   get profileFormControls() {
     return this.profileForm.controls;
+  }
+
+  private loadBookings() {
+    this.bookingsLoading.set(true);
+    this.bookingsError.set(null);
+
+    this.bookingService.getBookings().subscribe({
+      next: (bookings) => {
+        this.bookings.set(bookings);
+        this.bookingsLoading.set(false);
+      },
+      error: (err) => {
+        this.bookingsLoading.set(false);
+        this.bookingsError.set(err.error?.message || "Failed to load bookings");
+      },
+    });
+  }
+
+  getStatusBadgeClass(status: string): string {
+    switch (status) {
+      case "confirmed":
+        return "bg-green-100 text-green-800";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "cancelled":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  }
+
+  formatDate(date: string): string {
+    return new Date(date).toLocaleDateString();
   }
 }
