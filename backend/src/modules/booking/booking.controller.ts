@@ -18,7 +18,7 @@ import stripe from "../../config/stripe";
  *         application/json:
  *           schema:
  *             type: object
- *             required: [carId, startDate, endDate]
+ *             required: [carId, startDate, endDate, userInfo]
  *             properties:
  *               carId:
  *                 type: string
@@ -28,6 +28,39 @@ import stripe from "../../config/stripe";
  *               endDate:
  *                 type: string
  *                 format: date
+ *               userInfo:
+ *                 type: object
+ *                 required: [firstName, lastName, email, phone, dateOfBirth, driversLicenseNumber, driversLicenseExpiry, address]
+ *                 properties:
+ *                   firstName:
+ *                     type: string
+ *                   lastName:
+ *                     type: string
+ *                   email:
+ *                     type: string
+ *                     format: email
+ *                   phone:
+ *                     type: string
+ *                   dateOfBirth:
+ *                     type: string
+ *                     format: date
+ *                   driversLicenseNumber:
+ *                     type: string
+ *                   driversLicenseExpiry:
+ *                     type: string
+ *                     format: date
+ *                   address:
+ *                     type: object
+ *                     required: [street, city, postalCode, country]
+ *                     properties:
+ *                       street:
+ *                         type: string
+ *                       city:
+ *                         type: string
+ *                       postalCode:
+ *                         type: string
+ *                       country:
+ *                         type: string
  *     responses:
  *       201:
  *         description: Booking created with payment intent
@@ -45,10 +78,10 @@ import stripe from "../../config/stripe";
  */
 export async function createBooking(req: AuthRequest, res: Response) {
   try {
-    const { carId, startDate, endDate } = req.body;
+    const { carId, startDate, endDate, userInfo } = req.body;
     const userId = req.user?.id;
 
-    if (!userId || !carId || !startDate || !endDate) {
+    if (!userId || !carId || !startDate || !endDate || !userInfo) {
       return res.status(400).json({
         message: "Missing required fields",
       });
@@ -104,6 +137,7 @@ export async function createBooking(req: AuthRequest, res: Response) {
       endDate: end,
       totalPrice,
       status: BookingStatus.Pending,
+      userInfo,
     });
 
     const savedBooking = await booking.save();
