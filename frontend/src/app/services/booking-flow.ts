@@ -1,5 +1,6 @@
 import { Injectable, signal } from "@angular/core";
 import { Car } from "../models/car.model";
+import { UserInfo } from "../models/booking.model";
 
 export interface BookingData {
   carId: string;
@@ -9,6 +10,7 @@ export interface BookingData {
   bookingId?: string;
   clientSecret?: string;
   totalPrice?: number;
+  userInfo?: UserInfo;
 }
 
 @Injectable({

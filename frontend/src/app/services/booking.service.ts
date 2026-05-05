@@ -18,7 +18,7 @@ export class BookingService {
     return this.http.get<Booking[]>(`${this.baseUrl}/car/${carId}`);
   }
 
-  createBooking(data: { carId: string; startDate: Date; endDate: Date }): Observable<{ bookingId: string; clientSecret: string; totalPrice: number }> {
+  createBooking(data: { carId: string; startDate: Date; endDate: Date; userInfo: any }): Observable<{ bookingId: string; clientSecret: string; totalPrice: number }> {
     const token = localStorage.getItem("token");
 
     return this.http.post<{ bookingId: string; clientSecret: string; totalPrice: number }>(this.baseUrl, data, {
