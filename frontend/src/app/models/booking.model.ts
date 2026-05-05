@@ -1,3 +1,19 @@
+export interface UserInfo {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  dateOfBirth: string;
+  driversLicenseNumber: string;
+  driversLicenseExpiry: string;
+  address: {
+    street: string;
+    city: string;
+    postalCode: string;
+    country: string;
+  };
+}
+
 export interface Booking {
   _id: string;
 
@@ -20,4 +36,5 @@ export interface Booking {
   totalPrice: number;
   status: "pending" | "confirmed" | "cancelled";
   paymentIntentId?: string;
+  userInfo: UserInfo;
 }
