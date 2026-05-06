@@ -4,7 +4,6 @@ import { CarCardComponent } from "../car-card/car-card.component";
 import { ButtonModule } from "primeng/button";
 import { SelectModule } from "primeng/select";
 import { FormsModule } from "@angular/forms";
-import { SliderModule } from "primeng/slider";
 import { CarService } from "../../services/car.service";
 import { Car } from "../../models/car.model";
 
@@ -13,7 +12,7 @@ type SortOption = "priceAsc" | "priceDesc" | "yearDesc";
 @Component({
   selector: "app-car-list",
   standalone: true,
-  imports: [CommonModule, CarCardComponent, ButtonModule, SelectModule, FormsModule, SliderModule],
+  imports: [CommonModule, CarCardComponent, ButtonModule, SelectModule, FormsModule],
   templateUrl: "./car-list.component.html",
 })
 export class CarListComponent {
@@ -27,17 +26,10 @@ export class CarListComponent {
   selectedCategory = signal<string | null>(null);
   selectedBrand = signal<string | null>(null);
   selectedYear = signal<number | null>(null);
-  priceRange = signal<[number, number]>([0, 100]);
   sort = signal<SortOption>("priceAsc");
 
   constructor() {
     this.loadCars();
-
-    effect(() => {
-      if (this.cars().length) {
-        this.priceRange.set(this.priceBounds());
-      }
-    });
   }
 
   loadCars() {
@@ -52,11 +44,6 @@ export class CarListComponent {
     });
   }
 
-  priceBounds = computed<[number, number]>(() => {
-    const prices = this.cars().map((c) => c.pricePerDay);
-    return prices.length ? [Math.min(...prices), Math.max(...prices)] : [0, 100];
-  });
-
   filteredCars = computed(() => {
     let result = [...this.cars()].filter((c) => c.available);
 
@@ -67,9 +54,6 @@ export class CarListComponent {
     if (this.selectedCategory()) {
       result = result.filter((c) => c.categoryId._id === this.selectedCategory());
     }
-
-    const [min, max] = this.priceRange();
-    result = result.filter((c) => c.pricePerDay >= min && c.pricePerDay <= max);
 
     if (this.selectedBrand()) {
       result = result.filter((c) => c.brand === this.selectedBrand());
@@ -111,7 +95,6 @@ export class CarListComponent {
     this.selectedCategory.set(null);
     this.selectedBrand.set(null);
     this.selectedYear.set(null);
-    this.priceRange.set(this.priceBounds());
     this.sort.set("priceAsc");
   }
 }
