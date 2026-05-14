@@ -14,8 +14,10 @@ export class AuthService {
 
   private _currentUser = signal<User | null>(null);
   private _token = signal<string | null>(null);
+  private logoutTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly currentUser = this._currentUser.asReadonly();
+  readonly token = this._token.asReadonly();
   readonly isAuthenticated = computed(() => !!this._token());
   readonly isAdmin = computed(() => this._currentUser()?.isAdmin ?? false);
 
@@ -26,10 +28,16 @@ export class AuthService {
   login(credentials: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.baseUrl}/login`, credentials).pipe(
       tap(({ data }) => {
+        const expiresInMs = this.getTokenExpirationTime(data.token) - Date.now();
+
         this._token.set(data.token);
         this._currentUser.set(data.user);
-        localStorage.setItem("authToken", data.token);
-        localStorage.setItem("currentUser", JSON.stringify(data.user));
+
+        this.setCookie("authToken", data.token, expiresInMs);
+        this.setCookie("currentUser", JSON.stringify(data.user), expiresInMs);
+
+        this.scheduleAutoLogout(data.token);
+
         void this.router.navigate(["/"]);
       }),
       catchError((err) => throwError(() => err)),
@@ -44,15 +52,17 @@ export class AuthService {
   }
 
   logout(): void {
-    this._token.set(null);
-    this._currentUser.set(null);
-    localStorage.clear();
+    this.clearAuthData();
     void this.router.navigate(["/login"]);
   }
 
   updateUser(userData: Partial<User>): Observable<User> {
     const userId = this._currentUser()?.id;
-    if (!userId) return throwError(() => new Error("UserTypes not found"));
+    const token = this._token();
+
+    if (!userId || !token) {
+      return throwError(() => new Error("User not found"));
+    }
 
     return this.http
       .put<{ error: null; data: User }>(`${API_BASE_URL}/users/${userId}`, userData)
@@ -60,27 +70,97 @@ export class AuthService {
         map((res) => res.data),
         tap((user) => {
           const merged = { ...this._currentUser()!, ...user };
+          const expiresInMs = this.getTokenExpirationTime(token) - Date.now();
+
           this._currentUser.set(merged);
-          localStorage.setItem("currentUser", JSON.stringify(merged));
+          this.setCookie("currentUser", JSON.stringify(merged), expiresInMs);
         }),
         catchError((err) => throwError(() => err)),
       );
   }
 
   private loadStoredAuth(): void {
-    const token = localStorage.getItem("authToken");
-    const user = localStorage.getItem("currentUser");
+    const token = this.getCookie("authToken");
+    const user = this.getCookie("currentUser");
 
-    if (!token) return;
+    if (!token || !user) {
+      this.clearAuthData();
+      return;
+    }
 
-    this._token.set(token);
+    if (this.getTokenExpirationTime(token) <= Date.now()) {
+      this.clearAuthData();
+      return;
+    }
 
-    if (user) {
-      try {
-        this._currentUser.set(JSON.parse(user));
-      } catch {
-        this._currentUser.set(null);
+    try {
+      this._token.set(token);
+      this._currentUser.set(JSON.parse(user));
+      this.scheduleAutoLogout(token);
+    } catch {
+      this.clearAuthData();
+    }
+  }
+
+  private clearAuthData(): void {
+    this._token.set(null);
+    this._currentUser.set(null);
+
+    this.deleteCookie("authToken");
+    this.deleteCookie("currentUser");
+
+    if (this.logoutTimer) {
+      clearTimeout(this.logoutTimer);
+      this.logoutTimer = null;
+    }
+  }
+
+  private scheduleAutoLogout(token: string): void {
+    if (this.logoutTimer) {
+      clearTimeout(this.logoutTimer);
+    }
+
+    const timeUntilExpiration = this.getTokenExpirationTime(token) - Date.now();
+
+    if (timeUntilExpiration > 0) {
+      this.logoutTimer = setTimeout(() => {
+        this.logout();
+      }, timeUntilExpiration);
+    } else {
+      this.logout();
+    }
+  }
+
+  private getTokenExpirationTime(token: string): number {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return payload.exp * 1000;
+    } catch {
+      return Date.now();
+    }
+  }
+
+  private setCookie(name: string, value: string, expiresInMs: number): void {
+    const expires = new Date(Date.now() + expiresInMs);
+    document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires.toUTCString()}; path=/; SameSite=Strict`;
+  }
+
+  private getCookie(name: string): string | null {
+    const nameEQ = `${name}=`;
+    const cookies = document.cookie.split(";");
+
+    for (let cookie of cookies) {
+      cookie = cookie.trim();
+
+      if (cookie.startsWith(nameEQ)) {
+        return decodeURIComponent(cookie.substring(nameEQ.length));
       }
     }
+
+    return null;
+  }
+
+  private deleteCookie(name: string): void {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict`;
   }
 }
