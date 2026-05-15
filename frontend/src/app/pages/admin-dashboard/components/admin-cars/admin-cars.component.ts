@@ -107,19 +107,18 @@ export class AdminCarsComponent {
     if (this.form.invalid) return;
 
     const carData = this.form.value;
+    const isUpdate = !!this.selectedCar();
 
-    const request = this.selectedCar()
+    const request = isUpdate
       ? this.carService.updateCar(this.selectedCar()?.id ?? "", carData)
       : this.carService.createCar(carData);
 
     request.subscribe({
       next: (car) => {
-        this.success.set(
-          this.selectedCar() ? "Car updated successfully" : "Car created successfully",
-        );
         this.selectedCar.set(null);
         this.form.reset({ available: true, year: new Date().getFullYear(), pricePerDay: 0 });
         this.loadData();
+        this.success.set(isUpdate ? "Car updated successfully" : "Car created successfully");
       },
       error: (err) => this.error.set(err.error?.message || "Failed to save car"),
     });
@@ -130,8 +129,8 @@ export class AdminCarsComponent {
 
     this.carService.deleteCar(id).subscribe({
       next: () => {
-        this.success.set("Car deleted successfully");
         this.loadData();
+        this.success.set("Car deleted successfully");
       },
       error: (err) => this.error.set(err.error?.message || "Failed to delete car"),
     });
