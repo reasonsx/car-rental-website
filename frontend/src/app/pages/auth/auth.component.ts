@@ -1,5 +1,5 @@
 import { Component, signal, inject } from "@angular/core";
-import { Router, RouterModule } from "@angular/router";
+import { ActivatedRoute, Router, RouterModule } from "@angular/router";
 import {
   FormControl,
   FormGroup,
@@ -34,6 +34,7 @@ import { CardModule } from "primeng/card";
 export class AuthComponent {
   private auth = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   isLogin = signal(true);
   loading = signal(false);
@@ -107,7 +108,11 @@ export class AuthComponent {
       };
 
       this.auth.login(payload).subscribe({
-        next: () => this.loading.set(false),
+        next: () => {
+          const returnUrl = this.route.snapshot.queryParamMap.get("returnUrl") || "/";
+          void this.router.navigateByUrl(returnUrl);
+          this.loading.set(false);
+        },
         error: (err) => {
           this.error.set(err?.error?.message ?? "Login failed");
           this.loading.set(false);

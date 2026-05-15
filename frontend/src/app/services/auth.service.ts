@@ -37,8 +37,6 @@ export class AuthService {
         this.setCookie("currentUser", JSON.stringify(data.user), expiresInMs);
 
         this.scheduleAutoLogout(data.token);
-
-        void this.router.navigate(["/"]);
       }),
       catchError((err) => throwError(() => err)),
     );
