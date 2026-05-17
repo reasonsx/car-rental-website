@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { BookingModel } from "./booking.model";
+import { CarModel } from "../car/car.model";
 import { BookingStatus } from "./booking";
 import { AuthRequest } from "../auth/auth.controller";
 import stripe from "../../config/stripe";
@@ -120,7 +121,7 @@ export async function createBooking(req: AuthRequest, res: Response) {
       });
     }
 
-    const car = await (await import("../car/car.model")).CarModel.findById(carId);
+    const car = await CarModel.findById(carId);
 
     if (!car) {
       return res.status(404).json({ message: "Car not found" });
@@ -145,7 +146,7 @@ export async function createBooking(req: AuthRequest, res: Response) {
     // Create payment intent
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(totalPrice * 100), // in cents
-      currency: 'usd',
+      currency: "usd",
       metadata: {
         bookingId: savedBooking._id.toString(),
       },
