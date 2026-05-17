@@ -151,7 +151,7 @@
                           <p class="text-sm text-slate-600">
                             {{ formatDate(booking.startDate) }} - {{ formatDate(booking.endDate) }}
                           </p>
-                          <p class="text-sm font-medium text-blue-600">${{ booking.totalPrice }} total</p>
+                          <p class="text-sm font-medium text-blue-600">{{ booking.totalPrice }} DKK total</p>
                         </div>
                       </div>
 
@@ -162,7 +162,7 @@
                         >
                           {{ booking.status }}
                         </span>
-                        <p class="text-xs text-slate-500">${{ booking.carId.pricePerDay }}/day</p>
+                        <p class="text-xs text-slate-500">{{ booking.carId.pricePerDay }} DKK /day</p>
                       </div>
                     </div>
                   </div>
