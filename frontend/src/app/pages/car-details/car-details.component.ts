@@ -5,24 +5,17 @@ import { CarService } from "../../services/car.service";
 import { BookingService } from "../../services/booking.service";
 import { Car } from "../../models/car.model";
 import { Booking } from "../../models/booking.model";
-import { CardModule } from "primeng/card";
 import { ButtonModule } from "primeng/button";
 import { ProgressSpinnerModule } from "primeng/progressspinner";
 import { ImageModule } from "primeng/image";
-import { DividerModule } from "primeng/divider";
 import { BookingFlowService } from "../../services/booking-flow";
+
+type CalendarCell = { date: Date | null; booked: boolean };
 
 @Component({
   selector: "app-car-details",
   standalone: true,
-  imports: [
-    CommonModule,
-    CardModule,
-    ButtonModule,
-    ProgressSpinnerModule,
-    ImageModule,
-    DividerModule,
-  ],
+  imports: [CommonModule, ButtonModule, ProgressSpinnerModule, ImageModule],
   templateUrl: "./car-details.component.html",
 })
 export class CarDetailsComponent {
@@ -40,6 +33,9 @@ export class CarDetailsComponent {
 
   selectedRange = signal<[Date, Date] | null>(null);
 
+  category = computed(() => this.car()?.categoryId ?? null);
+  pickupLocation = computed(() => this.car()?.locationId ?? null);
+
   constructor() {
     this.loadData();
   }
@@ -54,6 +50,16 @@ export class CarDetailsComponent {
 
   isPast(d: Date): boolean {
     return this.normalize(d) < this.today();
+  }
+
+  isDateDisabled(cell: CalendarCell): boolean {
+    return !cell.date || cell.booked || this.isPast(cell.date);
+  }
+
+  selectCalendarDate(cell: CalendarCell) {
+    if (this.isDateDisabled(cell) || !cell.date) return;
+
+    this.selectDate(cell.date);
   }
 
   selectDate(date: Date) {
@@ -142,7 +148,7 @@ export class CarDetailsComponent {
 
   bookedRanges = computed(() =>
     this.bookings()
-      .filter(b => b.status === 'pending' || b.status === 'confirmed')
+      .filter((b) => b.status === "pending" || b.status === "confirmed")
       .map((b) => ({
         startDate: new Date(b.startDate),
         endDate: new Date(b.endDate),
@@ -167,7 +173,7 @@ export class CarDetailsComponent {
     const firstDay = base.getDay();
     const daysInMonth = new Date(base.getFullYear(), base.getMonth() + 1, 0).getDate();
 
-    const cells: { date: Date | null; booked: boolean }[] = [];
+    const cells: CalendarCell[] = [];
 
     for (let i = 0; i < firstDay; i++) {
       cells.push({ date: null, booked: false });
@@ -217,6 +223,6 @@ export class CarDetailsComponent {
     });
 
     // Navigate to checkout
-    this.router.navigate(['/checkout']);
+    this.router.navigate(["/checkout"]);
   }
 }
