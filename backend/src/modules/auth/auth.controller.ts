@@ -169,6 +169,58 @@ export async function loginUser(req: Request, res: Response) {
   }
 }
 
+/**
+ * @swagger
+ * /auth/change-password:
+ *   post:
+ *     summary: Change current user's password
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [currentPassword, newPassword]
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password changed
+ *       400:
+ *         description: Validation error / incorrect password
+ */
+export async function changePassword(req: AuthRequest, res: Response) {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword || typeof newPassword !== "string") {
+      return res.status(400).json({ error: "Invalid request" });
+    }
+
+    const user = await UserModel.findById(req.user?.id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: "Current password is incorrect" });
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+    user.password = hashed;
+    await user.save();
+
+    res.json({ error: null, data: "Password changed" });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to change password" });
+  }
+}
+
 // ========================
 // VERIFY TOKEN (MIDDLEWARE)
 // ========================

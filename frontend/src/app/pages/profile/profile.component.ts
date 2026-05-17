@@ -84,24 +84,49 @@ export class ProfileComponent {
       email: formValue.email,
     };
 
-    if (formValue.newPassword) {
-      updateData.password = formValue.newPassword;
-    }
+    const doProfileUpdate = () => {
+      return this.authService.updateUser(updateData);
+    };
 
-    this.authService.updateUser(updateData).subscribe({
-      next: () => {
-        this.isLoading.set(false);
-        this.success.set("Profile updated successfully!");
+    const performPasswordChange = () => {
+      if (!formValue.newPassword) return null;
+      if (!formValue.currentPassword) {
+        throw { error: { message: "Current password is required to change password" } };
+      }
 
-        this.profileForm.patchValue({
-          currentPassword: "",
-          newPassword: "",
-          confirmNewPassword: "",
-        });
+      return this.authService.changePassword(formValue.currentPassword, formValue.newPassword);
+    };
+
+    // Execute profile update first (if any fields present), then password change if requested
+    const profileObs = doProfileUpdate();
+
+    profileObs.subscribe({
+      next: async () => {
+        try {
+          if (formValue.newPassword) {
+            await new Promise((resolve, reject) => {
+              const pwObs = performPasswordChange();
+              if (!pwObs) return resolve(null);
+              pwObs.subscribe({ next: () => resolve(null), error: (e) => reject(e) });
+            });
+          }
+
+          this.isLoading.set(false);
+          this.success.set("Profile updated successfully!");
+
+          this.profileForm.patchValue({
+            currentPassword: "",
+            newPassword: "",
+            confirmNewPassword: "",
+          });
+        } catch (err: any) {
+          this.isLoading.set(false);
+          this.error.set(err?.error?.message || "Failed to change password");
+        }
       },
-      error: (err) => {
+      error: (err: any) => {
         this.isLoading.set(false);
-        this.error.set(err.error?.message || "Failed to update profile");
+        this.error.set(err?.error?.message || "Failed to update profile");
       },
     });
   }
@@ -130,9 +155,9 @@ export class ProfileComponent {
         this.bookings.set(bookings);
         this.bookingsLoading.set(false);
       },
-      error: (err) => {
+      error: (err: any) => {
         this.bookingsLoading.set(false);
-        this.bookingsError.set(err.error?.message || "Failed to load bookings");
+        this.bookingsError.set(err?.error?.message || "Failed to load bookings");
       },
     });
   }

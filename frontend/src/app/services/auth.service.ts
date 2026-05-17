@@ -77,6 +77,14 @@ export class AuthService {
       );
   }
 
+  changePassword(currentPassword: string, newPassword: string): Observable<void> {
+    const payload = { currentPassword, newPassword };
+
+    return this.http.post<void>(`${this.baseUrl}/change-password`, payload).pipe(
+      catchError((err) => throwError(() => err))
+    );
+  }
+
   private loadStoredAuth(): void {
     const token = this.getCookie("authToken");
     const user = this.getCookie("currentUser");
