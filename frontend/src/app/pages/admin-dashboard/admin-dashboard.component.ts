@@ -1,6 +1,6 @@
-import { Component, inject, signal, effect } from "@angular/core";
+import { Component, inject, signal } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Tabs, TabList, Tab, TabPanels, TabPanel } from "primeng/tabs";
+import { TabsModule } from "primeng/tabs";
 
 import { AdminCarsComponent } from "./components/admin-cars/admin-cars.component";
 import { AdminUsersComponent } from "./components/admin-users/admin-users.component";
@@ -14,11 +14,7 @@ type TabKey = "cars" | "users" | "bookings" | "categories" | "locations";
   selector: "app-admin-dashboard",
   standalone: true,
   imports: [
-    Tabs,
-    TabList,
-    Tab,
-    TabPanels,
-    TabPanel,
+    TabsModule,
     AdminCarsComponent,
     AdminUsersComponent,
     AdminBookingsComponent,
@@ -32,36 +28,56 @@ export class AdminDashboardComponent {
   private router = inject(Router);
 
   tabs = [
-    { key: "cars" as TabKey, label: "Cars" },
-    { key: "users" as TabKey, label: "Users" },
-    { key: "bookings" as TabKey, label: "Bookings" },
-    { key: "categories" as TabKey, label: "Categories" },
-    { key: "locations" as TabKey, label: "Locations" },
+    {
+      key: "cars" as TabKey,
+      label: "Cars",
+      icon: "pi pi-car",
+    },
+    {
+      key: "users" as TabKey,
+      label: "Users",
+      icon: "pi pi-users",
+    },
+    {
+      key: "bookings" as TabKey,
+      label: "Bookings",
+      icon: "pi pi-calendar",
+    },
+    {
+      key: "categories" as TabKey,
+      label: "Categories",
+      icon: "pi pi-tags",
+    },
+    {
+      key: "locations" as TabKey,
+      label: "Locations",
+      icon: "pi pi-map-marker",
+    },
   ];
-  
+
   activeTab = signal<TabKey>("cars");
 
   constructor() {
-    // Read tab from URL query parameter on init
     this.route.queryParams.subscribe((params) => {
       const tab = params["tab"] as TabKey;
+
       if (tab && this.tabs.some((t) => t.key === tab)) {
         this.activeTab.set(tab);
       }
     });
-
-    // Update URL when tab changes
-    effect(() => {
-      const currentTab = this.activeTab();
-      this.router.navigate([], {
-        relativeTo: this.route,
-        queryParams: { tab: currentTab },
-        queryParamsHandling: "merge",
-      });
-    });
   }
 
-  onTabChange(tabKey: TabKey): void {
+  onTabChange(tab: string | number | undefined) {
+    if (!tab) return;
+
+    const tabKey = tab as TabKey;
+
     this.activeTab.set(tabKey);
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab: tabKey },
+      queryParamsHandling: "merge",
+    });
   }
 }

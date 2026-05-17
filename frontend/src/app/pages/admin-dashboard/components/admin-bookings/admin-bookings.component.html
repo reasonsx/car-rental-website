@@ -1,122 +1,130 @@
-<div class="h-full flex flex-col overflow-hidden">
-
-  <div class="mb-6">
+<div class="flex flex-col gap-6">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
     <div>
-      <h2 class="text-xl font-semibold text-gray-800">Bookings management</h2>
-      <p class="text-sm text-gray-500">Manage car bookings</p>
+      <h2 class="text-xl font-semibold text-slate-900">Bookings</h2>
+      <p class="text-sm text-slate-500">Manage car bookings</p>
     </div>
-    @if (error()) {
-      <div class="text-red-500">{{ error() }}</div>
-    }
+
+    <p-button
+      icon="pi pi-refresh"
+      label="Refresh"
+      severity="secondary"
+      size="small"
+      (onClick)="loadBookings()"
+    />
   </div>
 
-  <!-- TABLE AREA -->
-  <div class="flex-1 overflow-hidden">
-    <p-table
-      [value]="bookings()"
-      [paginator]="true"
-      [rows]="8"
-      scrollable="true"
-      scrollHeight="flex"
-      class="h-full"
-    >
-      <ng-template pTemplate="header">
-        <tr>
-          <th>Car</th>
-          <th>User Info</th>
-          <th>Contact</th>
-          <th>Dates</th>
-          <th>Price</th>
-          <th>Status</th>
-          <th></th>
-        </tr>
-      </ng-template>
+  @if (error()) {
+    <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+      {{ error() }}
+    </div>
+  }
 
-      <ng-template pTemplate="body" let-b>
-        <tr>
-          <td class="font-medium">
-            <a
-              [routerLink]="['/car', b.carId?._id]"
-              target="_blank"
-              class="text-blue-600 hover:underline"
-            >
-              {{ b.carId?.brand }} {{ b.carId?.modelName }}
-            </a>
-          </td>
+  <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div class="mb-4 flex items-center justify-between">
+      <h3 class="text-base font-medium text-slate-700">Bookings list</h3>
+      <span class="text-sm text-slate-500">{{ bookings().length }} bookings</span>
+    </div>
 
-          <td>
-            <div class="flex flex-col">
-              <span class="font-medium">{{ b.userInfo?.firstName }} {{ b.userInfo?.lastName }}</span>
-              <span class="text-xs text-gray-500">{{ b.userInfo?.driversLicenseNumber }}</span>
-            </div>
-          </td>
+    <div class="overflow-x-auto">
+      <p-table [value]="bookings()" [paginator]="true" [rows]="8" class="text-sm">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Car</th>
+            <th>User</th>
+            <th>Contact</th>
+            <th>Dates</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th class="w-56"></th>
+          </tr>
+        </ng-template>
 
-          <td>
-            <div class="flex flex-col text-sm">
-              <span>{{ b.userInfo?.email }}</span>
-              <span class="text-gray-600">{{ b.userInfo?.phone }}</span>
-            </div>
-          </td>
+        <ng-template pTemplate="body" let-b>
+          <tr class="transition hover:bg-slate-50">
+            <td class="font-medium">
+              <a
+                [routerLink]="['/car', b.carId?._id]"
+                target="_blank"
+                class="text-blue-600 hover:underline"
+              >
+                {{ b.carId?.brand }} {{ b.carId?.modelName }}
+              </a>
+            </td>
 
-          <td>
-            <div class="inline-flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-md text-xs">
-              <span>{{ b.startDate | date:'MMM d, y' }}</span>
-              <span class="text-gray-400">–</span>
-              <span>{{ b.endDate | date:'MMM d, y' }}</span>
-            </div>
-          </td>
+            <td>
+              <div class="flex flex-col">
+                <span class="font-medium text-slate-800">
+                  {{ b.userInfo?.firstName }} {{ b.userInfo?.lastName }}
+                </span>
+                <span class="text-xs text-slate-500">{{ b.userInfo?.driversLicenseNumber }}</span>
+              </div>
+            </td>
 
-          <td class="whitespace-nowrap">
-            {{ b.totalPrice | number }} DKK
-          </td>
+            <td>
+              <div class="flex flex-col text-sm">
+                <span class="text-slate-800">{{ b.userInfo?.email }}</span>
+                <span class="text-slate-500">{{ b.userInfo?.phone }}</span>
+              </div>
+            </td>
 
-          <td>
-    <span
-      class="px-3 py-1 rounded-full text-xs font-semibold uppercase"
-      [class.bg-green-100]="b.status === 'confirmed'"
-      [class.text-green-700]="b.status === 'confirmed'"
-      [class.bg-yellow-100]="b.status === 'pending'"
-      [class.text-yellow-700]="b.status === 'pending'"
-      [class.bg-red-100]="b.status === 'cancelled'"
-      [class.text-red-700]="b.status === 'cancelled'"
-    >
-      {{ b.status }}
-    </span>
-          </td>
+            <td>
+              <div class="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-1 text-xs text-slate-700">
+                <span>{{ b.startDate | date:"MMM d, y" }}</span>
+                <span class="text-slate-400">-</span>
+                <span>{{ b.endDate | date:"MMM d, y" }}</span>
+              </div>
+            </td>
 
-          <!-- 🔥 FIXED ACTIONS -->
-          <td class="text-right whitespace-nowrap">
-            <div class="inline-flex items-center gap-2">
-              <p-select
-                [options]="statusOptions"
-                optionLabel="label"
-                optionValue="value"
-                [ngModel]="b.status"
-                (ngModelChange)="updateStatus(b, $event)"
-                class="w-40"
-              />
+            <td class="whitespace-nowrap font-medium text-slate-800">
+              {{ b.totalPrice | number }} DKK
+            </td>
 
-              <p-button
-                icon="pi pi-trash"
-                size="small"
-                severity="danger"
-                [text]="true"
-                (onClick)="delete(b._id)"
-              />
-            </div>
-          </td>
-        </tr>
-      </ng-template>
+            <td>
+              <span
+                class="rounded-full px-3 py-1 text-xs font-semibold uppercase"
+                [class.bg-green-100]="b.status === 'confirmed'"
+                [class.text-green-700]="b.status === 'confirmed'"
+                [class.bg-yellow-100]="b.status === 'pending'"
+                [class.text-yellow-700]="b.status === 'pending'"
+                [class.bg-red-100]="b.status === 'cancelled'"
+                [class.text-red-700]="b.status === 'cancelled'"
+              >
+                {{ b.status }}
+              </span>
+            </td>
 
-      <!-- EMPTY STATE -->
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="7" class="text-center py-10 text-gray-500">
-            No bookings found
-          </td>
-        </tr>
-      </ng-template>
+            <td class="whitespace-nowrap text-right">
+              <div class="inline-flex items-center gap-2">
+                <p-select
+                  [options]="statusOptions"
+                  optionLabel="label"
+                  optionValue="value"
+                  [ngModel]="b.status"
+                  (ngModelChange)="updateStatus(b, $event)"
+                  class="w-40"
+                />
 
-    </p-table>
+                <p-button
+                  icon="pi pi-trash"
+                  size="small"
+                  severity="danger"
+                  [text]="true"
+                  (onClick)="delete(b._id)"
+                />
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="7" class="py-10 text-center text-slate-500">
+              No bookings found
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
   </div>
 </div>

@@ -1,47 +1,59 @@
-<div class="h-screen flex flex-col bg-gray-50 p-6">
-  <div class="flex flex-col flex-1 max-w-7xl mx-auto w-full">
-    <h1 class="text-3xl font-semibold text-gray-900 mb-6">
-      Admin Dashboard
-    </h1>
+<div class="min-h-screen bg-slate-50 py-8">
+  <div class="mx-auto flex w-full max-w-7xl flex-col gap-6 px-2 sm:px-8 lg:px-12">
+    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 class="text-3xl font-semibold text-slate-900">Admin dashboard</h1>
 
-    <p-tabs
-  [value]="activeTab()"
-  class="flex flex-col flex-1 overflow-hidden rounded-lg"
->
-  <p-tablist>
-    @for (tab of tabs; track tab.key) {
-      <p-tab
-        [value]="tab.key"
-        (click)="onTabChange(tab.key)"
+          <p class="mt-2 text-slate-600">
+            Manage cars, users, bookings, categories, and pickup locations.
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <p-tabs
+        [value]="activeTab()"
+        (valueChange)="onTabChange($event)"
+        class="flex flex-col"
       >
-        {{ tab.label }}
-      </p-tab>
-    }
-  </p-tablist>
+        <div class="border-b border-slate-200 px-4 pt-3">
+          <p-tablist class="overflow-x-auto">
+            @for (tab of tabs; track tab.key) {
+              <p-tab [value]="tab.key">
+                <span class="inline-flex items-center gap-2 whitespace-nowrap">
+                  <i [class]="tab.icon"></i>
+                  {{ tab.label }}
+                </span>
+              </p-tab>
+            }
+          </p-tablist>
+        </div>
 
-      <p-tabpanels class="flex-1 overflow-hidden">
+        <p-tabpanels class="bg-white p-6">
+          <p-tabpanel value="cars">
+            <app-admin-cars />
+          </p-tabpanel>
 
-        <p-tabpanel value="cars" class="h-full">
-          <app-admin-cars class="block h-full" />
-        </p-tabpanel>
+          <p-tabpanel value="users">
+            <app-admin-users />
+          </p-tabpanel>
 
-        <p-tabpanel value="users" class="h-full">
-          <app-admin-users class="block h-full" />
-        </p-tabpanel>
+          <p-tabpanel value="bookings">
+            <app-admin-bookings />
+          </p-tabpanel>
 
-        <p-tabpanel value="bookings" class="h-full">
-          <app-admin-bookings class="block h-full" />
-        </p-tabpanel>
+          <p-tabpanel value="categories">
+            <app-admin-categories />
+          </p-tabpanel>
 
-        <p-tabpanel value="categories" class="h-full">
-          <app-admin-categories class="block h-full" />
-        </p-tabpanel>
-
-        <p-tabpanel value="locations" class="h-full">
-          <app-admin-locations class="block h-full" />
-        </p-tabpanel>
-
-      </p-tabpanels>
-    </p-tabs>
+          <p-tabpanel value="locations">
+            <app-admin-locations />
+          </p-tabpanel>
+        </p-tabpanels>
+      </p-tabs>
+    </div>
   </div>
 </div>
