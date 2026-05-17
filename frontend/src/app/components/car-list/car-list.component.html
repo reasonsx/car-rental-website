@@ -9,15 +9,7 @@
       <p class="text-sm text-gray-500">({{ filteredCars().length }}) results</p>
     </div>
 
-    <div class="flex gap-2">
-      <p-button
-        label="Reset filters"
-        icon="pi pi-refresh"
-        severity="secondary"
-        size="small"
-        (onClick)="resetFilters()"
-      />
-    </div>
+    <!-- reset button moved to filter bar so it's inline with filters -->
   </div>
 
   <!-- FILTER BAR -->
@@ -32,7 +24,7 @@
       [ngModel]="sort()"
       (ngModelChange)="sort.set($event)"
       placeholder="Sort"
-      class="w-56"
+      class="w-56 h-10"
     >
       <ng-template pTemplate="selectedItem" let-option>
         <div class="flex items-center gap-2">
@@ -55,7 +47,10 @@
       [ngModel]="selectedBrand()"
       (ngModelChange)="selectedBrand.set($event)"
       placeholder="Brand"
-      class="w-44"
+      class="w-60 h-10"
+      [filter]="true"
+      filterPlaceholder="Search brands"
+      filterBy="label"
     />
 
     <!-- YEAR -->
@@ -64,8 +59,24 @@
       [ngModel]="selectedYear()"
       (ngModelChange)="selectedYear.set($event)"
       placeholder="Year"
-      class="w-32"
+      class="w-32 h-10"
     />
+
+    <div class="ml-auto">
+      <p-button
+        label="Reset filters"
+        icon="pi pi-refresh"
+        severity="secondary"
+        size="small"
+        class="h-10"
+        styleClass="h-10"
+        (onClick)="resetFilters()"
+        [disabled]="!filtersActive()"
+        pTooltip="No filters to reset"
+        [tooltipDisabled]="filtersActive()"
+        tooltipPosition="top"
+      />
+    </div>
 
   </div>
 
@@ -80,20 +91,11 @@
     </div>
   } @else {
     <!-- EMPTY -->
-    <div
-      class="flex flex-col items-center justify-center py-16 gap-3 bg-gray-50 rounded-xl border border-dashed"
-    >
-      <i class="pi pi-car text-3xl text-gray-400"></i>
+    <div class="flex flex-col items-center justify-center gap-4 bg-white rounded-xl p-8 h-80">
+      <i class="pi pi-car text-4xl text-gray-400"></i>
 
-      <p class="text-gray-500">No cars match your filters.</p>
-
-      <p-button
-        label="Reset filters"
-        icon="pi pi-refresh"
-        severity="secondary"
-        size="small"
-        (onClick)="resetFilters()"
-      />
+      <p class="text-gray-700 font-medium text-lg">No cars match your filters.</p>
+      <p class="text-sm text-gray-500">Try adjusting your filters or reset to see all available cars.</p>
     </div>
   }
 </div>

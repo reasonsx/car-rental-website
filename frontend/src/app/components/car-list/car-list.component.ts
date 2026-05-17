@@ -3,6 +3,7 @@ import { CommonModule } from "@angular/common";
 import { CarCardComponent } from "../car-card/car-card.component";
 import { ButtonModule } from "primeng/button";
 import { SelectModule } from "primeng/select";
+import { TooltipModule } from "primeng/tooltip";
 import { FormsModule } from "@angular/forms";
 import { CarService } from "../../services/car.service";
 import { Car } from "../../models/car.model";
@@ -12,7 +13,7 @@ type SortOption = "priceAsc" | "priceDesc" | "yearDesc";
 @Component({
   selector: "app-car-list",
   standalone: true,
-  imports: [CommonModule, CarCardComponent, ButtonModule, SelectModule, FormsModule],
+  imports: [CommonModule, CarCardComponent, ButtonModule, SelectModule, TooltipModule, FormsModule],
   templateUrl: "./car-list.component.html",
 })
 export class CarListComponent {
@@ -26,7 +27,18 @@ export class CarListComponent {
   selectedCategory = signal<string | null>(null);
   selectedBrand = signal<string | null>(null);
   selectedYear = signal<number | null>(null);
-  sort = signal<SortOption>("priceAsc");
+  // Default to newest first
+  sort = signal<SortOption>("yearDesc");
+
+  filtersActive = computed(() => {
+    return (
+      !!this.selectedLocationId() ||
+      !!this.selectedCategory() ||
+      !!this.selectedBrand() ||
+      !!this.selectedYear() ||
+      this.sort() !== "yearDesc"
+    );
+  });
 
   constructor() {
     this.loadCars();
@@ -95,6 +107,6 @@ export class CarListComponent {
     this.selectedCategory.set(null);
     this.selectedBrand.set(null);
     this.selectedYear.set(null);
-    this.sort.set("priceAsc");
+    this.sort.set("yearDesc");
   }
 }

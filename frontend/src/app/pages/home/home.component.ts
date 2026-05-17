@@ -4,8 +4,6 @@ import { LocationSelectorComponent } from "../../components/location-selector/lo
 import { CarListComponent } from "../../components/car-list/car-list.component";
 import { LocationService } from "../../services/location.service";
 import { Location } from "../../models/location.model";
-import { CardModule } from "primeng/card";
-import { ProgressSpinnerModule } from "primeng/progressspinner";
 import { SkeletonModule } from "primeng/skeleton";
 
 @Component({
@@ -15,9 +13,7 @@ import { SkeletonModule } from "primeng/skeleton";
     CommonModule,
     LocationSelectorComponent,
     CarListComponent,
-    CardModule,
     SkeletonModule,
-    ProgressSpinnerModule,
   ],
   templateUrl: "./home.component.html",
 })

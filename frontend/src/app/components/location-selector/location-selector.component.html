@@ -9,6 +9,9 @@
     placeholder="All locations"
     [ngModel]="selectedLocationId()"
     (ngModelChange)="onLocationChange($event)"
-    class="w-full"
+    class="w-full h-10"
+    [filter]="true"
+    filterPlaceholder="Search locations"
+    filterBy="name"
   />
 </div>
