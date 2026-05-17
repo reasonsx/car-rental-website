@@ -1,4 +1,4 @@
-import { Component, computed, inject } from "@angular/core";
+import { Component, computed, inject, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { RouterModule } from "@angular/router";
 import { AuthService } from "../../services/auth.service";
@@ -13,11 +13,15 @@ import { ButtonModule } from "primeng/button";
 export class NavComponent {
   private authService = inject(AuthService);
 
+  // mobile menu state
+  menuOpen = signal(false);
+
   isAuthenticated = computed(() => this.authService.isAuthenticated());
   isAdmin = computed(() => this.authService.isAdmin());
   currentUser = computed(() => this.authService.currentUser());
 
   logout(): void {
     this.authService.logout();
+    this.menuOpen.set(false);
   }
 }

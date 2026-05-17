@@ -1,44 +1,60 @@
-<nav class="sticky top-0 z-50 w-full bg-white shadow-sm border-b border-gray-100 px-6 py-3 flex items-center justify-between">
-  <!-- LEFT: BRAND -->
-  <a routerLink="/" class="text-lg font-semibold text-gray-800 flex items-center gap-2">
-    <i class="pi pi-car"></i>
-    Car Rental
-  </a>
+<nav class="sticky top-0 z-50 w-full bg-white shadow-md border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <!-- LEFT: BRAND -->
+      <div class="flex items-center gap-4">
+        <a routerLink="/" class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+          <i class="pi pi-car text-primary"></i>
+          Car Rental
+        </a>
+      </div>
 
-  <!-- RIGHT: ACTIONS -->
-  <div class="flex items-center gap-3">
-    @if (isAuthenticated()) {
-      <span class="text-sm text-gray-600 hidden sm:block">
-        Welcome, {{ currentUser()?.name }}
-      </span>
+      <!-- CENTER/RIGHT: ACTIONS -->
+      <div class="flex items-center">
+        <!-- desktop actions -->
+        <div class="hidden sm:flex items-center gap-3">
+          @if (isAuthenticated()) {
+            <span class="text-sm text-gray-600 hidden md:block">Welcome, {{ currentUser()?.name }}</span>
 
-      <p-button
-        routerLink="/profile"
-        label="Profile"
-        icon="pi pi-user"
-        [text]="true"
-        styleClass="text-sm"
-      />
+            <p-button routerLink="/profile" label="Profile" icon="pi pi-user" [text]="true" styleClass="text-sm" />
 
-      @if (isAdmin()) {
-        <p-button
-          routerLink="/admin"
-          label="Admin"
-          icon="pi pi-cog"
-          [text]="true"
-          styleClass="text-sm"
-        />
+            @if (isAdmin()) {
+              <p-button routerLink="/admin" label="Admin" icon="pi pi-cog" [text]="true" styleClass="text-sm" />
+            }
+
+            <p-button (onClick)="logout()" label="Logout" icon="pi pi-sign-out" severity="danger" styleClass="text-sm" />
+          } @else {
+            <p-button routerLink="/login" label="Login" icon="pi pi-sign-in" styleClass="text-sm" />
+          }
+        </div>
+
+        <!-- mobile menu button -->
+        <button
+          class="sm:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:bg-gray-100"
+          aria-expanded="false"
+          (click)="menuOpen.set(!menuOpen())"
+        >
+          <i class="pi pi-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- mobile menu -->
+  <div *ngIf="menuOpen()" class="sm:hidden">
+    <div class="px-4 pt-2 pb-3 space-y-1 bg-white border-t border-gray-100">
+      @if (isAuthenticated()) {
+        <div class="px-2 py-2 text-sm text-gray-700">Welcome, {{ currentUser()?.name }}</div>
+        <p-button routerLink="/profile" label="Profile" icon="pi pi-user" [text]="true" styleClass="w-full text-left" (onClick)="menuOpen.set(false)" />
+
+        @if (isAdmin()) {
+          <p-button routerLink="/admin" label="Admin" icon="pi pi-cog" [text]="true" styleClass="w-full text-left" (onClick)="menuOpen.set(false)" />
+        }
+
+        <p-button (onClick)="logout()" label="Logout" icon="pi pi-sign-out" severity="danger" styleClass="w-full text-left" />
+      } @else {
+        <p-button routerLink="/login" label="Login" icon="pi pi-sign-in" styleClass="w-full text-left" (onClick)="menuOpen.set(false)" />
       }
-
-      <p-button
-        (onClick)="logout()"
-        label="Logout"
-        icon="pi pi-sign-out"
-        severity="danger"
-        styleClass="text-sm"
-      />
-    } @else {
-      <p-button routerLink="/login" label="Login" icon="pi pi-sign-in" styleClass="text-sm" />
-    }
+    </div>
   </div>
 </nav>
