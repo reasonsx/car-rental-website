@@ -7,7 +7,7 @@
     "clean": "rimraf dist",
     "build": "npm run clean && tsc",
     "start-dev": "npx nodemon",
-    "start": "node dist/app.js",
+    "start": "node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "nodemonConfig": {
