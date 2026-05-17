@@ -10,7 +10,6 @@ import { connect } from "./config/db";
 const app: Application = express();
 
 export async function startServer() {
-  // Connect once
   await connect();
 
   app.use(
@@ -18,11 +17,15 @@ export async function startServer() {
       origin: "*",
       methods: ["GET", "PUT", "POST", "DELETE"],
       allowedHeaders: ["Authorization", "Content-Type", "Origin", "X-Requested-With", "Accept"],
-      credentials: true,
     }),
   );
 
   app.use(express.json());
+
+  app.get("/", (_req, res) => {
+    res.send("Car rental backend is running");
+  });
+
   app.use("/api", routes);
 
   setupDocumentation(app);
@@ -31,9 +34,4 @@ export async function startServer() {
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
   });
-}
-
-// Only start server if this file is executed directly
-if (require.main === module) {
-  startServer();
 }
