@@ -25,35 +25,37 @@
     <div class="flex flex-col gap-5 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
       <div class="flex items-center justify-between">
         <h3 class="text-base font-medium text-slate-700">Edit user</h3>
-
-        <p-button
-          label="Cancel"
-          icon="pi pi-times"
-          severity="secondary"
-          size="small"
-          (onClick)="cancelEdit()"
-        />
       </div>
 
-      <form [formGroup]="form" (ngSubmit)="saveUser()" class="grid gap-4 md:grid-cols-2">
-        <input pInputText formControlName="name" placeholder="Full name" />
-        <input pInputText formControlName="email" placeholder="Email address" />
+      <form [formGroup]="form" (ngSubmit)="saveUser()" class="flex flex-col gap-6">
+        <!-- USER INFO -->
+        <div class="grid gap-6 md:grid-cols-2">
+          <div class="flex flex-col gap-2">
+            <label class="text-sm font-medium text-slate-700">Full name</label>
+            <input pInputText formControlName="name" placeholder="Enter full name" />
+          </div>
+          <div class="flex flex-col gap-2">
+            <label class="text-sm font-medium text-slate-700">Email address</label>
+            <input pInputText formControlName="email" placeholder="Enter email" />
+          </div>
+        </div>
 
         <!-- ROLE -->
-        <div class="flex items-center gap-2 md:col-span-2 pt-1">
+        <div class="flex items-center gap-3 pt-2">
           <p-checkbox formControlName="isAdmin" binary="true" />
-          <span class="text-sm text-slate-600">Administrator</span>
+          <label class="text-sm font-medium text-slate-700">Administrator</label>
         </div>
 
         <!-- DELETED -->
-        <div class="flex items-center gap-2 md:col-span-2 pt-1">
+        <div class="flex items-center gap-3 pt-1">
           <p-checkbox formControlName="isDeleted" binary="true" />
-          <span class="text-sm text-slate-600">Soft deleted</span>
+          <label class="text-sm font-medium text-slate-700">Soft deleted</label>
         </div>
 
         <!-- ACTION -->
-        <div class="md:col-span-2 flex justify-end pt-3">
-          <p-button type="submit" label="Update user" icon="pi pi-save" [disabled]="form.invalid" />
+        <div class="flex justify-end gap-2 pt-4 border-t border-slate-200">
+          <p-button label="Cancel" icon="pi pi-times" severity="secondary" (onClick)="cancelEdit()" />
+          <p-button type="submit" [label]="selectedUser() ? 'Update user' : 'Create user'" icon="pi pi-save" [disabled]="form.invalid" />
         </div>
       </form>
     </div>
@@ -63,10 +65,8 @@
   <div class="flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
     <div class="flex items-center justify-between">
       <h3 class="text-base font-medium text-slate-700">Users list</h3>
-
       <span class="text-sm text-slate-500"> {{ users().length }} users </span>
     </div>
-
     <div class="overflow-x-auto">
       <p-table [value]="users()" [paginator]="true" [rows]="8" class="text-sm">
         <!-- HEADER -->
@@ -79,7 +79,6 @@
             <th class="w-24"></th>
           </tr>
         </ng-template>
-
         <!-- BODY -->
         <ng-template pTemplate="body" let-user>
           <tr class="transition hover:bg-slate-50">
@@ -87,12 +86,10 @@
             <td class="font-medium text-slate-800">
               {{ user.name }}
             </td>
-
             <!-- EMAIL -->
             <td class="text-slate-600">
               {{ user.email }}
             </td>
-
             <!-- ROLE -->
             <td>
               <span
@@ -105,7 +102,6 @@
                 {{ user.isAdmin ? "Admin" : "User" }}
               </span>
             </td>
-
             <!-- STATUS -->
             <td>
               <span
@@ -118,7 +114,6 @@
                 {{ user.isDeleted ? "Deleted" : "Active" }}
               </span>
             </td>
-
             <!-- ACTIONS -->
             <td>
               <div class="flex justify-end gap-1">
@@ -128,7 +123,6 @@
                   [text]="true"
                   (onClick)="editUser(user)"
                 />
-
                 <p-button
                   icon="pi pi-trash"
                   size="small"

@@ -13,12 +13,11 @@
     </div>
   }
 
-  <div class="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-    <div class="mb-4 flex items-center justify-between">
+  <div class="flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+    <div class="flex items-center justify-between">
       <h3 class="text-base font-medium text-slate-700">Bookings list</h3>
-      <span class="text-sm text-slate-500">{{ bookings().length }} bookings</span>
+      <span class="text-sm text-slate-500"> {{ bookings().length }} items </span>
     </div>
-
     <div class="overflow-x-auto">
       <p-table [value]="bookings()" [paginator]="true" [rows]="8" class="text-sm">
         <ng-template pTemplate="header">
@@ -35,7 +34,7 @@
 
         <ng-template pTemplate="body" let-b>
           <tr class="transition hover:bg-slate-50">
-            <td class="font-medium">
+            <td class="font-medium text-slate-800">
               <a
                 [routerLink]="['/car', b.carId?._id]"
                 target="_blank"

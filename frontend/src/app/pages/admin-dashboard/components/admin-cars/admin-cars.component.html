@@ -27,56 +27,70 @@
       <h3 class="text-base font-medium text-slate-700">
         {{ selectedCar() ? "Edit car" : "Create new car" }}
       </h3>
-
-      @if (selectedCar()) {
-        <p-button
-          label="Cancel"
-          icon="pi pi-times"
-          severity="secondary"
-          size="small"
-          (onClick)="cancelEdit()"
-        />
-      }
     </div>
 
-    <form [formGroup]="form" (ngSubmit)="saveCar()" class="grid gap-4 md:grid-cols-2">
-      <!-- BASIC -->
-      <input pInputText formControlName="brand" placeholder="Brand" />
-      <input pInputText formControlName="modelName" placeholder="Model" />
-
-      <input type="number" pInputText formControlName="year" placeholder="Year" />
-      <input type="number" pInputText formControlName="pricePerDay" placeholder="Price / day" />
+    <form [formGroup]="form" (ngSubmit)="saveCar()" class="flex flex-col gap-6">
+      <!-- BASIC DETAILS -->
+      <div class="grid gap-6 md:grid-cols-2">
+        <div class="flex flex-col gap-2">
+          <label class="text-sm font-medium text-slate-700">Brand</label>
+          <input pInputText formControlName="brand" placeholder="Enter brand" />
+        </div>
+        <div class="flex flex-col gap-2">
+          <label class="text-sm font-medium text-slate-700">Model</label>
+          <input pInputText formControlName="modelName" placeholder="Enter model" />
+        </div>
+        <div class="flex flex-col gap-2">
+          <label class="text-sm font-medium text-slate-700">Year</label>
+          <input type="number" pInputText formControlName="year" placeholder="Enter year" />
+        </div>
+        <div class="flex flex-col gap-2">
+          <label class="text-sm font-medium text-slate-700">Price per day (DKK)</label>
+          <input type="number" pInputText formControlName="pricePerDay" placeholder="Enter price" />
+        </div>
+      </div>
 
       <!-- IMAGE -->
-      <input pInputText formControlName="imageUrl" placeholder="Image URL" class="md:col-span-2" />
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-medium text-slate-700">Image URL</label>
+        <input pInputText formControlName="imageUrl" placeholder="Enter image URL" />
+      </div>
 
       <!-- SELECTS -->
-      <p-select
-        [options]="categories()"
-        optionLabel="name"
-        optionValue="id"
-        formControlName="categoryId"
-        placeholder="Category"
-        class="w-full"
-      />
-
-      <p-select
-        [options]="locations()"
-        optionLabel="name"
-        optionValue="_id"
-        formControlName="locationId"
-        placeholder="Location"
-        class="w-full"
-      />
+      <div class="grid gap-6 md:grid-cols-2">
+        <div class="flex flex-col gap-2">
+          <label class="text-sm font-medium text-slate-700">Category</label>
+          <p-select
+            [options]="categories()"
+            optionLabel="name"
+            optionValue="id"
+            formControlName="categoryId"
+            placeholder="Select category"
+            class="w-full"
+          />
+        </div>
+        <div class="flex flex-col gap-2">
+          <label class="text-sm font-medium text-slate-700">Location</label>
+          <p-select
+            [options]="locations()"
+            optionLabel="name"
+            optionValue="_id"
+            formControlName="locationId"
+            placeholder="Select location"
+            class="w-full"
+          />
+        </div>
+      </div>
 
       <!-- AVAILABLE -->
-      <div class="flex items-center gap-2 md:col-span-2 pt-1">
+      <div class="flex items-center gap-3 pt-2">
         <p-checkbox formControlName="available" binary="true" />
-        <span class="text-sm text-slate-600">Available for booking</span>
+        <label class="text-sm font-medium text-slate-700">Available for booking</label>
       </div>
 
       <!-- ACTION -->
-      <div class="md:col-span-2 pt-3 flex justify-end">
+      <div class="flex justify-end gap-2 pt-4 border-t border-slate-200">
+        <p-button *ngIf="selectedCar()" label="Cancel" icon="pi pi-times" severity="secondary" (onClick)="cancelEdit()" />
         <p-button
           type="submit"
           [label]="selectedCar() ? 'Update car' : 'Create car'"
