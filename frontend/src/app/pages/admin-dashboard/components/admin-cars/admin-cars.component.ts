@@ -95,12 +95,18 @@ export class AdminCarsComponent {
       pricePerDay: car.pricePerDay,
       available: car.available,
       imageUrl: car.imageUrl ?? "",
-      categoryId: car.categoryId,
-      locationId: car.locationId,
+      categoryId: this.extractId(car.categoryId),
+      locationId: this.extractId(car.locationId),
     });
 
     this.success.set(null);
     this.error.set(null);
+  }
+
+  private extractId(value: any): string {
+    if (!value) return "";
+    if (typeof value === "string") return value;
+    return value.id ?? value._id ?? "";
   }
 
   saveCar(): void {
