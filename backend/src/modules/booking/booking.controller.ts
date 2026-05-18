@@ -9,7 +9,8 @@ import stripe from "../../config/stripe";
  * @swagger
  * /bookings:
  *   post:
- *     summary: Create a new booking
+ *     summary: Create booking and payment intent
+ *     description: Creates a pending booking for the authenticated user and returns a Stripe client secret for payment.
  *     tags: [Bookings]
  *     security:
  *       - bearerAuth: []
@@ -23,56 +24,30 @@ import stripe from "../../config/stripe";
  *             properties:
  *               carId:
  *                 type: string
+ *                 example: 65f1c2a9b7f4a8d123456789
  *               startDate:
  *                 type: string
  *                 format: date
+ *                 example: 2026-06-01
  *               endDate:
  *                 type: string
  *                 format: date
+ *                 example: 2026-06-05
  *               userInfo:
- *                 type: object
- *                 required: [firstName, lastName, phone, dateOfBirth, driversLicenseNumber, driversLicenseExpiry, address]
- *                 properties:
- *                   firstName:
- *                     type: string
- *                   lastName:
- *                     type: string
- *                   phone:
- *                     type: string
- *                   dateOfBirth:
- *                     type: string
- *                     format: date
- *                   driversLicenseNumber:
- *                     type: string
- *                   driversLicenseExpiry:
- *                     type: string
- *                     format: date
- *                   address:
- *                     type: object
- *                     required: [street, city, postalCode, country]
- *                     properties:
- *                       street:
- *                         type: string
- *                       city:
- *                         type: string
- *                       postalCode:
- *                         type: string
- *                       country:
- *                         type: string
+ *                 $ref: '#/components/schemas/BookingUserInfo'
  *     responses:
  *       201:
- *         description: Booking created with payment intent
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 bookingId:
- *                   type: string
- *                 clientSecret:
- *                   type: string
- *                 totalPrice:
- *                   type: number
+ *         description: Booking created and payment intent generated
+ *       400:
+ *         description: Missing fields, invalid date range, or past date selected
+ *       401:
+ *         description: Missing or invalid token
+ *       404:
+ *         description: Car not found
+ *       409:
+ *         description: Car already booked for selected dates
+ *       500:
+ *         description: Failed to create booking
  */
 export async function createBooking(req: AuthRequest, res: Response) {
   try {
@@ -171,6 +146,7 @@ export async function createBooking(req: AuthRequest, res: Response) {
  * /bookings/{id}/confirm:
  *   put:
  *     summary: Confirm booking after payment
+ *     description: Confirms a pending booking owned by the authenticated user.
  *     tags: [Bookings]
  *     security:
  *       - bearerAuth: []
@@ -178,15 +154,21 @@ export async function createBooking(req: AuthRequest, res: Response) {
  *       - in: path
  *         name: id
  *         required: true
+ *         description: Booking ID
  *         schema:
  *           type: string
+ *         example: 65f1c2a9b7f4a8d123456789
  *     responses:
  *       200:
  *         description: Booking confirmed
  *       400:
- *         description: Invalid request
+ *         description: Booking is not pending
+ *       401:
+ *         description: Missing or invalid token
  *       404:
  *         description: Booking not found
+ *       500:
+ *         description: Failed to confirm booking
  */
 export async function confirmBooking(req: AuthRequest, res: Response) {
   try {
@@ -219,19 +201,18 @@ export async function confirmBooking(req: AuthRequest, res: Response) {
  * @swagger
  * /bookings:
  *   get:
- *     summary: Get bookings for logged-in user
+ *     summary: Get bookings
+ *     description: Returns bookings for the logged-in user. Admin users receive all bookings.
  *     tags: [Bookings]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: List of bookings
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Booking'
+ *       401:
+ *         description: Missing or invalid token
+ *       500:
+ *         description: Failed to fetch bookings
  */
 export async function getBookings(req: AuthRequest, res: Response) {
   try {
@@ -256,18 +237,27 @@ export async function getBookings(req: AuthRequest, res: Response) {
  * /bookings/{id}:
  *   get:
  *     summary: Get booking by ID
+ *     description: Returns a single booking by its ID.
  *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
+ *         description: Booking ID
  *         schema:
  *           type: string
+ *         example: 65f1c2a9b7f4a8d123456789
  *     responses:
  *       200:
  *         description: Booking found
+ *       401:
+ *         description: Missing or invalid token
  *       404:
- *         description: Not found
+ *         description: Booking not found
+ *       500:
+ *         description: Failed to fetch booking
  */
 export async function getBookingById(req: Request, res: Response) {
   try {
@@ -293,17 +283,22 @@ export async function getBookingById(req: Request, res: Response) {
  * @swagger
  * /bookings/car/{carId}:
  *   get:
- *     summary: Get bookings for a specific car
+ *     summary: Get unavailable dates for car
+ *     description: Returns pending and confirmed bookings for a specific car, useful for disabling unavailable dates in the frontend.
  *     tags: [Bookings]
  *     parameters:
  *       - in: path
  *         name: carId
  *         required: true
+ *         description: Car ID
  *         schema:
  *           type: string
+ *         example: 65f1c2a9b7f4a8d123456789
  *     responses:
  *       200:
- *         description: Booking dates
+ *         description: List of unavailable booking dates
+ *       500:
+ *         description: Failed to fetch bookings
  */
 export async function getBookingsForCar(req: Request, res: Response) {
   try {
@@ -326,23 +321,33 @@ export async function getBookingsForCar(req: Request, res: Response) {
  * /bookings/{id}:
  *   put:
  *     summary: Update booking
+ *     description: Updates a booking by ID. Requires authentication.
  *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
+ *         description: Booking ID
  *         schema:
  *           type: string
+ *         example: 65f1c2a9b7f4a8d123456789
  *     requestBody:
+ *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Booking'
+ *             $ref: '#/components/schemas/BookingUpdateInput'
  *     responses:
  *       200:
- *         description: Updated booking
+ *         description: Booking updated
+ *       401:
+ *         description: Missing or invalid token
  *       404:
- *         description: Not found
+ *         description: Booking not found
+ *       500:
+ *         description: Failed to update booking
  */
 export async function updateBooking(req: Request, res: Response) {
   try {
@@ -372,18 +377,27 @@ export async function updateBooking(req: Request, res: Response) {
  * /bookings/{id}:
  *   delete:
  *     summary: Delete booking
+ *     description: Deletes a booking by ID. Requires authentication.
  *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
+ *         description: Booking ID
  *         schema:
  *           type: string
+ *         example: 65f1c2a9b7f4a8d123456789
  *     responses:
  *       200:
- *         description: Booking deleted
+ *         description: Booking deleted successfully
+ *       401:
+ *         description: Missing or invalid token
  *       404:
- *         description: Not found
+ *         description: Booking not found
+ *       500:
+ *         description: Failed to delete booking
  */
 export async function deleteBooking(req: Request, res: Response) {
   try {
