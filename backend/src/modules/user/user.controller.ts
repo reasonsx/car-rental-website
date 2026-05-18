@@ -30,6 +30,7 @@ const updateUserSchema = Joi.object({
     .custom(rejectHtmlTags)
     .custom(rejectControlCharacters)
     .messages({
+      "string.empty": "Name is required",
       "string.min": "Name must be at least 3 characters",
       "string.max": "Name must not exceed 100 characters",
       "string.htmlTag": "Name cannot contain HTML tags",
@@ -43,6 +44,7 @@ const updateUserSchema = Joi.object({
     .custom(rejectHtmlTags)
     .custom(rejectControlCharacters)
     .messages({
+      "string.empty": "Email is required",
       "string.email": "Enter a valid email address",
       "string.max": "Email must not exceed 254 characters",
       "string.htmlTag": "Email cannot contain HTML tags",
@@ -198,7 +200,14 @@ export async function updateUser(req: AuthRequest, res: Response) {
     }> = {};
 
     if (value.name) updateData.name = value.name;
-    if (value.email) updateData.email = value.email;
+    if (value.email) {
+      const existingUser = await UserModel.findOne({ _id: { $ne: id }, email: value.email });
+      if (existingUser) {
+        return res.status(400).json({ error: "Email already exists" });
+      }
+
+      updateData.email = value.email;
+    }
 
     // only admin can change role
     if (req.user?.isAdmin && typeof value.isAdmin === "boolean") {

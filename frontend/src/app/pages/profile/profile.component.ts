@@ -1,21 +1,24 @@
-import { Component, signal, computed, inject, effect } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { ReactiveFormsModule, FormBuilder, FormGroup } from "@angular/forms";
+import { Component, computed, effect, inject, signal } from "@angular/core";
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from "@angular/forms";
 import { Router } from "@angular/router";
-import { AuthService } from "../../services/auth.service";
-import { BookingService } from "../../services/booking.service";
+import { ButtonModule } from "primeng/button";
+import { CardModule } from "primeng/card";
+import { InputTextModule } from "primeng/inputtext";
+import { MessageModule } from "primeng/message";
+import { PasswordModule } from "primeng/password";
 import { User } from "../../models/auth.model";
 import { Booking } from "../../models/booking.model";
-import { InputTextModule } from "primeng/inputtext";
-import { CardModule } from "primeng/card";
-import { ButtonModule } from "primeng/button";
-import { PasswordModule } from "primeng/password";
-import { MessageModule } from "primeng/message";
-import {
-  emailValidators,
-  nameValidators,
-  optionalNewPasswordValidators,
-} from "../../validators/auth.validators";
+import { AuthService } from "../../services/auth.service";
+import { BookingService } from "../../services/booking.service";
+import { emailValidators, nameValidators, newPasswordValidators } from "../../validators/auth.validators";
 
 @Component({
   selector: "app-profile",
@@ -36,119 +39,151 @@ export class ProfileComponent {
   private bookingService = inject(BookingService);
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private bookingsLoadedForUserId: string | null = null;
+  private profileFormUserId: string | null = null;
 
   currentUser = computed(() => this.authService.currentUser());
   isAdmin = computed(() => this.authService.isAdmin());
 
-  isLoading = signal(false);
-  error = signal<string | null>(null);
-  success = signal<string | null>(null);
+  profileLoading = signal(false);
+  profileError = signal<string | null>(null);
+  profileSuccess = signal<string | null>(null);
+
+  passwordLoading = signal(false);
+  passwordError = signal<string | null>(null);
+  passwordSuccess = signal<string | null>(null);
 
   bookings = signal<Booking[]>([]);
   bookingsLoading = signal(false);
   bookingsError = signal<string | null>(null);
 
-  profileForm: FormGroup = this.fb.group(
+  profileForm: FormGroup = this.fb.group({
+    name: ["", nameValidators],
+    email: ["", emailValidators],
+  });
+
+  passwordForm: FormGroup = this.fb.group(
     {
-      name: ["", nameValidators],
-      email: ["", emailValidators],
-      currentPassword: [""],
-      newPassword: ["", optionalNewPasswordValidators],
-      confirmNewPassword: [""],
+      currentPassword: ["", Validators.required],
+      newPassword: ["", newPasswordValidators],
+      confirmNewPassword: ["", Validators.required],
     },
     { validators: this.passwordMatchValidator },
   );
 
   constructor() {
-    const user = this.currentUser();
-
-    if (user) {
-      this.profileForm.patchValue({
-        name: user.name,
-        email: user.email,
-      });
-    }
-
-    // Load user bookings
     effect(() => {
-      if (this.currentUser()) {
+      const user = this.currentUser();
+
+      if (!user) {
+        this.bookingsLoadedForUserId = null;
+        this.profileFormUserId = null;
+        this.bookings.set([]);
+        this.profileForm.reset({ name: "", email: "" }, { emitEvent: false });
+        return;
+      }
+
+      if (this.profileFormUserId !== user.id && !this.profileForm.dirty) {
+        this.profileForm.patchValue(
+          {
+            name: user.name,
+            email: user.email,
+          },
+          { emitEvent: false },
+        );
+        this.profileForm.markAsPristine();
+        this.profileFormUserId = user.id;
+      }
+
+      if (this.bookingsLoadedForUserId !== user.id) {
+        this.bookingsLoadedForUserId = user.id;
         this.loadBookings();
       }
     });
   }
 
-  onUpdateProfile() {
+  onUpdateProfile(): void {
     if (this.profileForm.invalid) {
       this.profileForm.markAllAsTouched();
       return;
     }
 
-    this.isLoading.set(true);
-    this.error.set(null);
-    this.success.set(null);
+    const currentUser = this.currentUser();
+    if (!currentUser) return;
 
-    const formValue = this.profileForm.value;
-
+    const formValue = this.profileForm.getRawValue();
     const updateData: Partial<User> = {
-      name: formValue.name,
-      email: formValue.email,
+      name: formValue.name.trim(),
+      email: formValue.email.trim().toLowerCase(),
     };
 
-    const doProfileUpdate = () => {
-      return this.authService.updateUser(updateData);
-    };
+    if (updateData.name === currentUser.name && updateData.email === currentUser.email) {
+      this.profileSuccess.set("No profile changes to save.");
+      this.profileError.set(null);
+      return;
+    }
 
-    const performPasswordChange = () => {
-      if (!formValue.newPassword) return null;
-      if (!formValue.currentPassword) {
-        throw { error: { message: "Current password is required to change password" } };
-      }
-      if (!formValue.confirmNewPassword) {
-        throw { error: { message: "Password confirmation is required" } };
-      }
+    this.profileLoading.set(true);
+    this.profileError.set(null);
+    this.profileSuccess.set(null);
 
-      return this.authService.changePassword(formValue.currentPassword, formValue.newPassword);
-    };
-
-    // Execute profile update first (if any fields present), then password change if requested
-    const profileObs = doProfileUpdate();
-
-    profileObs.subscribe({
-      next: async () => {
-        try {
-          if (formValue.newPassword) {
-            await new Promise((resolve, reject) => {
-              const pwObs = performPasswordChange();
-              if (!pwObs) return resolve(null);
-              pwObs.subscribe({ next: () => resolve(null), error: (e) => reject(e) });
-            });
-          }
-
-          this.isLoading.set(false);
-          this.success.set("Profile updated successfully!");
-
-          this.profileForm.patchValue({
-            currentPassword: "",
-            newPassword: "",
-            confirmNewPassword: "",
-          });
-        } catch (err: any) {
-          this.isLoading.set(false);
-          this.error.set(this.getHttpErrorMessage(err, "Failed to change password"));
-        }
+    this.authService.updateUser(updateData).subscribe({
+      next: (user) => {
+        this.profileForm.patchValue(
+          {
+            name: user.name,
+            email: user.email,
+          },
+          { emitEvent: false },
+        );
+        this.profileForm.markAsPristine();
+        this.profileLoading.set(false);
+        this.profileSuccess.set("Profile updated successfully.");
       },
       error: (err: any) => {
-        this.isLoading.set(false);
-        this.error.set(this.getHttpErrorMessage(err, "Failed to update profile"));
+        this.profileLoading.set(false);
+        this.profileError.set(this.getHttpErrorMessage(err, "Failed to update profile"));
       },
     });
   }
 
-  goToAdminDashboard() {
-    this.router.navigate(["/admin"]);
+  onChangePassword(): void {
+    if (this.passwordForm.invalid) {
+      this.passwordForm.markAllAsTouched();
+      return;
+    }
+
+    const formValue = this.passwordForm.getRawValue();
+
+    this.passwordLoading.set(true);
+    this.passwordError.set(null);
+    this.passwordSuccess.set(null);
+
+    this.authService.changePassword(formValue.currentPassword, formValue.newPassword).subscribe({
+      next: () => {
+        this.passwordForm.reset(
+          {
+            currentPassword: "",
+            newPassword: "",
+            confirmNewPassword: "",
+          },
+          { emitEvent: false },
+        );
+        this.passwordLoading.set(false);
+        this.passwordSuccess.set("Password changed successfully.");
+      },
+      error: (err: any) => {
+        this.passwordLoading.set(false);
+        this.passwordError.set(this.getHttpErrorMessage(err, "Failed to change password"));
+      },
+    });
   }
 
-  private passwordMatchValidator(group: FormGroup) {
+  goToAdminDashboard(): void {
+    void this.router.navigate(["/admin"]);
+  }
+
+  private passwordMatchValidator(group: AbstractControl): ValidationErrors | null {
     const newPassword = group.get("newPassword")?.value;
     const confirm = group.get("confirmNewPassword")?.value;
 
@@ -160,6 +195,10 @@ export class ProfileComponent {
 
   get profileFormControls() {
     return this.profileForm.controls;
+  }
+
+  get passwordFormControls() {
+    return this.passwordForm.controls;
   }
 
   get nameErrors(): string[] {
@@ -188,10 +227,17 @@ export class ProfileComponent {
     return errors;
   }
 
+  get currentPasswordErrors(): string[] {
+    return this.passwordForm.get("currentPassword")?.hasError("required")
+      ? ["Current password is required"]
+      : [];
+  }
+
   get newPasswordErrors(): string[] {
-    const control = this.profileForm.get("newPassword");
+    const control = this.passwordForm.get("newPassword");
     const errors: string[] = [];
 
+    if (control?.hasError("required")) errors.push("New password is required");
     if (control?.hasError("minlength")) errors.push("New password must be at least 8 characters");
     if (control?.hasError("maxlength")) errors.push("New password must not exceed 64 characters");
     if (control?.hasError("maxUtf8Bytes")) errors.push("New password is too long for secure storage");
@@ -203,7 +249,19 @@ export class ProfileComponent {
     return errors;
   }
 
-  private loadBookings() {
+  get confirmNewPasswordErrors(): string[] {
+    const control = this.passwordForm.get("confirmNewPassword");
+    const errors: string[] = [];
+
+    if (control?.hasError("required") || this.passwordForm.hasError("passwordConfirmationRequired")) {
+      errors.push("Password confirmation is required");
+    }
+    if (this.passwordForm.hasError("passwordMismatch")) errors.push("Passwords do not match");
+
+    return errors;
+  }
+
+  private loadBookings(): void {
     this.bookingsLoading.set(true);
     this.bookingsError.set(null);
 

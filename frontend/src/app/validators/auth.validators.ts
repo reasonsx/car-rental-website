@@ -60,11 +60,3 @@ export const newPasswordValidators = [
   noHtmlTagsValidator(),
   noControlCharactersValidator(),
 ];
-
-export const optionalNewPasswordValidators = [
-  Validators.minLength(PASSWORD_MIN_LENGTH),
-  Validators.maxLength(PASSWORD_MAX_LENGTH),
-  maxUtf8BytesValidator(BCRYPT_MAX_BYTES),
-  noHtmlTagsValidator(),
-  noControlCharactersValidator(),
-];
