@@ -69,17 +69,32 @@ function mapUser(user: any) {
  * @swagger
  * /users:
  *   get:
- *     summary: Get all users (Admin only)
+ *     summary: Get all users
+ *     description: Returns all users. Accessible only by administrators.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: List of users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   nullable: true
+ *                   example: null
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Missing or invalid token
  *       403:
  *         description: Admins only
  *       500:
- *         description: Server error
+ *         description: Failed to fetch users
  */
 export async function getAllUsers(req: AuthRequest, res: Response) {
   try {
@@ -102,7 +117,8 @@ export async function getAllUsers(req: AuthRequest, res: Response) {
  * @swagger
  * /users/{id}:
  *   get:
- *     summary: Get user by ID (self or admin)
+ *     summary: Get user by ID
+ *     description: Returns a user by ID. Accessible by the user themselves or administrators.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -110,15 +126,31 @@ export async function getAllUsers(req: AuthRequest, res: Response) {
  *       - in: path
  *         name: id
  *         required: true
+ *         description: User ID
  *         schema:
  *           type: string
+ *         example: 65f1c2a9b7f4a8d123456789
  *     responses:
  *       200:
  *         description: User found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   nullable: true
+ *                   example: null
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Missing or invalid token
  *       403:
  *         description: Forbidden
  *       404:
  *         description: User not found
+ *       500:
+ *         description: Failed to fetch user
  */
 export async function getUserById(req: AuthRequest, res: Response) {
   try {
@@ -144,7 +176,8 @@ export async function getUserById(req: AuthRequest, res: Response) {
  * @swagger
  * /users/{id}:
  *   put:
- *     summary: Update user (self or admin)
+ *     summary: Update user
+ *     description: Updates a user profile. Users may update themselves, while admins may update any user and modify roles or deletion status.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
@@ -152,29 +185,39 @@ export async function getUserById(req: AuthRequest, res: Response) {
  *       - in: path
  *         name: id
  *         required: true
+ *         description: User ID
  *         schema:
  *           type: string
+ *         example: 65f1c2a9b7f4a8d123456789
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               email:
- *                 type: string
- *               isAdmin:
- *                 type: boolean
- *                 description: Only admins can change this
+ *             $ref: '#/components/schemas/UserUpdateInput'
  *     responses:
  *       200:
- *         description: User updated
+ *         description: User updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   nullable: true
+ *                   example: null
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Validation error or email already exists
+ *       401:
+ *         description: Missing or invalid token
  *       403:
  *         description: Forbidden
  *       404:
  *         description: User not found
+ *       500:
+ *         description: Failed to update user
  */
 export async function updateUser(req: AuthRequest, res: Response) {
   try {
@@ -234,48 +277,26 @@ export async function updateUser(req: AuthRequest, res: Response) {
   }
 }
 
-/**
- * @swagger
- * /users/{id}:
- *   delete:
- *     summary: Soft delete user (Admin only) - sets isDeleted to true
- *     tags: [Users]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: User soft deleted
- *       403:
- *         description: Admins only
- *       404:
- *         description: User not found
- */
-export async function deleteUser(req: AuthRequest, res: Response) {
-  try {
-    if (!req.user?.isAdmin) {
-      return res.status(403).json({ error: "Admins only" });
-    }
-
-    const { id } = req.params;
-
-    const user = await UserModel.findByIdAndUpdate(
-      id,
-      { isDeleted: true },
-      { returnDocument: "after" }
-    ).select("-password");
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    res.json({ error: null, data: "User soft deleted" });
-  } catch {
-    res.status(500).json({ error: "Failed to soft delete user" });
-  }
-}
+// export async function deleteUser(req: AuthRequest, res: Response) {
+//   try {
+//     if (!req.user?.isAdmin) {
+//       return res.status(403).json({ error: "Admins only" });
+//     }
+//
+//     const { id } = req.params;
+//
+//     const user = await UserModel.findByIdAndUpdate(
+//       id,
+//       { isDeleted: true },
+//       { returnDocument: "after" }
+//     ).select("-password");
+//
+//     if (!user) {
+//       return res.status(404).json({ error: "User not found" });
+//     }
+//
+//     res.json({ error: null, data: "User soft deleted" });
+//   } catch {
+//     res.status(500).json({ error: "Failed to soft delete user" });
+//   }
+// }
