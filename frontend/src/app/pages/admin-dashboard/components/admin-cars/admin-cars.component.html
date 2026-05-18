@@ -106,7 +106,7 @@
     <div class="flex items-center justify-between">
       <h3 class="text-base font-medium text-slate-700">Cars list</h3>
 
-      <span class="text-sm text-slate-500"> {{ cars().length }} items </span>
+      <span class="text-sm text-slate-500">Cars ({{ cars().length }})</span>
     </div>
 
     <div class="overflow-x-auto">
@@ -115,7 +115,6 @@
         [paginator]="true"
         [rows]="8"
         class="text-sm min-w-full"
-        responsiveLayout="scroll"
         tableStyleClass="min-w-full"
       >
       >
