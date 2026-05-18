@@ -10,10 +10,10 @@ import {
 const router = Router();
 
 // CRUD routes
-router.post("/", createLocation);
+router.post("/", verifyToken, createLocation);
 router.get("/", getLocations);
 router.get("/:id", getLocationById);
-router.put("/:id", updateLocation);
-router.delete("/:id", deleteLocation);
+router.put("/:id", verifyToken, updateLocation);
+router.delete("/:id", verifyToken, deleteLocation);
 
 export default router;
