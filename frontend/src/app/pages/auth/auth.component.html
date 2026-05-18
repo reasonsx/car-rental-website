@@ -2,9 +2,6 @@
   <div class="mx-auto grid min-h-[calc(100vh-9rem)] w-full max-w-5xl items-center gap-8 lg:grid-cols-[1fr_420px]">
     <div class="hidden lg:block">
       <div class="max-w-xl">
-        <div class="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-slate-900 text-white">
-          <span class="pi pi-car text-xl"></span>
-        </div>
         <h1 class="text-4xl font-semibold tracking-normal text-slate-950">Car rental account</h1>
         <p class="mt-4 max-w-md text-base leading-7 text-slate-600">
           Manage bookings, checkout faster, and keep your rental details in one place.
@@ -35,7 +32,7 @@
         <div class="grid grid-cols-2 rounded-lg bg-slate-100 p-1">
           <button
             type="button"
-            class="rounded-md px-3 py-2 text-sm font-medium transition"
+            class="cursor-pointer rounded-md px-3 py-2 text-sm font-medium transition"
             [class.bg-white]="isLogin()"
             [class.text-slate-950]="isLogin()"
             [class.shadow-sm]="isLogin()"
@@ -46,7 +43,7 @@
           </button>
           <button
             type="button"
-            class="rounded-md px-3 py-2 text-sm font-medium transition"
+            class="cursor-pointer rounded-md px-3 py-2 text-sm font-medium transition"
             [class.bg-white]="!isLogin()"
             [class.text-slate-950]="!isLogin()"
             [class.shadow-sm]="!isLogin()"
@@ -110,7 +107,7 @@
               inputId="auth-password"
               formControlName="password"
               [toggleMask]="true"
-              [feedback]="!isLogin()"
+              [feedback]="false"
               class="w-full"
               inputStyleClass="w-full rounded-lg"
               [class.ng-invalid]="password?.invalid && password?.touched"
