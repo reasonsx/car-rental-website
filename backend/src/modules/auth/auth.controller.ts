@@ -127,29 +127,60 @@ const changePasswordSchema = Joi.object({
  * /auth/register:
  *   post:
  *     summary: Register a new user
- *     tags: [Auth]
+ *     description: Creates a new user account. Name, email, and password are validated before registration.
+ *     tags:
+ *       - Auth
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required: [name, email, password]
+ *             required:
+ *               - name
+ *               - email
+ *               - password
  *             properties:
  *               name:
  *                 type: string
+ *                 minLength: 3
+ *                 maxLength: 100
  *                 example: John Doe
+ *                 description: User's full name. HTML tags and control characters are not allowed.
  *               email:
  *                 type: string
+ *                 format: email
+ *                 maxLength: 254
  *                 example: john@example.com
+ *                 description: User's email address. It is normalized to lowercase.
  *               password:
  *                 type: string
- *                 example: 123456
+ *                 format: password
+ *                 minLength: 8
+ *                 maxLength: 64
+ *                 example: SecurePass123
+ *                 description: Password must be 8-64 characters and cannot contain HTML tags or control characters.
  *     responses:
  *       201:
- *         description: User created
+ *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   nullable: true
+ *                   example: null
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: 65f1c2a9b7f4a8d123456789
  *       400:
- *         description: Validation error
+ *         description: Validation error or email already exists
+ *       500:
+ *         description: Failed to register user
  */
 export async function registerUser(req: Request, res: Response) {
   try {
@@ -186,27 +217,60 @@ export async function registerUser(req: Request, res: Response) {
  * @swagger
  * /auth/login:
  *   post:
- *     summary: Login user and receive JWT token
- *     tags: [Auth]
+ *     summary: Login user
+ *     description: Authenticates a user and returns a JWT token valid for 2 hours.
+ *     tags:
+ *       - Auth
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required: [email, password]
+ *             required:
+ *               - email
+ *               - password
  *             properties:
  *               email:
  *                 type: string
+ *                 format: email
  *                 example: john@example.com
  *               password:
  *                 type: string
- *                 example: 123456
+ *                 format: password
+ *                 example: SecurePass123
  *     responses:
  *       200:
  *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   nullable: true
+ *                   example: null
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     token:
+ *                       type: string
+ *                       description: JWT bearer token
+ *                     user:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                         name:
+ *                           type: string
+ *                         email:
+ *                           type: string
+ *                         isAdmin:
+ *                           type: boolean
  *       400:
- *         description: Invalid credentials
+ *         description: Invalid credentials, validation error, or deactivated account
+ *       500:
+ *         description: Failed to login user or server misconfiguration
  */
 export async function loginUser(req: Request, res: Response) {
   try {
@@ -267,7 +331,9 @@ export async function loginUser(req: Request, res: Response) {
  * /auth/change-password:
  *   post:
  *     summary: Change current user's password
- *     tags: [Auth]
+ *     description: Changes the password for the authenticated user. Requires a valid JWT bearer token.
+ *     tags:
+ *       - Auth
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -276,17 +342,32 @@ export async function loginUser(req: Request, res: Response) {
  *         application/json:
  *           schema:
  *             type: object
- *             required: [currentPassword, newPassword]
+ *             required:
+ *               - currentPassword
+ *               - newPassword
  *             properties:
  *               currentPassword:
  *                 type: string
+ *                 format: password
+ *                 example: OldSecurePass123
  *               newPassword:
  *                 type: string
+ *                 format: password
+ *                 minLength: 8
+ *                 maxLength: 64
+ *                 example: NewSecurePass123
+ *                 description: New password must be 8-64 characters and cannot contain HTML tags or control characters.
  *     responses:
  *       200:
- *         description: Password changed
+ *         description: Password changed successfully
  *       400:
- *         description: Validation error / incorrect password
+ *         description: Validation error or current password is incorrect
+ *       401:
+ *         description: Missing, invalid, or expired token
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Failed to change password
  */
 export async function changePassword(req: AuthRequest, res: Response) {
   try {
