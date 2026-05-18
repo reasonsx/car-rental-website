@@ -75,7 +75,7 @@
                 label="Update profile"
                 icon="pi pi-save"
                 [loading]="profileLoading()"
-                [disabled]="profileForm.invalid || profileLoading()"
+                [disabled]="profileForm.invalid || profileLoading() || !profileForm.dirty"
                 styleClass="w-full"
               ></p-button>
 
