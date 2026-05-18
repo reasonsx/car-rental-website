@@ -127,8 +127,8 @@ describe("AdminCarsComponent", () => {
       pricePerDay: 50,
       available: false,
       imageUrl: "http://example.com/fiesta.jpg",
-      categoryId: car.categoryId,
-      locationId: car.locationId,
+      categoryId: "cat1",
+      locationId: "loc1",
     });
     expect(cmp.error()).toBeNull();
   });
@@ -136,8 +136,6 @@ describe("AdminCarsComponent", () => {
   it("should create a car when form is valid and no car is selected", () => {
     const fixture = TestBed.createComponent(AdminCarsComponent);
     const cmp = fixture.componentInstance;
-    const category = makeCategory();
-    const location = makeLocation();
 
     cmp.form.setValue({
       brand: "Honda",
@@ -146,8 +144,8 @@ describe("AdminCarsComponent", () => {
       pricePerDay: 90,
       available: true,
       imageUrl: "",
-      categoryId: category,
-      locationId: location,
+      categoryId: "cat1",
+      locationId: "loc1",
     });
 
     cmp.saveCar();
@@ -159,9 +157,10 @@ describe("AdminCarsComponent", () => {
       pricePerDay: 90,
       available: true,
       imageUrl: "",
-      categoryId: category,
-      locationId: location,
+      categoryId: "cat1",
+      locationId: "loc1",
     });
+
     expect(cmp.success()).toBe("Car created successfully");
     expect(cmp.selectedCar()).toBeNull();
     expect(carServiceMock.getCars).toHaveBeenCalledTimes(2);
@@ -173,6 +172,7 @@ describe("AdminCarsComponent", () => {
     const car = makeCar({ id: "c1" });
 
     cmp.editCar(car);
+
     cmp.form.setValue({
       brand: "Toyota",
       modelName: "Corolla",
@@ -180,8 +180,8 @@ describe("AdminCarsComponent", () => {
       pricePerDay: 85,
       available: true,
       imageUrl: "http://example.com/car.jpg",
-      categoryId: car.categoryId,
-      locationId: car.locationId,
+      categoryId: "cat1",
+      locationId: "loc1",
     });
 
     cmp.saveCar();
@@ -193,9 +193,10 @@ describe("AdminCarsComponent", () => {
       pricePerDay: 85,
       available: true,
       imageUrl: "http://example.com/car.jpg",
-      categoryId: car.categoryId,
-      locationId: car.locationId,
+      categoryId: "cat1",
+      locationId: "loc1",
     });
+
     expect(cmp.success()).toBe("Car updated successfully");
     expect(cmp.selectedCar()).toBeNull();
     expect(carServiceMock.getCars).toHaveBeenCalledTimes(2);

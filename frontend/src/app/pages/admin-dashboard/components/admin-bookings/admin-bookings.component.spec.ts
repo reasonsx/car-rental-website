@@ -21,21 +21,26 @@ const makeBooking = (over: Partial<Booking> = {}): Booking => ({
     dateOfBirth: "1990-01-01",
     driversLicenseNumber: "L1",
     driversLicenseExpiry: "2030-01-01",
-    address: { street: "s", city: "c", postalCode: "00-000", country: "PL" },
+    address: {
+      street: "s",
+      city: "c",
+      postalCode: "00-000",
+      country: "PL",
+    },
   },
   ...over,
 });
 
 describe("AdminBookingsComponent", () => {
   let bookingServiceMock: {
-    getBookings: ReturnType<typeof vi.fn>;
+    getAllBookings: ReturnType<typeof vi.fn>;
     updateBooking: ReturnType<typeof vi.fn>;
     deleteBooking: ReturnType<typeof vi.fn>;
   };
 
   beforeEach(async () => {
     bookingServiceMock = {
-      getBookings: vi.fn().mockReturnValue(of([makeBooking()])),
+      getAllBookings: vi.fn().mockReturnValue(of([makeBooking()])),
       updateBooking: vi.fn().mockReturnValue(of(makeBooking({ status: "confirmed" }))),
       deleteBooking: vi.fn().mockReturnValue(of({ message: "ok" })),
     };
@@ -51,6 +56,7 @@ describe("AdminBookingsComponent", () => {
 
   it("should create the component", () => {
     const fixture = TestBed.createComponent(AdminBookingsComponent);
+
     expect(fixture.componentInstance).toBeTruthy();
   });
 
@@ -58,7 +64,7 @@ describe("AdminBookingsComponent", () => {
     const fixture = TestBed.createComponent(AdminBookingsComponent);
     const cmp = fixture.componentInstance;
 
-    expect(bookingServiceMock.getBookings).toHaveBeenCalledTimes(1);
+    expect(bookingServiceMock.getAllBookings).toHaveBeenCalledTimes(1);
     expect(cmp.bookings().length).toBe(1);
     expect(cmp.bookings()[0]._id).toBe("b1");
     expect(cmp.loading()).toBe(false);
@@ -66,7 +72,9 @@ describe("AdminBookingsComponent", () => {
   });
 
   it("should set error when loading fails", () => {
-    bookingServiceMock.getBookings.mockReturnValueOnce(throwError(() => new Error("fail")));
+    bookingServiceMock.getAllBookings.mockReturnValueOnce(
+      throwError(() => new Error("fail")),
+    );
 
     const fixture = TestBed.createComponent(AdminBookingsComponent);
     const cmp = fixture.componentInstance;
@@ -93,7 +101,9 @@ describe("AdminBookingsComponent", () => {
 
     cmp.updateStatus(booking, "confirmed");
 
-    expect(bookingServiceMock.updateBooking).toHaveBeenCalledWith("b1", { status: "confirmed" });
+    expect(bookingServiceMock.updateBooking).toHaveBeenCalledWith("b1", {
+      status: "confirmed",
+    });
     expect(booking.status).toBe("confirmed");
   });
 
@@ -102,13 +112,13 @@ describe("AdminBookingsComponent", () => {
     const cmp = fixture.componentInstance;
 
     const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(true);
-    bookingServiceMock.getBookings.mockClear();
+    bookingServiceMock.getAllBookings.mockClear();
 
     cmp.delete("b1");
 
     expect(confirmSpy).toHaveBeenCalled();
     expect(bookingServiceMock.deleteBooking).toHaveBeenCalledWith("b1");
-    expect(bookingServiceMock.getBookings).toHaveBeenCalledTimes(1);
+    expect(bookingServiceMock.getAllBookings).toHaveBeenCalledTimes(1);
 
     confirmSpy.mockRestore();
   });
@@ -126,4 +136,3 @@ describe("AdminBookingsComponent", () => {
     confirmSpy.mockRestore();
   });
 });
-
