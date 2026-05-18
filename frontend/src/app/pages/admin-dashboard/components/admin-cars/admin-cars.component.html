@@ -110,7 +110,15 @@
     </div>
 
     <div class="overflow-x-auto">
-    <p-table [value]="cars()" [paginator]="true" [rows]="8" class="text-sm">
+      <p-table
+        [value]="cars()"
+        [paginator]="true"
+        [rows]="8"
+        class="text-sm min-w-full"
+        responsiveLayout="scroll"
+        tableStyleClass="min-w-full"
+      >
+      >
       <!-- HEADER -->
       <ng-template pTemplate="header">
         <tr>

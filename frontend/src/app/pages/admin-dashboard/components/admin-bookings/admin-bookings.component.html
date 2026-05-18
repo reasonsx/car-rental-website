@@ -4,7 +4,6 @@
       <h2 class="text-xl font-semibold text-slate-900">Bookings</h2>
       <p class="text-sm text-slate-500">Manage car bookings</p>
     </div>
-
   </div>
 
   @if (error()) {
@@ -18,23 +17,30 @@
       <h3 class="text-base font-medium text-slate-700">Bookings list</h3>
       <span class="text-sm text-slate-500"> {{ bookings().length }} items </span>
     </div>
+
     <div class="overflow-x-auto">
-      <p-table [value]="bookings()" [paginator]="true" [rows]="8" class="text-sm">
+      <p-table
+        [value]="bookings()"
+        [paginator]="true"
+        [rows]="8"
+        class="text-sm min-w-full"
+        tableStyleClass="min-w-full"
+      >
         <ng-template pTemplate="header">
-          <tr>
-            <th>Car</th>
-            <th>User</th>
-            <th>Contact</th>
-            <th>Dates</th>
-            <th>Price</th>
-            <th>Status</th>
-            <th class="w-56"></th>
+          <tr class="border-b border-slate-200">
+            <th class="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Car</th>
+            <th class="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">User</th>
+            <th class="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Contact</th>
+            <th class="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Dates</th>
+            <th class="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Price</th>
+            <th class="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Status</th>
+            <th class="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Actions</th>
           </tr>
         </ng-template>
 
         <ng-template pTemplate="body" let-b>
           <tr class="transition hover:bg-slate-50">
-            <td class="font-medium text-slate-800">
+            <td class="px-3 py-3 font-medium text-slate-800">
               <a
                 [routerLink]="['/car', b.carId?._id]"
                 target="_blank"
@@ -44,7 +50,7 @@
               </a>
             </td>
 
-            <td>
+            <td class="px-3 py-3">
               <div class="flex flex-col">
                 <span class="font-medium text-slate-800">
                   {{ b.userInfo?.firstName }} {{ b.userInfo?.lastName }}
@@ -53,14 +59,14 @@
               </div>
             </td>
 
-            <td>
+            <td class="px-3 py-3">
               <div class="flex flex-col text-sm">
                 <span class="text-slate-800">{{ b.userId?.email }}</span>
                 <span class="text-slate-500">{{ b.userInfo?.phone }}</span>
               </div>
             </td>
 
-            <td>
+            <td class="px-3 py-3">
               <div class="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-1 text-xs text-slate-700">
                 <span>{{ b.startDate | date:"MMM d, y" }}</span>
                 <span class="text-slate-400">-</span>
@@ -68,11 +74,11 @@
               </div>
             </td>
 
-            <td class="whitespace-nowrap font-medium text-slate-800">
+            <td class="px-3 py-3 whitespace-nowrap font-medium text-slate-800">
               {{ b.totalPrice | number }} DKK
             </td>
 
-            <td>
+            <td class="px-3 py-3">
               <span
                 class="rounded-full px-3 py-1 text-xs font-semibold uppercase"
                 [class.bg-green-100]="b.status === 'confirmed'"
@@ -86,7 +92,7 @@
               </span>
             </td>
 
-            <td class="whitespace-nowrap text-right">
+            <td class="px-3 py-3 whitespace-nowrap text-right">
               <div class="inline-flex items-center gap-2">
                 <p-select
                   [options]="statusOptions"
@@ -94,6 +100,7 @@
                   optionValue="value"
                   [ngModel]="b.status"
                   (ngModelChange)="updateStatus(b, $event)"
+                  appendTo="body"
                   class="w-40"
                 />
 

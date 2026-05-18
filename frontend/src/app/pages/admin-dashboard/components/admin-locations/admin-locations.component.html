@@ -68,14 +68,21 @@
       <span class="text-sm text-slate-500"> {{ locations().length }} items </span>
     </div>
     <div class="overflow-x-auto">
-      <p-table [value]="locations()" [paginator]="true" [rows]="8" class="text-sm">
+      <p-table
+        [value]="locations()"
+        [paginator]="true"
+        [rows]="8"
+        class="text-sm min-w-full"
+        responsiveLayout="scroll"
+        tableStyleClass="min-w-full"
+      >
         <ng-template pTemplate="header">
-          <tr>
-            <th>Name</th>
-            <th>City</th>
-            <th>Address</th>
-            <th>Phone</th>
-            <th></th>
+          <tr class="border-b border-slate-200">
+            <th class="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Name</th>
+            <th class="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">City</th>
+            <th class="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Address</th>
+            <th class="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Phone</th>
+            <th class="px-3 py-2 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">Actions</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-location>
