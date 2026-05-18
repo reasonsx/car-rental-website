@@ -1,6 +1,7 @@
 import { Application } from "express";
 import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
+import { schemas } from "./docs";
 
 export function setupDocumentation(app: Application) {
   const options: swaggerJsdoc.Options = {
@@ -34,6 +35,7 @@ export function setupDocumentation(app: Application) {
             bearerFormat: "JWT",
           },
         },
+        schemas,
       },
     },
     apis: ["./src/**/*.ts"],
