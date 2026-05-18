@@ -19,9 +19,23 @@
             <div class="mt-6 flex flex-col gap-2">
               <label class="text-sm text-slate-600">Name</label>
               <input pInputText formControlName="name" class="w-full" placeholder="Your name" />
+              @if (profileFormControls["name"].touched && nameErrors.length > 0) {
+                <div class="flex flex-col gap-1">
+                  @for (message of nameErrors; track message) {
+                    <p-message severity="error" [text]="message"></p-message>
+                  }
+                </div>
+              }
 
               <label class="text-sm text-slate-600">Email</label>
               <input pInputText formControlName="email" class="w-full" placeholder="email@example.com" />
+              @if (profileFormControls["email"].touched && emailErrors.length > 0) {
+                <div class="flex flex-col gap-1">
+                  @for (message of emailErrors; track message) {
+                    <p-message severity="error" [text]="message"></p-message>
+                  }
+                </div>
+              }
 
               <div class="pt-2">
                 <p-button
@@ -83,6 +97,14 @@
                 inputStyleClass="w-full"
                 placeholder="New password"
               ></p-password>
+              <p class="text-xs text-slate-500">Use 8-64 characters. HTML tags are not allowed.</p>
+              @if (profileFormControls["newPassword"].touched && newPasswordErrors.length > 0) {
+                <div class="flex flex-col gap-1">
+                  @for (message of newPasswordErrors; track message) {
+                    <p-message severity="error" [text]="message"></p-message>
+                  }
+                </div>
+              }
 
               <label class="text-sm text-slate-600">Confirm new password</label>
               <p-password
@@ -92,6 +114,10 @@
                 inputStyleClass="w-full"
                 placeholder="Confirm new password"
               ></p-password>
+
+              @if (profileForm.errors?.["passwordConfirmationRequired"]) {
+                <span class="text-sm text-red-500 text-center">Password confirmation is required.</span>
+              }
 
               @if (profileForm.errors?.["passwordMismatch"]) {
                 <span class="text-sm text-red-500 text-center">Passwords do not match.</span>

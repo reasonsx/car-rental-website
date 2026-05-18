@@ -1,6 +1,6 @@
 import { Component, signal, computed, inject, effect } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from "@angular/forms";
+import { ReactiveFormsModule, FormBuilder, FormGroup } from "@angular/forms";
 import { Router } from "@angular/router";
 import { AuthService } from "../../services/auth.service";
 import { BookingService } from "../../services/booking.service";
@@ -10,6 +10,12 @@ import { InputTextModule } from "primeng/inputtext";
 import { CardModule } from "primeng/card";
 import { ButtonModule } from "primeng/button";
 import { PasswordModule } from "primeng/password";
+import { MessageModule } from "primeng/message";
+import {
+  emailValidators,
+  nameValidators,
+  optionalNewPasswordValidators,
+} from "../../validators/auth.validators";
 
 @Component({
   selector: "app-profile",
@@ -21,6 +27,7 @@ import { PasswordModule } from "primeng/password";
     PasswordModule,
     ButtonModule,
     CardModule,
+    MessageModule,
   ],
   templateUrl: "./profile.component.html",
 })
@@ -43,10 +50,10 @@ export class ProfileComponent {
 
   profileForm: FormGroup = this.fb.group(
     {
-      name: ["", [Validators.required, Validators.minLength(3)]],
-      email: ["", [Validators.required, Validators.email]],
+      name: ["", nameValidators],
+      email: ["", emailValidators],
       currentPassword: [""],
-      newPassword: [""],
+      newPassword: ["", optionalNewPasswordValidators],
       confirmNewPassword: [""],
     },
     { validators: this.passwordMatchValidator },
@@ -71,7 +78,10 @@ export class ProfileComponent {
   }
 
   onUpdateProfile() {
-    if (this.profileForm.invalid) return;
+    if (this.profileForm.invalid) {
+      this.profileForm.markAllAsTouched();
+      return;
+    }
 
     this.isLoading.set(true);
     this.error.set(null);
@@ -92,6 +102,9 @@ export class ProfileComponent {
       if (!formValue.newPassword) return null;
       if (!formValue.currentPassword) {
         throw { error: { message: "Current password is required to change password" } };
+      }
+      if (!formValue.confirmNewPassword) {
+        throw { error: { message: "Password confirmation is required" } };
       }
 
       return this.authService.changePassword(formValue.currentPassword, formValue.newPassword);
@@ -121,12 +134,12 @@ export class ProfileComponent {
           });
         } catch (err: any) {
           this.isLoading.set(false);
-          this.error.set(err?.error?.message || "Failed to change password");
+          this.error.set(this.getHttpErrorMessage(err, "Failed to change password"));
         }
       },
       error: (err: any) => {
         this.isLoading.set(false);
-        this.error.set(err?.error?.message || "Failed to update profile");
+        this.error.set(this.getHttpErrorMessage(err, "Failed to update profile"));
       },
     });
   }
@@ -139,11 +152,55 @@ export class ProfileComponent {
     const newPassword = group.get("newPassword")?.value;
     const confirm = group.get("confirmNewPassword")?.value;
 
+    if (!newPassword && !confirm) return null;
+    if (newPassword && !confirm) return { passwordConfirmationRequired: true };
+
     return newPassword && confirm && newPassword !== confirm ? { passwordMismatch: true } : null;
   }
 
   get profileFormControls() {
     return this.profileForm.controls;
+  }
+
+  get nameErrors(): string[] {
+    const control = this.profileForm.get("name");
+    const errors: string[] = [];
+
+    if (control?.hasError("required")) errors.push("Name is required");
+    if (control?.hasError("minlength")) errors.push("Name must be at least 3 characters");
+    if (control?.hasError("maxlength")) errors.push("Name must not exceed 100 characters");
+    if (control?.hasError("htmlTag")) errors.push("Name cannot contain HTML tags");
+    if (control?.hasError("controlCharacter")) errors.push("Name contains invalid characters");
+
+    return errors;
+  }
+
+  get emailErrors(): string[] {
+    const control = this.profileForm.get("email");
+    const errors: string[] = [];
+
+    if (control?.hasError("required")) errors.push("Email is required");
+    if (control?.hasError("email")) errors.push("Enter a valid email address");
+    if (control?.hasError("maxlength")) errors.push("Email must not exceed 254 characters");
+    if (control?.hasError("htmlTag")) errors.push("Email cannot contain HTML tags");
+    if (control?.hasError("controlCharacter")) errors.push("Email contains invalid characters");
+
+    return errors;
+  }
+
+  get newPasswordErrors(): string[] {
+    const control = this.profileForm.get("newPassword");
+    const errors: string[] = [];
+
+    if (control?.hasError("minlength")) errors.push("New password must be at least 8 characters");
+    if (control?.hasError("maxlength")) errors.push("New password must not exceed 64 characters");
+    if (control?.hasError("maxUtf8Bytes")) errors.push("New password is too long for secure storage");
+    if (control?.hasError("htmlTag")) errors.push("New password cannot contain HTML tags");
+    if (control?.hasError("controlCharacter")) {
+      errors.push("New password contains invalid characters");
+    }
+
+    return errors;
   }
 
   private loadBookings() {
@@ -157,9 +214,13 @@ export class ProfileComponent {
       },
       error: (err: any) => {
         this.bookingsLoading.set(false);
-        this.bookingsError.set(err?.error?.message || "Failed to load bookings");
+        this.bookingsError.set(this.getHttpErrorMessage(err, "Failed to load bookings"));
       },
     });
+  }
+
+  private getHttpErrorMessage(err: any, fallback: string): string {
+    return err?.error?.message ?? err?.error?.error ?? fallback;
   }
 
   getStatusBadgeClass(status: string): string {

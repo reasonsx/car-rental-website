@@ -81,7 +81,7 @@ export class AuthService {
     const payload = { currentPassword, newPassword };
 
     return this.http.post<void>(`${this.baseUrl}/change-password`, payload).pipe(
-      catchError((err) => throwError(() => err))
+      catchError((err) => throwError(() => err)),
     );
   }
 
@@ -139,11 +139,19 @@ export class AuthService {
 
   private getTokenExpirationTime(token: string): number {
     try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
+      const payload = JSON.parse(this.decodeJwtPayload(token));
       return payload.exp * 1000;
     } catch {
       return Date.now();
     }
+  }
+
+  private decodeJwtPayload(token: string): string {
+    const payload = token.split(".")[1];
+    const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), "=");
+
+    return atob(padded);
   }
 
   private setCookie(name: string, value: string, expiresInMs: number): void {
