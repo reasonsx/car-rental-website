@@ -52,22 +52,46 @@
 
             <td class="px-3 py-3">
               <div class="flex flex-col">
-                <span class="font-medium text-slate-800">
-                  {{ b.userInfo?.firstName }} {{ b.userInfo?.lastName }}
+              <span
+                class="font-medium text-slate-800"
+                pTooltip="Customer name"
+                tooltipPosition="top"
+              >
+                {{ b.userInfo?.firstName }} {{ b.userInfo?.lastName }}
+              </span>
+
+                <span
+                  class="text-xs text-slate-500"
+                  pTooltip="Driver's license number"
+                  tooltipPosition="top"
+                >
+                  {{ b.userInfo?.driversLicenseNumber }}
                 </span>
-                <span class="text-xs text-slate-500">{{ b.userInfo?.driversLicenseNumber }}</span>
               </div>
             </td>
 
             <td class="px-3 py-3">
               <div class="flex flex-col text-sm">
-                <span class="text-slate-800">{{ b.userId?.email }}</span>
-                <span class="text-slate-500">{{ b.userInfo?.phone }}</span>
+              <span
+                class="text-slate-800"
+                pTooltip="Email address"
+                tooltipPosition="top"
+              >
+                {{ b.userId?.email }}
+              </span>
+
+                <span
+                  class="text-slate-500"
+                  pTooltip="Phone number"
+                  tooltipPosition="top"
+                >
+                  {{ b.userInfo?.phone }}
+                </span>
               </div>
             </td>
 
             <td class="px-3 py-3">
-              <div class="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-1 text-xs text-slate-700">
+              <div class="inline-flex items-center gap-1.5 rounded-md bg-slate-100 px-2.5 py-1 text-xs text-slate-700">
                 <span>{{ b.startDate | date:"MMM d, y" }}</span>
                 <span class="text-slate-400">-</span>
                 <span>{{ b.endDate | date:"MMM d, y" }}</span>
