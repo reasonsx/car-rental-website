@@ -17,17 +17,6 @@
             No image
           </div>
         }
-
-        <!-- STATUS -->
-        <span
-          class="absolute top-3 right-3 text-xs px-2 py-1 rounded-full font-medium shadow-sm backdrop-blur-sm"
-          [class.bg-green-100]="car.available"
-          [class.text-green-700]="car.available"
-          [class.bg-red-100]="!car.available"
-          [class.text-red-600]="!car.available"
-        >
-          {{ car.available ? "Available" : "Unavailable" }}
-        </span>
       </div>
 
       <!-- CONTENT -->
