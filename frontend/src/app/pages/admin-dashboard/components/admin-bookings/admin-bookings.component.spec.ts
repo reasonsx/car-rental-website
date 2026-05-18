@@ -17,7 +17,6 @@ const makeBooking = (over: Partial<Booking> = {}): Booking => ({
   userInfo: {
     firstName: "Alice",
     lastName: "Smith",
-    email: "a@a.com",
     phone: "123",
     dateOfBirth: "1990-01-01",
     driversLicenseNumber: "L1",
