@@ -31,15 +31,12 @@ import stripe from "../../config/stripe";
  *                 format: date
  *               userInfo:
  *                 type: object
- *                 required: [firstName, lastName, email, phone, dateOfBirth, driversLicenseNumber, driversLicenseExpiry, address]
+ *                 required: [firstName, lastName, phone, dateOfBirth, driversLicenseNumber, driversLicenseExpiry, address]
  *                 properties:
  *                   firstName:
  *                     type: string
  *                   lastName:
  *                     type: string
- *                   email:
- *                     type: string
- *                     format: email
  *                   phone:
  *                     type: string
  *                   dateOfBirth:
