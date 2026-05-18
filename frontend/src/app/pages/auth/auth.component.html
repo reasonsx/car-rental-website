@@ -1,99 +1,185 @@
-<div class="h-full flex items-center justify-center">
-  <p-card class="w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
-    <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-6 p-8">
-      <!-- HEADER -->
-      <div class="text-center space-y-1">
-        <h2 class="text-2xl font-semibold text-gray-800">
-          {{ isLogin() ? "Welcome back" : "Create account" }}
-        </h2>
-
-        <p class="text-sm text-gray-500">
-          {{ isLogin() ? "Sign in to continue" : "Start renting cars today" }}
+<section class="min-h-[calc(100vh-4rem)] bg-slate-50 px-4 py-10">
+  <div class="mx-auto grid min-h-[calc(100vh-9rem)] w-full max-w-5xl items-center gap-8 lg:grid-cols-[1fr_420px]">
+    <div class="hidden lg:block">
+      <div class="max-w-xl">
+        <h1 class="text-4xl font-semibold tracking-normal text-slate-950">Car rental account</h1>
+        <p class="mt-4 max-w-md text-base leading-7 text-slate-600">
+          Manage bookings, checkout faster, and keep your rental details in one place.
         </p>
       </div>
+    </div>
 
-      <!-- FORM FIELDS -->
-      <div class="flex flex-col gap-4">
-        @if (!isLogin()) {
-          <input
-            pInputText
-            formControlName="name"
-            placeholder="Full name"
-            class="w-full rounded-lg"
-          />
-        }
+    <p-card styleClass="w-full rounded-lg border border-slate-200 shadow-xl">
+      <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-5 p-2 sm:p-4">
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center gap-3 lg:hidden">
+            <div class="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900 text-white">
+              <span class="pi pi-car"></span>
+            </div>
+            <span class="text-sm font-medium text-slate-700">Car rental account</span>
+          </div>
 
-        <input
-          pInputText
-          formControlName="email"
-          placeholder="Email address"
-          class="w-full rounded-lg"
-        />
-
-        <p-password
-          formControlName="password"
-          [toggleMask]="true"
-          [feedback]="!isLogin()"
-          class="w-full"
-          inputStyleClass="w-full rounded-lg"
-          placeholder="Password"
-        />
-
-        @if (!isLogin()) {
-          <p-password
-            formControlName="confirmPassword"
-            [toggleMask]="true"
-            [feedback]="false"
-            class="w-full"
-            inputStyleClass="w-full rounded-lg"
-            placeholder="Confirm password"
-          />
-        }
-      </div>
-
-      <!-- ERROR -->
-      @if (error()) {
-        <div
-          class="rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-600 text-center"
-        >
-          {{ error() }}
+          <div>
+            <h2 class="text-2xl font-semibold text-slate-950">
+              {{ isLogin() ? "Welcome back" : "Create account" }}
+            </h2>
+            <p class="mt-1 text-sm text-slate-500">
+              {{ isLogin() ? "Sign in to continue." : "Start with a secure account." }}
+            </p>
+          </div>
         </div>
-      }
 
-      <!-- ACTIONS -->
-      <div class="flex flex-col gap-3">
-        <!-- PRIMARY BUTTON -->
-        <p-button
-          type="submit"
-          [label]="isLogin() ? 'Sign in' : 'Create account'"
-          [icon]="isLogin() ? 'pi pi-sign-in' : 'pi pi-user-plus'"
-          [loading]="loading()"
-          [disabled]="form.invalid || loading()"
-          styleClass="w-full"
-        />
-
-        <!-- TOGGLE -->
-        <p-button
-          type="button"
-          (onClick)="toggleMode()"
-          [text]="true"
-          [label]="isLogin() ? 'Create account' : 'Back to login'"
-          [icon]="isLogin() ? 'pi pi-user-plus' : 'pi pi-arrow-left'"
-          styleClass="w-full text-sm"
-        />
-      </div>
-
-      <!-- EXTRA -->
-      @if (isLogin()) {
-        <div class="text-center pt-2">
-          <a
-            routerLink="/cars"
-            class="text-sm text-gray-500 hover:text-gray-800 underline transition"
+        <div class="grid grid-cols-2 rounded-lg bg-slate-100 p-1">
+          <button
+            type="button"
+            class="cursor-pointer rounded-md px-3 py-2 text-sm font-medium transition"
+            [class.bg-white]="isLogin()"
+            [class.text-slate-950]="isLogin()"
+            [class.shadow-sm]="isLogin()"
+            [class.text-slate-500]="!isLogin()"
+            (click)="isLogin() || toggleMode()"
           >
-            Browse available cars
-          </a>
+            Sign in
+          </button>
+          <button
+            type="button"
+            class="cursor-pointer rounded-md px-3 py-2 text-sm font-medium transition"
+            [class.bg-white]="!isLogin()"
+            [class.text-slate-950]="!isLogin()"
+            [class.shadow-sm]="!isLogin()"
+            [class.text-slate-500]="isLogin()"
+            (click)="isLogin() && toggleMode()"
+          >
+            Register
+          </button>
         </div>
-      }
-    </form>
-  </p-card>
-</div>
+
+        <div class="flex flex-col gap-4">
+          @if (!isLogin()) {
+            <div class="flex flex-col gap-2">
+              <label for="auth-name" class="text-sm font-medium text-slate-700">Full name</label>
+              <input
+                id="auth-name"
+                pInputText
+                formControlName="name"
+                autocomplete="name"
+                placeholder="Jane Driver"
+                class="w-full rounded-lg"
+                [class.ng-invalid]="name?.invalid && name?.touched"
+                [attr.aria-invalid]="name?.invalid && name?.touched"
+              />
+
+              @if (name?.touched && nameErrors.length > 0) {
+                <div class="flex flex-col gap-1">
+                  @for (message of nameErrors; track message) {
+                    <p-message severity="error" [text]="message"></p-message>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+          <div class="flex flex-col gap-2">
+            <label for="auth-email" class="text-sm font-medium text-slate-700">Email</label>
+            <input
+              id="auth-email"
+              pInputText
+              formControlName="email"
+              autocomplete="email"
+              placeholder="you@example.com"
+              class="w-full rounded-lg"
+              [class.ng-invalid]="email?.invalid && email?.touched"
+              [attr.aria-invalid]="email?.invalid && email?.touched"
+            />
+
+            @if (email?.touched && emailErrors.length > 0) {
+              <div class="flex flex-col gap-1">
+                @for (message of emailErrors; track message) {
+                  <p-message severity="error" [text]="message"></p-message>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label for="auth-password" class="text-sm font-medium text-slate-700">Password</label>
+            <p-password
+              inputId="auth-password"
+              formControlName="password"
+              [toggleMask]="true"
+              [feedback]="false"
+              class="w-full"
+              inputStyleClass="w-full rounded-lg"
+              [class.ng-invalid]="password?.invalid && password?.touched"
+              placeholder="Password"
+            />
+
+            @if (!isLogin()) {
+              <p class="text-xs text-slate-500">Use 8-64 characters. HTML tags are not allowed.</p>
+            }
+
+            @if (password?.touched && passwordErrors.length > 0) {
+              <div class="flex flex-col gap-1">
+                @for (message of passwordErrors; track message) {
+                  <p-message severity="error" [text]="message"></p-message>
+                }
+              </div>
+            }
+          </div>
+
+          @if (!isLogin()) {
+            <div class="flex flex-col gap-2">
+              <label for="auth-confirm-password" class="text-sm font-medium text-slate-700">
+                Confirm password
+              </label>
+              <p-password
+                inputId="auth-confirm-password"
+                formControlName="confirmPassword"
+                [toggleMask]="true"
+                [feedback]="false"
+                class="w-full"
+                inputStyleClass="w-full rounded-lg"
+                [class.ng-invalid]="confirmPassword?.invalid && confirmPassword?.touched"
+                placeholder="Confirm password"
+              />
+
+              @if (confirmPassword?.touched && confirmPasswordErrors.length > 0) {
+                <div class="flex flex-col gap-1">
+                  @for (message of confirmPasswordErrors; track message) {
+                    <p-message severity="error" [text]="message"></p-message>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        @if (error()) {
+          <div class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-center text-sm text-red-700">
+            {{ error() }}
+          </div>
+        }
+
+        <div class="flex flex-col gap-3">
+          <p-button
+            type="submit"
+            [label]="isLogin() ? 'Sign in' : 'Create account'"
+            [icon]="isLogin() ? 'pi pi-sign-in' : 'pi pi-user-plus'"
+            [loading]="loading()"
+            [disabled]="form.invalid || loading()"
+            styleClass="w-full"
+          />
+
+          @if (isLogin()) {
+            <a
+              routerLink="/cars"
+              class="text-center text-sm text-slate-500 underline transition hover:text-slate-900"
+            >
+              Browse available cars
+            </a>
+          }
+        </div>
+      </form>
+    </p-card>
+  </div>
+</section>

@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { Observable, map } from "rxjs";
+import { Observable } from "rxjs";
 import { Booking } from "../models/booking.model";
 import { API_BASE_URL } from "./api.constants";
 
@@ -19,23 +19,11 @@ export class BookingService {
   }
 
   createBooking(data: { carId: string; startDate: Date; endDate: Date; userInfo: any }): Observable<{ bookingId: string; clientSecret: string; totalPrice: number }> {
-    const token = localStorage.getItem("token");
-
-    return this.http.post<{ bookingId: string; clientSecret: string; totalPrice: number }>(this.baseUrl, data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return this.http.post<{ bookingId: string; clientSecret: string; totalPrice: number }>(this.baseUrl, data);
   }
 
   confirmBooking(id: string): Observable<{ message: string }> {
-    const token = localStorage.getItem("token");
-
-    return this.http.put<{ message: string }>(`${this.baseUrl}/${id}/confirm`, {}, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    return this.http.put<{ message: string }>(`${this.baseUrl}/${id}/confirm`, {});
   }
 
   updateBooking(id: string, data: Partial<Booking>): Observable<Booking> {

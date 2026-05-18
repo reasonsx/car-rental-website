@@ -1,22 +1,29 @@
-import { Component, signal, inject } from "@angular/core";
+import { Component, inject, signal } from "@angular/core";
 import { ActivatedRoute, Router, RouterModule } from "@angular/router";
 import {
+  AbstractControl,
   FormControl,
   FormGroup,
   ReactiveFormsModule,
-  Validators,
-  AbstractControl,
   ValidationErrors,
   ValidatorFn,
+  Validators,
 } from "@angular/forms";
 
-import { InputTextModule } from "primeng/inputtext";
-import { PasswordModule } from "primeng/password";
 import { ButtonModule } from "primeng/button";
-
-import { AuthService } from "../../services/auth.service";
-import { LoginRequest, RegisterRequest } from "../../models/auth.model";
 import { CardModule } from "primeng/card";
+import { InputTextModule } from "primeng/inputtext";
+import { MessageModule } from "primeng/message";
+import { PasswordModule } from "primeng/password";
+
+import { LoginRequest, RegisterRequest } from "../../models/auth.model";
+import { AuthService } from "../../services/auth.service";
+import {
+  emailValidators,
+  loginPasswordValidators,
+  nameValidators,
+  newPasswordValidators,
+} from "../../validators/auth.validators";
 
 @Component({
   selector: "app-auth",
@@ -27,6 +34,7 @@ import { CardModule } from "primeng/card";
     InputTextModule,
     PasswordModule,
     ButtonModule,
+    MessageModule,
     CardModule,
   ],
   templateUrl: "./auth.component.html",
@@ -44,19 +52,15 @@ export class AuthComponent {
     {
       name: new FormControl("", {
         nonNullable: true,
-        validators: [Validators.minLength(3)],
+        validators: [],
       }),
       email: new FormControl("", {
         nonNullable: true,
-        validators: [Validators.required, Validators.email],
+        validators: emailValidators,
       }),
       password: new FormControl("", {
         nonNullable: true,
-        validators: [
-          Validators.required,
-          Validators.minLength(6),
-          Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d).+$/), // at least 1 letter + number
-        ],
+        validators: loginPasswordValidators,
       }),
       confirmPassword: new FormControl("", {
         nonNullable: true,
@@ -65,32 +69,84 @@ export class AuthComponent {
     { validators: this.passwordMatchValidator() },
   );
 
-  // ✅ expose controls (clean template, no .controls access issues)
+  name = this.form.get("name");
   email = this.form.get("email");
   password = this.form.get("password");
   confirmPassword = this.form.get("confirmPassword");
 
-  toggleMode() {
-    this.isLogin.update((v) => !v);
+  get nameErrors(): string[] {
+    const errors: string[] = [];
+
+    if (this.name?.hasError("required")) errors.push("Name is required");
+    if (this.name?.hasError("minlength")) errors.push("Name must be at least 3 characters");
+    if (this.name?.hasError("maxlength")) errors.push("Name must not exceed 100 characters");
+    if (this.name?.hasError("htmlTag")) errors.push("Name cannot contain HTML tags");
+    if (this.name?.hasError("controlCharacter")) errors.push("Name contains invalid characters");
+
+    return errors;
+  }
+
+  get emailErrors(): string[] {
+    const errors: string[] = [];
+
+    if (this.email?.hasError("required")) errors.push("Email is required");
+    if (this.email?.hasError("email")) errors.push("Enter a valid email address");
+    if (this.email?.hasError("maxlength")) errors.push("Email must not exceed 254 characters");
+    if (this.email?.hasError("htmlTag")) errors.push("Email cannot contain HTML tags");
+    if (this.email?.hasError("controlCharacter")) errors.push("Email contains invalid characters");
+
+    return errors;
+  }
+
+  get passwordErrors(): string[] {
+    const errors: string[] = [];
+
+    if (this.password?.hasError("required")) errors.push("Password is required");
+    if (this.password?.hasError("minlength")) errors.push("Password must be at least 8 characters");
+    if (this.password?.hasError("maxlength")) errors.push("Password must not exceed 64 characters");
+    if (this.password?.hasError("maxUtf8Bytes")) {
+      errors.push("Password is too long for secure storage");
+    }
+    if (this.password?.hasError("htmlTag")) errors.push("Password cannot contain HTML tags");
+    if (this.password?.hasError("controlCharacter")) {
+      errors.push("Password contains invalid characters");
+    }
+
+    return errors;
+  }
+
+  get confirmPasswordErrors(): string[] {
+    const errors: string[] = [];
+
+    if (this.confirmPassword?.hasError("required")) {
+      errors.push("Password confirmation is required");
+    }
+    if (this.form.hasError("passwordMismatch")) errors.push("Passwords do not match");
+
+    return errors;
+  }
+
+  toggleMode(): void {
+    this.isLogin.update((value) => !value);
     this.error.set("");
     this.form.reset();
 
     if (this.isLogin()) {
-      // LOGIN MODE
-      this.form.get("name")?.clearValidators();
-      this.form.get("confirmPassword")?.clearValidators();
+      this.name?.clearValidators();
+      this.confirmPassword?.clearValidators();
+      this.password?.setValidators(loginPasswordValidators);
     } else {
-      // REGISTER MODE
-      this.form.get("name")?.setValidators([Validators.required, Validators.minLength(3)]);
-
-      this.form.get("confirmPassword")?.setValidators([Validators.required]);
+      this.name?.setValidators(nameValidators);
+      this.confirmPassword?.setValidators([Validators.required]);
+      this.password?.setValidators(newPasswordValidators);
     }
 
-    this.form.get("name")?.updateValueAndValidity();
-    this.form.get("confirmPassword")?.updateValueAndValidity();
+    this.name?.updateValueAndValidity();
+    this.password?.updateValueAndValidity();
+    this.confirmPassword?.updateValueAndValidity();
   }
 
-  submit() {
+  submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -99,43 +155,44 @@ export class AuthComponent {
     this.loading.set(true);
     this.error.set("");
 
-    const v = this.form.getRawValue();
+    const value = this.form.getRawValue();
 
     if (this.isLogin()) {
       const payload: LoginRequest = {
-        email: v.email,
-        password: v.password,
+        email: value.email.trim().toLowerCase(),
+        password: value.password,
       };
 
       this.auth.login(payload).subscribe({
         next: () => {
-          const returnUrl = this.route.snapshot.queryParamMap.get("returnUrl") || "/";
+          const returnUrl = this.route.snapshot.queryParamMap.get("returnUrl") || "/profile";
           void this.router.navigateByUrl(returnUrl);
           this.loading.set(false);
         },
         error: (err) => {
-          this.error.set(err?.error?.message ?? "Login failed");
+          this.error.set(this.getHttpErrorMessage(err, "Login failed"));
           this.loading.set(false);
         },
       });
-    } else {
-      const payload: RegisterRequest = {
-        name: v.name,
-        email: v.email,
-        password: v.password,
-      };
-
-      this.auth.register(payload).subscribe({
-        next: () => {
-          this.toggleMode();
-          this.loading.set(false);
-        },
-        error: (err) => {
-          this.error.set(err?.error?.message ?? "Registration failed");
-          this.loading.set(false);
-        },
-      });
+      return;
     }
+
+    const payload: RegisterRequest = {
+      name: value.name.trim(),
+      email: value.email.trim().toLowerCase(),
+      password: value.password,
+    };
+
+    this.auth.register(payload).subscribe({
+      next: () => {
+        this.toggleMode();
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set(this.getHttpErrorMessage(err, "Registration failed"));
+        this.loading.set(false);
+      },
+    });
   }
 
   private passwordMatchValidator(): ValidatorFn {
@@ -147,5 +204,9 @@ export class AuthComponent {
 
       return password === confirm ? null : { passwordMismatch: true };
     };
+  }
+
+  private getHttpErrorMessage(err: any, fallback: string): string {
+    return err?.error?.message ?? err?.error?.error ?? fallback;
   }
 }

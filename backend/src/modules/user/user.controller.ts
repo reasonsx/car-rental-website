@@ -1,6 +1,58 @@
 import { Response } from "express";
+import Joi from "joi";
 import { UserModel } from "./user.model";
 import { AuthRequest } from "../auth/auth.controller";
+
+const HTML_TAG_PATTERN = /<\/?[a-z][\s\S]*>/i;
+const CONTROL_CHARACTER_PATTERN = /[\u0000-\u001f\u007f]/;
+
+function rejectHtmlTags(value: string, helpers: Joi.CustomHelpers) {
+  if (HTML_TAG_PATTERN.test(value)) {
+    return helpers.error("string.htmlTag");
+  }
+
+  return value;
+}
+
+function rejectControlCharacters(value: string, helpers: Joi.CustomHelpers) {
+  if (CONTROL_CHARACTER_PATTERN.test(value)) {
+    return helpers.error("string.controlCharacter");
+  }
+
+  return value;
+}
+
+const updateUserSchema = Joi.object({
+  name: Joi.string()
+    .trim()
+    .min(3)
+    .max(100)
+    .custom(rejectHtmlTags)
+    .custom(rejectControlCharacters)
+    .messages({
+      "string.empty": "Name is required",
+      "string.min": "Name must be at least 3 characters",
+      "string.max": "Name must not exceed 100 characters",
+      "string.htmlTag": "Name cannot contain HTML tags",
+      "string.controlCharacter": "Name contains invalid characters",
+    }),
+  email: Joi.string()
+    .trim()
+    .lowercase()
+    .email({ tlds: { allow: false } })
+    .max(254)
+    .custom(rejectHtmlTags)
+    .custom(rejectControlCharacters)
+    .messages({
+      "string.empty": "Email is required",
+      "string.email": "Enter a valid email address",
+      "string.max": "Email must not exceed 254 characters",
+      "string.htmlTag": "Email cannot contain HTML tags",
+      "string.controlCharacter": "Email contains invalid characters",
+    }),
+  isAdmin: Joi.boolean(),
+  isDeleted: Joi.boolean(),
+});
 
 // helper mapper
 function mapUser(user: any) {
@@ -132,6 +184,14 @@ export async function updateUser(req: AuthRequest, res: Response) {
       return res.status(403).json({ error: "Forbidden" });
     }
 
+    const { error, value } = updateUserSchema.validate(req.body, {
+      abortEarly: true,
+      stripUnknown: true,
+    });
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
     const updateData: Partial<{
       name: string;
       email: string;
@@ -139,17 +199,24 @@ export async function updateUser(req: AuthRequest, res: Response) {
       isDeleted: boolean;
     }> = {};
 
-    if (req.body.name) updateData.name = req.body.name;
-    if (req.body.email) updateData.email = req.body.email;
+    if (value.name) updateData.name = value.name;
+    if (value.email) {
+      const existingUser = await UserModel.findOne({ _id: { $ne: id }, email: value.email });
+      if (existingUser) {
+        return res.status(400).json({ error: "Email already exists" });
+      }
+
+      updateData.email = value.email;
+    }
 
     // only admin can change role
-    if (req.user?.isAdmin && typeof req.body.isAdmin === "boolean") {
-      updateData.isAdmin = req.body.isAdmin;
+    if (req.user?.isAdmin && typeof value.isAdmin === "boolean") {
+      updateData.isAdmin = value.isAdmin;
     }
 
     // only admin can change deleted status
-    if (req.user?.isAdmin && typeof req.body.isDeleted === "boolean") {
-      updateData.isDeleted = req.body.isDeleted;
+    if (req.user?.isAdmin && typeof value.isDeleted === "boolean") {
+      updateData.isDeleted = value.isDeleted;
     }
 
     const user = await UserModel.findByIdAndUpdate(id, updateData, {
