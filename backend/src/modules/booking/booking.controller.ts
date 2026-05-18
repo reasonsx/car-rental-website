@@ -235,6 +235,46 @@ export async function getBookings(req: AuthRequest, res: Response) {
 
 /**
  * @swagger
+ * /bookings/admin/all:
+ *   get:
+ *     summary: Get all bookings
+ *     description: Returns all bookings in the system. Accessible only by administrators.
+ *     tags: [Bookings]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of all bookings
+ *       401:
+ *         description: Missing or invalid token
+ *       403:
+ *         description: Admins only
+ *       500:
+ *         description: Failed to fetch bookings
+ */
+export async function getAllBookings(req: AuthRequest, res: Response) {
+  try {
+    if (!req.user?.isAdmin) {
+      return res.status(403).json({ message: "Admins only" });
+    }
+
+    const bookings = await BookingModel.find()
+      .populate("userId", "name email")
+      .populate("carId", "brand modelName pricePerDay imageUrl")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res.status(200).json(bookings);
+  } catch (error: any) {
+    res.status(500).json({
+      message: "Failed to fetch bookings",
+      error: error.message,
+    });
+  }
+}
+
+/**
+ * @swagger
  * /bookings/{id}:
  *   get:
  *     summary: Get booking by ID

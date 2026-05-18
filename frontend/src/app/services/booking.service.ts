@@ -14,6 +14,10 @@ export class BookingService {
     return this.http.get<Booking[]>(this.baseUrl);
   }
 
+  getAllBookings(): Observable<Booking[]> {
+    return this.http.get<Booking[]>(`${this.baseUrl}/admin/all`);
+  }
+
   getBookingsForCar(carId: string): Observable<Booking[]> {
     return this.http.get<Booking[]>(`${this.baseUrl}/car/${carId}`);
   }

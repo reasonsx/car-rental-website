@@ -33,7 +33,7 @@ export class AdminBookingsComponent {
   loadBookings() {
     this.loading.set(true);
 
-    this.bookingService.getBookings().subscribe({
+    this.bookingService.getAllBookings().subscribe({
       next: (data) => {
         this.bookings.set(data);
         this.loading.set(false);
