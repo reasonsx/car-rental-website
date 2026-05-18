@@ -26,27 +26,30 @@ const mapCategory = (c: any): CategoryResponse => ({
  * @swagger
  * /categories:
  *   post:
- *     summary: Create a new category
+ *     summary: Create category
+ *     description: Creates a new car category. Usually used by administrators.
  *     tags: [Categories]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required: [name]
- *             properties:
- *               name:
- *                 type: string
- *                 example: SUV
- *               description:
- *                 type: string
- *                 example: Sport Utility Vehicles
+ *             $ref: '#/components/schemas/CategoryInput'
  *     responses:
  *       201:
- *         description: Category created
+ *         description: Category created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Category'
  *       400:
  *         description: Validation error
+ *       401:
+ *         description: Missing or invalid token
+ *       500:
+ *         description: Internal server error
  */
 export async function createCategory(req: Request<{}, {}, CreateCategoryRequest>, res: Response) {
   try {
@@ -68,12 +71,19 @@ export async function createCategory(req: Request<{}, {}, CreateCategoryRequest>
  * /categories:
  *   get:
  *     summary: Get all categories
+ *     description: Returns all available car categories.
  *     tags: [Categories]
  *     responses:
  *       200:
  *         description: List of categories
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Category'
  *       500:
- *         description: Server error
+ *         description: Internal server error
  */
 export async function getCategories(_req: Request, res: Response) {
   try {
@@ -89,20 +99,29 @@ export async function getCategories(_req: Request, res: Response) {
  * /categories/{id}:
  *   get:
  *     summary: Get category by ID
+ *     description: Returns a single category by MongoDB ObjectId.
  *     tags: [Categories]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
+ *         description: Category ID
  *         schema:
  *           type: string
+ *         example: 65f1c2a9b7f4a8d123456789
  *     responses:
  *       200:
  *         description: Category found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Category'
  *       400:
  *         description: Invalid ID
  *       404:
  *         description: Category not found
+ *       500:
+ *         description: Internal server error
  */
 export async function getCategoryById(req: Request<{ id: string }>, res: Response) {
   try {
@@ -128,32 +147,40 @@ export async function getCategoryById(req: Request<{ id: string }>, res: Respons
  * @swagger
  * /categories/{id}:
  *   put:
- *     summary: Update a category
+ *     summary: Update category
+ *     description: Updates an existing category by ID.
  *     tags: [Categories]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
+ *         description: Category ID
  *         schema:
  *           type: string
+ *         example: 65f1c2a9b7f4a8d123456789
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               description:
- *                 type: string
+ *             $ref: '#/components/schemas/CategoryUpdateInput'
  *     responses:
  *       200:
- *         description: Category updated
+ *         description: Category updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Category'
  *       400:
  *         description: Validation error or invalid ID
+ *       401:
+ *         description: Missing or invalid token
  *       404:
  *         description: Category not found
+ *       500:
+ *         description: Internal server error
  */
 export async function updateCategory(
   req: Request<{ id: string }, {}, UpdateCategoryRequest>,
@@ -190,21 +217,30 @@ export async function updateCategory(
  * @swagger
  * /categories/{id}:
  *   delete:
- *     summary: Delete a category
+ *     summary: Delete category
+ *     description: Deletes a category by ID.
  *     tags: [Categories]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
+ *         description: Category ID
  *         schema:
  *           type: string
+ *         example: 65f1c2a9b7f4a8d123456789
  *     responses:
  *       200:
- *         description: Category deleted
+ *         description: Category deleted successfully
  *       400:
  *         description: Invalid ID
+ *       401:
+ *         description: Missing or invalid token
  *       404:
  *         description: Category not found
+ *       500:
+ *         description: Internal server error
  */
 export async function deleteCategory(req: Request<{ id: string }>, res: Response) {
   try {
