@@ -7,12 +7,12 @@ export function setupDocumentation(app: Application) {
     definition: {
       openapi: "3.0.0",
       info: {
-        title: "Car Rental API",
+        title: "Car Rental Website API",
         version: "1.0.0",
       },
       servers: [
         {
-          url: "http://localhost:4000/api",
+          url: "https://car-rental-website-backend-g5ot.onrender.com/api",
         },
       ],
     },
