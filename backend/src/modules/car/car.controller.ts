@@ -16,7 +16,55 @@ const mapCar = (c: any): CarResponse => ({
 });
 
 /**
- * CREATE
+ * @swagger
+ * /cars:
+ *   post:
+ *     summary: Create a new car
+ *     description: Creates a new car. Usually used by admins to add vehicles to the catalog.
+ *     tags: [Cars]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [brand, modelName, year, pricePerDay, categoryId, locationId]
+ *             properties:
+ *               brand:
+ *                 type: string
+ *                 example: Toyota
+ *               modelName:
+ *                 type: string
+ *                 example: Corolla
+ *               year:
+ *                 type: number
+ *                 example: 2023
+ *               pricePerDay:
+ *                 type: number
+ *                 example: 500
+ *               available:
+ *                 type: boolean
+ *                 example: true
+ *               imageUrl:
+ *                 type: string
+ *                 example: https://example.com/toyota-corolla.jpg
+ *               categoryId:
+ *                 type: string
+ *                 example: 65f1c2a9b7f4a8d123456789
+ *               locationId:
+ *                 type: string
+ *                 example: 65f1c2a9b7f4a8d987654321
+ *     responses:
+ *       201:
+ *         description: Car created successfully
+ *       400:
+ *         description: Missing required fields
+ *       401:
+ *         description: Missing or invalid token
+ *       500:
+ *         description: Failed to create car
  */
 export async function createCar(req: Request<{}, {}, CreateCarRequest>, res: Response) {
   try {
@@ -48,7 +96,17 @@ export async function createCar(req: Request<{}, {}, CreateCarRequest>, res: Res
 }
 
 /**
- * GET ALL
+ * @swagger
+ * /cars:
+ *   get:
+ *     summary: Get all cars
+ *     description: Returns all cars with populated category and location data.
+ *     tags: [Cars]
+ *     responses:
+ *       200:
+ *         description: List of cars
+ *       500:
+ *         description: Failed to fetch cars
  */
 export async function getCars(_req: Request, res: Response) {
   try {
@@ -63,7 +121,17 @@ export async function getCars(_req: Request, res: Response) {
 }
 
 /**
- * GET ONE
+ * @swagger
+ * /cars:
+ *   get:
+ *     summary: Get all cars
+ *     description: Returns all cars with populated category and location data.
+ *     tags: [Cars]
+ *     responses:
+ *       200:
+ *         description: List of cars
+ *       500:
+ *         description: Failed to fetch cars
  */
 export async function getCarById(req: Request<{ id: string }>, res: Response) {
   try {
@@ -89,7 +157,64 @@ export async function getCarById(req: Request<{ id: string }>, res: Response) {
 }
 
 /**
- * UPDATE
+ * @swagger
+ * /cars/{id}:
+ *   put:
+ *     summary: Update car
+ *     description: Updates a car by ID. Usually used by admins.
+ *     tags: [Cars]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Car ID
+ *         schema:
+ *           type: string
+ *         example: 65f1c2a9b7f4a8d123456789
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               brand:
+ *                 type: string
+ *                 example: BMW
+ *               modelName:
+ *                 type: string
+ *                 example: X5
+ *               year:
+ *                 type: number
+ *                 example: 2024
+ *               pricePerDay:
+ *                 type: number
+ *                 example: 1200
+ *               available:
+ *                 type: boolean
+ *                 example: true
+ *               imageUrl:
+ *                 type: string
+ *                 example: https://example.com/bmw-x5.jpg
+ *               categoryId:
+ *                 type: string
+ *                 example: 65f1c2a9b7f4a8d123456789
+ *               locationId:
+ *                 type: string
+ *                 example: 65f1c2a9b7f4a8d987654321
+ *     responses:
+ *       200:
+ *         description: Car updated successfully
+ *       400:
+ *         description: Invalid ID
+ *       401:
+ *         description: Missing or invalid token
+ *       404:
+ *         description: Car not found
+ *       500:
+ *         description: Failed to update car
  */
 export async function updateCar(req: Request<{ id: string }, {}, UpdateCarRequest>, res: Response) {
   try {
@@ -118,7 +243,33 @@ export async function updateCar(req: Request<{ id: string }, {}, UpdateCarReques
 }
 
 /**
- * DELETE
+ * @swagger
+ * /cars/{id}:
+ *   delete:
+ *     summary: Delete car
+ *     description: Deletes a car by ID. Usually used by admins.
+ *     tags: [Cars]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: Car ID
+ *         schema:
+ *           type: string
+ *         example: 65f1c2a9b7f4a8d123456789
+ *     responses:
+ *       200:
+ *         description: Car deleted successfully
+ *       400:
+ *         description: Invalid ID
+ *       401:
+ *         description: Missing or invalid token
+ *       404:
+ *         description: Car not found
+ *       500:
+ *         description: Failed to delete car
  */
 export async function deleteCar(req: Request<{ id: string }>, res: Response) {
   try {
