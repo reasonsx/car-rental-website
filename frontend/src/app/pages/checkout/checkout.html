@@ -206,6 +206,23 @@
                     Date of birth is required
                   </small>
                 }
+                @if (userInfoForm.get('dateOfBirth')?.errors?.['tooOld']) {
+                  <small class="text-red-500">
+                    Date cannot be before 1900
+                  </small>
+                }
+
+                @if (userInfoForm.get('dateOfBirth')?.errors?.['futureDate']) {
+                  <small class="text-red-500">
+                    Date cannot be in the future
+                  </small>
+                }
+
+                @if (userInfoForm.get('dateOfBirth')?.errors?.['invalidDate']) {
+                  <small class="text-red-500">
+                    Invalid date
+                  </small>
+                }
               </div>
 
               <!-- License -->
@@ -261,6 +278,11 @@
                   userInfoForm.get('driversLicenseExpiry')?.touched) {
                     <small class="text-red-500">
                       License expiry date is required
+                    </small>
+                  }
+                  @if (userInfoForm.get('driversLicenseExpiry')?.errors?.['expired']) {
+                    <small class="text-red-500">
+                      License must not be expired
                     </small>
                   }
                 </div>

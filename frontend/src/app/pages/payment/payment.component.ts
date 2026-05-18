@@ -32,6 +32,7 @@ export class PaymentComponent implements OnInit, AfterViewInit {
   };
 
   cardOptions: StripeCardElementOptions = {
+  hidePostalCode: true,
     style: {
       base: {
         fontWeight: '400',

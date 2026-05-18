@@ -15,6 +15,64 @@ import {
 import { BookingFlowService } from "../../services/booking-flow";
 import { UserInfo } from "../../models/booking.model";
 
+import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+
+export function adultValidator(minAge: number): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    if (!control.value) return null;
+
+    const birthDate = new Date(control.value);
+    const today = new Date();
+
+    // ❌ invalid date check
+    if (isNaN(birthDate.getTime())) {
+      return { invalidDate: true };
+    }
+
+    // ❌ block unrealistic old dates
+    const minAllowedDate = new Date("1900-01-01");
+    if (birthDate < minAllowedDate) {
+      return { tooOld: true };
+    }
+
+    // ❌ block future dates
+    if (birthDate > today) {
+      return { futureDate: true };
+    }
+
+    // age calculation
+    let age = today.getFullYear() - birthDate.getFullYear();
+
+    const monthDiff =
+      today.getMonth() - birthDate.getMonth();
+
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 &&
+        today.getDate() < birthDate.getDate())
+    ) {
+      age--;
+    }
+
+    return age >= minAge
+      ? null
+      : { underage: true };
+  };
+}
+
+export function futureDateValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    if (!control.value) return null;
+
+    const date = new Date(control.value);
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+
+    return date > today ? null : { expired: true };
+  };
+}
+
 @Component({
   selector: "app-checkout",
   standalone: true,
@@ -80,8 +138,9 @@ export class CheckoutComponent implements OnInit {
 
       dateOfBirth: [
         null,
-        [Validators.required],
+        [Validators.required, adultValidator(18)],
       ],
+
 
       driversLicenseNumber: [
         "",
@@ -94,7 +153,7 @@ export class CheckoutComponent implements OnInit {
 
       driversLicenseExpiry: [
         null,
-        [Validators.required],
+        [Validators.required, futureDateValidator()],
       ],
 
       address: this.fb.group({
