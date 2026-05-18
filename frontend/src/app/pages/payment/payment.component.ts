@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild, ElementRef, OnInit, AfterViewInit } from "@angular/core";
+import { Component, inject, ViewChild, ElementRef, OnInit, AfterViewInit, computed } from "@angular/core";
 import { Router } from "@angular/router";
 import { CommonModule } from "@angular/common";
 import { CardModule } from "primeng/card";
@@ -23,7 +23,7 @@ export class PaymentComponent implements OnInit, AfterViewInit {
 
   @ViewChild('cardElement', { static: false }) cardElement!: ElementRef;
 
-  bookingData = this.bookingFlowService.getBookingData();
+  bookingData = computed(() => this.bookingFlowService.getBookingData());
   paymentProcessing = false;
   error: string | null = null;
 
@@ -50,7 +50,7 @@ export class PaymentComponent implements OnInit, AfterViewInit {
   private elementsReady = false;
 
   ngOnInit() {
-    if (!this.bookingData) {
+    if (!this.bookingData()) {
       this.router.navigate(['/']);
       return;
     }
@@ -59,45 +59,43 @@ export class PaymentComponent implements OnInit, AfterViewInit {
     this.createBooking();
   }
 
-  ngAfterViewInit() {
-    console.log('ngAfterViewInit called, cardElement:', this.cardElement);
-    // Check if we already have booking data with clientSecret (from a previous navigation)
-    const currentData = this.bookingFlowService.getBookingData();
-    console.log('Current booking data in ngAfterViewInit:', currentData);
-    if (currentData?.clientSecret && !this.elementsReady) {
-      console.log('Initializing Stripe elements from existing data');
-      this.initializeStripeElements(currentData.clientSecret);
+ngAfterViewInit() {
+  setTimeout(() => {
+    const data = this.bookingFlowService.getBookingData();
+
+    if (data?.clientSecret && !this.elementsReady) {
+      this.initializeStripeElements(data.clientSecret);
     }
-  }
+  });
+}
 
-  private createBooking() {
-    if (!this.bookingData) return;
+private createBooking() {
+  const data = this.bookingData();
 
-    console.log('Creating booking with data:', this.bookingData);
-    this.bookingService
-      .createBooking({
-        carId: this.bookingData.carId,
-        startDate: this.bookingData.startDate,
-        endDate: this.bookingData.endDate,
-        userInfo: this.bookingData.userInfo,
-      })
-      .subscribe({
-        next: (response) => {
-          console.log('Booking created successfully:', response);
-          this.bookingFlowService.updateBookingData({
-            bookingId: response.bookingId,
-            clientSecret: response.clientSecret,
-          });
-          console.log('Updated booking data with clientSecret');
-          // Now initialize Stripe elements since we have the clientSecret
-          this.initializeStripeElements(response.clientSecret);
-        },
-        error: (err) => {
-          console.error('Booking creation failed:', err);
-          this.error = err.error?.message || 'Failed to create booking';
-        },
-      });
-  }
+  if (!data) return;
+
+  this.bookingService
+    .createBooking({
+      carId: data.carId,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      userInfo: data.userInfo,
+    })
+    .subscribe({
+      next: (response) => {
+        this.bookingFlowService.updateBookingData({
+          bookingId: response.bookingId,
+          clientSecret: response.clientSecret,
+        });
+
+        this.initializeStripeElements(response.clientSecret);
+      },
+      error: (err) => {
+        console.error('Booking creation failed:', err);
+        this.error = err.error?.message || 'Failed to create booking';
+      },
+    });
+}
 
   private initializeStripeElements(clientSecret: string) {
     if (!this.cardElement) {
@@ -106,33 +104,20 @@ export class PaymentComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    console.log('Initializing Stripe elements with clientSecret:', clientSecret);
     // For confirmCardPayment, we don't need clientSecret in elements options
     this.stripeService.elements(this.elementsOptions).subscribe(elements => {
-      console.log('Stripe elements created:', elements);
       this.elements = elements;
       // Check if card element already exists
       if (this.card) {
-        console.log('Card element already exists, unmounting first');
         this.card.unmount();
       }
       this.card = elements.create('card', this.cardOptions);
-      console.log('Card element created:', this.card);
-      console.log('Mounting to element:', this.cardElement.nativeElement);
       this.card.mount(this.cardElement.nativeElement);
-      console.log('Card element mounted successfully');
       this.elementsReady = true;
-      console.log('Elements ready for payment');
     });
   }
 
   pay() {
-    console.log('Pay method called');
-    console.log('Elements ready:', this.elementsReady);
-    console.log('Elements object:', this.elements);
-    console.log('Card object:', this.card);
-    console.log('Card element ref:', this.cardElement);
-    console.log('Booking data:', this.bookingFlowService.getBookingData());
 
     if (!this.elementsReady || !this.elements || !this.card || !this.bookingFlowService.getBookingData()?.bookingId) {
       this.error = 'Payment system not ready. Please try again.';
@@ -155,25 +140,21 @@ export class PaymentComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    console.log('Confirming payment with clientSecret:', clientSecret);
     this.stripeService.confirmCardPayment(clientSecret, {
       payment_method: {
         card: this.card,
       },
     }).subscribe(result => {
-      console.log('Payment confirmation result:', result);
       if (result.error) {
         console.error('Payment error:', result.error);
         this.error = result.error.message || 'Payment failed';
         this.paymentProcessing = false;
       } else if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
-        console.log('Payment succeeded, confirming booking');
         // Payment succeeded, confirm booking
         const bookingId = this.bookingFlowService.getBookingData()?.bookingId;
         if (bookingId) {
           this.bookingService.confirmBooking(bookingId).subscribe({
             next: () => {
-              console.log('Booking confirmed successfully');
               this.bookingFlowService.clearBookingData();
               this.router.navigate(['/confirmation']);
             },
