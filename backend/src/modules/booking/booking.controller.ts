@@ -216,11 +216,12 @@ export async function confirmBooking(req: AuthRequest, res: Response) {
  */
 export async function getBookings(req: AuthRequest, res: Response) {
   try {
-    const query = req.user?.isAdmin ? {} : { userId: req.user?.id };
-
-    const bookings = await BookingModel.find(query)
+    const bookings = await BookingModel.find({
+      userId: req.user?.id,
+    })
       .populate("userId", "name email")
       .populate("carId", "brand modelName pricePerDay imageUrl")
+      .sort({ createdAt: -1 })
       .lean();
 
     res.status(200).json(bookings);

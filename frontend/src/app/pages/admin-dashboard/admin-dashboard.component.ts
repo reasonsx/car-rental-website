@@ -29,11 +29,6 @@ export class AdminDashboardComponent {
 
   tabs = [
     {
-      key: "cars" as TabKey,
-      label: "Cars",
-      icon: "pi pi-car",
-    },
-    {
       key: "users" as TabKey,
       label: "Users",
       icon: "pi pi-users",
@@ -42,6 +37,11 @@ export class AdminDashboardComponent {
       key: "bookings" as TabKey,
       label: "Bookings",
       icon: "pi pi-calendar",
+    },
+    {
+      key: "cars" as TabKey,
+      label: "Cars",
+      icon: "pi pi-car",
     },
     {
       key: "categories" as TabKey,
